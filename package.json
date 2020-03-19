@@ -1,0 +1,19 @@
+{
+  "name": "Purple-Iron-Bulldog",
+  "version": "1.0.0",
+  "description": "**Operation Purple Iron Bulldog** <br>\r *The New PsiSyn Staff Case Logger, created by* <br>\r - Kieran Holroyd\r - tagKnife\r - Justin Alexander",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab-jab.westeurope.cloudapp.azure.com:Kieran/Purple-Iron-Bulldog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pusher/chatkit-client": "^1.2.0"
+  }
+}

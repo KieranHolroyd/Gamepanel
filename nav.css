@@ -1,0 +1,140 @@
+.navSlider {
+    width: 60px;
+    height: 100vh;
+    position: fixed;
+    overflow: hidden;
+    padding: 5px;
+    box-shadow: 4px 0 10px 0 rgba(0,0,0,0.2);
+    background-color: #181830;
+    transition: 300ms ease-in-out;
+    text-align: center;
+    z-index: 100;
+}
+
+.navSlider .main {
+    height: calc(100vh - 100px);
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.navSlider:hover {
+    width: 180px;
+    background-color: #2e2c46;
+}
+
+.navSlider:hover .main {
+    overflow-y: auto;
+}
+
+.navSlider a {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0;
+    transition: 300ms ease-in-out;
+}
+
+.navSlider a span {
+    display: block;
+    opacity: 0;
+    transition: 300ms ease-in-out;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.navSlider .dropdown-anchor {
+    display: block;
+    cursor: pointer;
+    padding: 6px 0;
+    transition: 300ms ease-in-out;
+}
+
+.navSlider .dropdown-anchor span {
+    display: block;
+    opacity: 0;
+    transition: 300ms ease-in-out;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.navSlider:hover .bottom {
+    background-color: #2e2c46;
+}
+
+.navSlider:hover a span {
+    transition-delay: 300ms;
+    opacity: 1;
+}
+
+.navSlider a i, .navSlider a span {
+    color: #aaa;
+    transition: 300ms ease-in-out;
+    transition-delay: 0ms !important;
+}
+
+.navSlider a:hover i, .navSlider a:hover span {
+    color: #fff;
+}
+
+.navSlider:hover .dropdown-anchor span {
+    transition-delay: 300ms;
+    opacity: 1;
+}
+
+.navSlider .dropdown-anchor i, .navSlider .dropdown-anchor span {
+    color: #aaa;
+    transition: 300ms ease-in-out;
+    transition-delay: 0ms !important;
+}
+
+.navSlider .dropdown-anchor:hover i, .navSlider .dropdown-anchor:hover span {
+    color: #fff;
+}
+
+.navSlider img {
+    width: 48px;
+}
+
+.navSlider .spacer {
+    border-color: #3c3b62;
+}
+
+.navSlider .bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #181830;
+}
+
+.grid {
+    padding-left: 75px !important;
+}
+.dashboardOverlay {
+    padding-left: 75px;
+}
+.newPointBtn {
+    left: 75px;
+}
+.drawer.open {
+    left: 60px;
+}
+.navCards.meeting {
+    padding-left: 60px;
+}
+#loadMore {
+    left: 75px;
+}
+.cases-container {
+    padding-left: 75px;
+}
+.searchBox {
+    padding-left: 75px;
+}
+.bottomBar {
+    display: none;
+    margin-left: 60px;
+}

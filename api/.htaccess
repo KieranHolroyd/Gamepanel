@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^([^/]+)/? api.php?url=$1 [L,QSA]

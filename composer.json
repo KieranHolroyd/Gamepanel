@@ -1,0 +1,8 @@
+{
+  "require": {
+    "pusher/pusher-php-server": "^3.2",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "ext-pdo": "*"
+  }
+}
