@@ -60,6 +60,7 @@ class User
 
     public function isOnLOA()
     {
+        if(!$this->infoExists()) return false;
         if ($this->info->loa !== null) {
             /** @noinspection PhpUnhandledExceptionInspection */
             if (new DateTime() < new DateTime($this->info->loa)) {
@@ -71,6 +72,7 @@ class User
 
     public function isSLT()
     {
+        if(!$this->infoExists()) return false;
         if (($this->info->SLT || $this->info->Developer) && !$this->error) {
             return true;
         }
@@ -79,6 +81,7 @@ class User
 
     public function isStaff()
     {
+        if(!$this->infoExists()) return false;
         if ($this->verified() && $this->info->isStaff) {
             return true;
         }
@@ -87,6 +90,7 @@ class User
 
     public function isCommand()
     {
+        if(!$this->infoExists()) return false;
         if ($this->verified(false) && ($this->info->isCommand || $this->isSLT())) {
             return true;
         }
@@ -95,6 +99,7 @@ class User
 
     public function verified($old = true)
     {
+        if(!$this->infoExists()) return false;
         if (!$this->error) {
             if ($old) return true;
             return true;
@@ -104,11 +109,13 @@ class User
 
     public function displayName()
     {
+        if(!$this->infoExists()) return false;
         return $this->info->first_name . ' ' . $this->info->last_name;
     }
 
     public function isSuspended()
     {
+        if(!$this->infoExists()) return false;
         if ($this->info->suspended) {
             return true;
         }
@@ -117,6 +124,7 @@ class User
 
     public function hasGameReadAccess($level = 0)
     {
+        if(!$this->infoExists()) return false;
         if ($level == 0) {
             if ($this->info->rank_lvl <= 8 || $this->info->Developer || $this->isCommand()) {
                 return true;
@@ -131,6 +139,7 @@ class User
 
     public function hasGameWriteAccess($comp = true)
     {
+        if(!$this->infoExists()) return false;
         if ($comp) {
             if ($this->info->rank_lvl <= 6 || $this->info->Developer) {
                 return true;
@@ -146,6 +155,7 @@ class User
 
     public function needMoreInfo()
     {
+        if(!$this->infoExists()) return false;
         if ($this->info->region == null || $this->info->region == '') $this->neededFields[] = 'region';
         if ($this->info->steamid == null || $this->info->steamid == '') $this->neededFields[] = 'steamid';
 
@@ -156,18 +166,21 @@ class User
 
     public function isPD()
     {
+        if(!$this->infoExists()) return false;
         if ($this->info->isPD) return true;
         return false;
     }
 
     public function isEMS()
     {
+        if(!$this->infoExists()) return false;
         if ($this->info->isEMS) return true;
         return false;
     }
 
     public function getInfoForFrontend()
     {
+        if(!$this->infoExists()) return false;
         return [
             "isSLT" => $this->isSLT(),
             "isStaff" => $this->isStaff(),
@@ -189,6 +202,7 @@ class User
     }
 
     private function getFactionRank() {
+        if(!$this->infoExists()) return false;
         if ($this->isPD()) {
             return Config::$faction_ranks['police'][$this->info->faction_rank];
         } else {
@@ -199,6 +213,8 @@ class User
     public function fetchNotifications()
     {
         global $pdo;
+        
+        if(!$this->infoExists()) return false;
 
         $stmt = $pdo->prepare('SELECT * FROM notifications WHERE for_user_id = :id ORDER BY id DESC LIMIT 25');
         $stmt->bindValue(':id', $this->info->id, PDO::PARAM_INT);
@@ -222,6 +238,8 @@ class User
     {
         global $pdo;
 
+        if(!$this->infoExists()) return false;
+
         $stmt = $pdo->prepare('INSERT INTO notifications (`title`, `content`, `callback_url`, `for_user_id`) 
                               VALUES (:t, :c, :url, :id)');
         $stmt->bindValue(':t', $title, PDO::PARAM_INT);
@@ -242,5 +260,12 @@ class User
         ];
 
         Helpers::PusherSend($data, 'notifications', 'receive');
+    }
+
+    private function infoExists() {
+        if (gettype($this->info) !== gettype(json_decode("{\"example\": 0}"))) 
+            return false;
+
+        return true;
     }
 }
