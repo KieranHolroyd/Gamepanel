@@ -232,4 +232,3 @@ Guard::init()->SLTRequired();
             window.location.href = `/search?type=${$('#searchTypeChooser').val()}&query=${query}`;
         }
     </script>
-<?php include "footer.php"; ?>

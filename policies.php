@@ -161,4 +161,3 @@ Guard::init()->StaffRequired();
             editGuide();
         });
     </script>
-<?php include "footer.php"; ?>

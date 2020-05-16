@@ -73,4 +73,3 @@ Guard::init()->StaffRequired();
             });
         }
     </script>
-<?php include "footer.php"; ?>

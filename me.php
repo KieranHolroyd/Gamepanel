@@ -294,4 +294,3 @@ Guard::init()->StaffRequired();
 
         getStaffActivity();
     </script>
-<?php include "footer.php"; ?>

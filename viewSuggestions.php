@@ -37,4 +37,3 @@ $auth->SLTRequired();
 
         getSuggestions();
     </script>
-<?php include "footer.php"; ?>

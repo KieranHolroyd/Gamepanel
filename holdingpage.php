@@ -9,4 +9,3 @@
         <h1 class="title">Arma-Life Roleplay Staff</h1>
         <a href="passport"><button class="loginbtn">Login</button></a>
     </div>
-<?php include "footer.php"; ?>

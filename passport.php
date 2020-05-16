@@ -108,4 +108,3 @@ include "head.php";
             }
         }
     </script>
-<?php include "footer.php"; ?>

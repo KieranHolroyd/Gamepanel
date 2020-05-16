@@ -103,4 +103,3 @@ if ($_GET['meeting'] == ""):
         <div style="padding: 20px 70px;"><img style="width: 24px;" src="/img/loadw.svg" alt="loading"> Loading...</div>
     </div>
 <?php endif; ?>
-<?php include "../footer.php"; ?>

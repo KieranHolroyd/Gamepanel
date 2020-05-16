@@ -103,4 +103,3 @@
             stroke: #fff !important;
         }
     </style>
-<?php include "../footer.php"; ?>

@@ -14,4 +14,3 @@ include "../head.php"; ?>
             <button class="loginbtn">Arma-Life Homepage</button>
         </a>
     </div>
-<?php include "footer.php"; ?>

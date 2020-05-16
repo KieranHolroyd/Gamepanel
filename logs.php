@@ -75,4 +75,3 @@ Guard::init()->SLTRequired();
         });
 
     </script>
-<?php include "footer.php"; ?>
