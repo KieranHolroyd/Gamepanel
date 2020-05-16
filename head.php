@@ -64,7 +64,7 @@ $url = Config::$base_url; ?>
 <div class="overlayContainer"></div>
 <?php if ($user->verified(false)) include 'notifications.php'; ?>
 <script>
-    let loginToken = "<?php echo $_COOKIE['LOGINTOKEN'];?>";
+    let loginToken = "<?php echo isset($_COOKIE['LOGINTOKEN']) ? $_COOKIE['LOGINTOKEN']: false;?>";
     let userArray;
 
     function userArraySet() {

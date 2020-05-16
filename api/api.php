@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+// error_reporting(E_ALL);
 session_start();
 include_once $_SERVER['DOCUMENT_ROOT'] . "/db.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/User.php";
@@ -2108,6 +2108,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $arr['onemonth'] .= $onemonth;
         echo json_encode($arr);
     } else if ($url == "getUserInfo") {
+        if(!isset($_COOKIE['LOGINTOKEN'])) {
+            echo Helpers::APIResponse('Invalid API Token', null, 401);
+            exit;
+        }
+
         $cookietoken = sha1($_COOKIE['LOGINTOKEN']);
         //Get User ID From Login Tokens
         $sql = "SELECT * FROM login_tokens WHERE token = :token";
