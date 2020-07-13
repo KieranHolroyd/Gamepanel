@@ -109,7 +109,7 @@ $url = Config::$base_url; ?>
         return time;
     }
 </script>
-<?php if ($user->info->essentialNotification != '' && !$user->info->readEssentialNotification): ?>
+<?php if ((!$user->error) && $user->info->essentialNotification != '' && !$user->info->readEssentialNotification): ?>
     <div class="modal" id="essentialNotification" style="display: block;">
         <button id="close">×</button>
         <div class="content open" style="max-width: 500px;border-radius: 5px;">

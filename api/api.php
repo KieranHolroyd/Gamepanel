@@ -9,7 +9,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Config.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/DiffViewer.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Parsedown.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Interviews.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/vendor/unirest-php/src/Unirest.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/vendor/autoload.php";
 $url = $_GET['url'];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
