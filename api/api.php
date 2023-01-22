@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $query->bindValue(':email', $email, PDO::PARAM_STR);
         $query->execute();
         $selected_user = $query->fetch();
-        $arr = [];
+        $arr = ['token' => '', 'uid' => ''];
         if (password_verify($password, $selected_user->password)) {
             $userid = $selected_user->id;
             $cstrong = true;
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $query2->bindValue(':stoken', $stoken, PDO::PARAM_STR);
             $query2->bindValue(':userid', $userid, PDO::PARAM_STR);
             $query2->execute();
-            setcookie("LOGINTOKEN", $token, time() + 60 * 60 * 24 * 365, "/", null, null, true);
+            setcookie("LOGINTOKEN", $token, time() + 60 * 60 * 24 * 365, "/");
             $arr['token'] .= $token;
             $arr['uid'] .= $userid;
             $json = json_encode($arr);
@@ -304,7 +304,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $i = 1;
                     foreach ($rf as $r) {
                         $bl = htmlspecialchars($r->points);
-                        if (is_integer($bl)) $bl = $bl . " Points";
+                        if (is_integer($bl))
+                            $bl = $bl . " Points";
                         $staffinfo['log'][$i]['id'] = $r->id;
                         $staffinfo['log'][$i]['case_id'] = $r->case_id;
                         $staffinfo['log'][$i]['doe'] = htmlspecialchars($r->comments);
@@ -331,8 +332,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $i = 1;
                     foreach ($rf as $r) {
                         $bl = htmlspecialchars($r->length);
-                        if ($bl == 0) $bl = "Permanent Ban";
-                        if ($bl != 0) $bl = $bl . " Days";
+                        if ($bl == 0)
+                            $bl = "Permanent Ban";
+                        if ($bl != 0)
+                            $bl = $bl . " Days";
                         $staffinfo['log'][$i]['id'] = $r->id;
                         $staffinfo['log'][$i]['case_id'] = $r->case_id;
                         $staffinfo['log'][$i]['player'] = $r->player;
@@ -445,7 +448,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $rows = $stmt->fetchAll();
                         $i = 1;
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Cases Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Cases Logged', null, 404);
 
                         foreach ($rows as $row) {
                             $stmt = $pdo->prepare('SELECT * FROM punishment_reports WHERE case_id = :id');
@@ -461,7 +465,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
                         }
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Punishments Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Punishments Logged', null, 404);
 
                         echo Helpers::APIResponse("Fetched", $staffinfo, 200);
                         break;
@@ -472,7 +477,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $rows = $stmt->fetchAll();
                         $i = 1;
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Cases Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Cases Logged', null, 404);
 
                         foreach ($rows as $row) {
                             $stmt = $pdo->prepare('SELECT * FROM ban_reports WHERE case_id = :id');
@@ -489,7 +495,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
                         }
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Bans Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Bans Logged', null, 404);
 
                         echo Helpers::APIResponse("Fetched", $staffinfo, 200);
                         break;
@@ -538,7 +545,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $staffinfo = [];
                         $i = 1;
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Cases Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Cases Logged', null, 404);
 
                         foreach ($rows as $row) {
                             $stmt = $pdo->prepare('SELECT * FROM punishment_reports WHERE case_id = :id');
@@ -554,7 +562,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
                         }
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Punishments Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Punishments Logged', null, 404);
 
                         echo Helpers::APIResponse("Fetched", $staffinfo, 200);
                         break;
@@ -566,7 +575,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $staffinfo = [];
                         $i = 1;
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Cases Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Cases Logged', null, 404);
 
                         foreach ($rows as $row) {
                             $stmt = $pdo->prepare('SELECT * FROM ban_reports WHERE case_id = :id');
@@ -583,7 +593,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
                         }
 
-                        if (count($rows) < 1) echo Helpers::APIResponse('No Bans Logged', null, 404);
+                        if (count($rows) < 1)
+                            echo Helpers::APIResponse('No Bans Logged', null, 404);
 
                         echo Helpers::APIResponse("Fetched", $staffinfo, 200);
                         break;
@@ -675,10 +686,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
 
-            if ($r->notes == null) $r->notes = '';
-            if ($r->steamid == null) $r->steamid = '';
-            if ($r->rank_lvl == null) $r->rank_lvl = 100;
-            if ($r->lastPromotion == null) $r->lastPromotion = 'CHANGE ME';
+            if ($r->notes == null)
+                $r->notes = '';
+            if ($r->steamid == null)
+                $r->steamid = '';
+            if ($r->rank_lvl == null)
+                $r->rank_lvl = 100;
+            if ($r->lastPromotion == null)
+                $r->lastPromotion = 'CHANGE ME';
 
             $real_highest_rank_position = Permissions::getHighestRank(json_decode($r->rank_groups, true));
 
@@ -686,7 +701,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $user_highest_rank_position = ($user_highest_rank_position == 10) ? 0 : $user_highest_rank_position;
 
-            if (Permissions::init()->isOverlord()) $user_highest_rank_position = 0;
+            if (Permissions::init()->isOverlord())
+                $user_highest_rank_position = 0;
 
             $stmt = $pdo->prepare("SELECT * FROM rank_groups WHERE position > :p ORDER BY position");
             $stmt->bindValue(':p', $user_highest_rank_position, PDO::PARAM_INT);
@@ -725,7 +741,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $staffinfo['team'] = $r->staff_team;
             $staffinfo['isSuspended'] = ($r->suspended) ? true : false;
             $staffinfo['region'] = $r->region;
-            $staffinfo['activityGraph'] = (array)$activityGraph;
+            $staffinfo['activityGraph'] = (array) $activityGraph;
             $staffinfo['casecount'] = $allTimeCount;
             $staffinfo['casecount_week'] = $recentCount;
             $staffinfo['casecount_month'] = $Month;
@@ -808,10 +824,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
 
-            if ($r->notes == null) $r->notes = '';
-            if ($r->steamid == null) $r->steamid = '';
-            if ($r->rank_lvl == null) $r->rank_lvl = 100;
-            if ($r->lastPromotion == null) $r->lastPromotion = 'CHANGE ME';
+            if ($r->notes == null)
+                $r->notes = '';
+            if ($r->steamid == null)
+                $r->steamid = '';
+            if ($r->rank_lvl == null)
+                $r->rank_lvl = 100;
+            if ($r->lastPromotion == null)
+                $r->lastPromotion = 'CHANGE ME';
 
             $staffinfo['id'] = $r->id;
             $staffinfo['name'] = $staffname;
@@ -821,7 +841,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $staffinfo['lastPromotion'] = $r->lastPromotion;
             $staffinfo['rank_lvl'] = $r->rank_lvl;
             $staffinfo['team'] = $r->staff_team;
-            $staffinfo['activityGraph'] = (array)$activityGraph;
+            $staffinfo['activityGraph'] = (array) $activityGraph;
             $staffinfo['casecount'] = $allTimeCount;
             $staffinfo['casecount_week'] = $recentCount;
             echo Helpers::APIResponse("Fetched User", $staffinfo, 200);
@@ -896,9 +916,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
             $highest_rank = $stmt->fetch();
 
-            if ($user_highest_rank_position == 10) $user_highest_rank_position = 0;
+            if ($user_highest_rank_position == 10)
+                $user_highest_rank_position = 0;
 
-            if (Permissions::init()->isOverlord()) $user_highest_rank_position = 0;
+            if (Permissions::init()->isOverlord())
+                $user_highest_rank_position = 0;
 
             $stmt = $pdo->prepare("SELECT * FROM rank_groups WHERE position > :p");
             $stmt->bindValue(':p', $user_highest_rank_position, PDO::PARAM_INT);
@@ -906,7 +928,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $ranks_available = $stmt->fetchAll();
 
             foreach ($ranks_available as $rr) {
-                if ($rr->id === $rank) $passed_auth = true;
+                if ($rr->id === $rank)
+                    $passed_auth = true;
             }
 
             if (!$passed_auth) {
@@ -925,7 +948,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($selected == 'yes') {
                 foreach ($usr_ranks as $k => $rr) {
-                    if ($rr == $rank) unset($usr_ranks[$k]);
+                    if ($rr == $rank)
+                        unset($usr_ranks[$k]);
                 }
             } else {
                 array_push($usr_ranks, (int) $rank);
@@ -934,11 +958,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare("UPDATE users SET rank_groups = :rg, lastPromotion = :lp WHERE id = :i");
             $stmt->bindValue(':rg', json_encode($usr_ranks), PDO::PARAM_STR);
             $stmt->bindValue(':lp', $promotion, PDO::PARAM_STR);
-            $stmt->bindValue(':i',  $usr->id,   PDO::PARAM_STR);
+            $stmt->bindValue(':i', $usr->id, PDO::PARAM_STR);
             $stmt->execute();
             $updatedUsername = Helpers::IDToUsername($usr->id);
             echo Helpers::APIResponse("Success", null, 200);
-            Helpers::addAuditLog("{$user->info->username} Updated {$updatedUsername}'s Ranks Added: {$rank}, Now: ".json_encode($usr_ranks));
+            Helpers::addAuditLog("{$user->info->username} Updated {$updatedUsername}'s Ranks Added: {$rank}, Now: " . json_encode($usr_ranks));
         } else {
             echo Helpers::APIResponse("Unauthorised", null, 403);
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SetStaffRank`");
@@ -1028,7 +1052,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
 
-            if (count($playersArray) == 0) Helpers::fixPlayersForCase($caseid, null);
+            if (count($playersArray) == 0)
+                Helpers::fixPlayersForCase($caseid, null);
 
 
             $stmt = $pdo->prepare('SELECT * FROM case_logs WHERE id = :id');
@@ -1513,7 +1538,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit;
             }
 
-            if ($pb == 'NaN') $pb = 0;
+            if ($pb == 'NaN')
+                $pb = 0;
 
             $stmt = $gamepdo->prepare('SELECT * FROM `players` WHERE uid = :uid');
             $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
@@ -1860,8 +1886,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "suspend") {
         $user = new User;
 
-        $id = (isset($_POST{'id'})) ? $_POST['id'] : false;
-        $remove = (isset($_POST{'remove'})) ? $_POST['remove'] : false;
+        $id = (isset($_POST{ 'id'})) ? $_POST['id'] : false;
+        $remove = (isset($_POST{ 'remove'})) ? $_POST['remove'] : false;
 
         if (Permissions::init()->hasPermission("SEND_USER_ON_SUSPENSION")) {
             if (!$id) {
@@ -1891,7 +1917,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "newRole") {
         $user = new User;
 
-        $name = (isset($_POST{'name'})) ? $_POST['name'] : false;
+        $name = (isset($_POST{ 'name'})) ? $_POST['name'] : false;
 
         if (Permissions::init()->hasPermission("CREATE_ROLE")) {
             if (!$name) {
@@ -1928,7 +1954,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit;
             }
 
-            if (in_array('*', $perms)) $perms = ['*'];
+            if (in_array('*', $perms))
+                $perms = ['*'];
 
             $stmt = $pdo->prepare('UPDATE rank_groups SET permissions = :p WHERE id = :i');
             $stmt->bindValue(':i', $roleID, PDO::PARAM_INT);
@@ -2012,7 +2039,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit;
             }
 
-            foreach($pdo->query('SELECT * FROM users') as $u) {
+            foreach ($pdo->query('SELECT * FROM users') as $u) {
                 foreach (json_decode($u->rank_groups) as $g) {
                     if ($g == $id) {
                         echo Helpers::APIResponse("There are users dependant on this role, it can't be deleted", null, 400);
@@ -2107,7 +2134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $arr['onemonth'] .= $onemonth;
         echo json_encode($arr);
     } else if ($url == "getUserInfo") {
-        if(!isset($_COOKIE['LOGINTOKEN'])) {
+        if (!isset($_COOKIE['LOGINTOKEN'])) {
             echo Helpers::APIResponse('Invalid API Token', null, 401);
             exit;
         }
@@ -2238,7 +2265,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $i += 1;
             }
 
-            function sortByHighRank($a, $b) {
+            function sortByHighRank($a, $b)
+            {
                 return $a['highest_rank_position'] - $b['highest_rank_position'];
             }
 
@@ -2401,7 +2429,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt->execute();
                 }
                 $team_data['staff'] = Helpers::sanitizeUserDataArray($stmt->fetchAll());
-                foreach($team_data['staff'] as $k => $s) {
+                foreach ($team_data['staff'] as $k => $s) {
                     $team_data['staff'][$k]->rank = Helpers::getRankNameFromPosition(Permissions::getHighestRank(json_decode($s->rank_groups, true)));
                 }
                 echo Helpers::APIResponse("Success", $team_data, 200);
@@ -2416,7 +2444,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (Permissions::init()->hasPermission("VIEW_CASE")) {
             $playerName = '';
-            if (isset($_GET['name']) && !empty($_GET['name'])) $playerName = $_GET['name'];
+            if (isset($_GET['name']) && !empty($_GET['name']))
+                $playerName = $_GET['name'];
             if ($playerName !== '') {
                 $stmt = $pdo->prepare('SELECT * FROM case_players WHERE name = :name');
                 $stmt->bindValue(':name', $playerName, PDO::PARAM_STR);
@@ -2454,7 +2483,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($filters) {
                 foreach ($filters as $key => $filter) {
                     if ($filter) {
-                        if ($filterCount > 0) $sqlFilters .= "OR ";
+                        if ($filterCount > 0)
+                            $sqlFilters .= "OR ";
                         $sqlFilters .= "{$filterConnections[$key]} ";
                         $filterCount++;
                     }
@@ -2482,7 +2512,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $playerCount = count($players);
             $refine = ($playerTotalCount > 100) ? ' Refine Your Search Terms.' : '';
 
-            echo(Helpers::APIResponse("Displaying {$playerCount} Of {$playerTotalCount}{$refine}", $players, 200));
+            echo (Helpers::APIResponse("Displaying {$playerCount} Of {$playerTotalCount}{$refine}", $players, 200));
         } else {
             echo Helpers::APIResponse("Not High Enough Rank", null, 403);
         }
@@ -2548,7 +2578,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user = new User;
 
         if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
-//            $levelSettings = file_get_contents('https://ws.infishit.de/gameLevels');
+            //            $levelSettings = file_get_contents('https://ws.infishit.de/gameLevels');
             $levelSettings = [
                 "police" => [
                     0 => 'Not Whitelisted',
@@ -2620,7 +2650,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $audit = $stmt->fetchAll();
 
             echo Helpers::APIResponse("Success", $audit, 200);
-        } elsE {
+        } else {
             echo Helpers::APIResponse("Unauthorised", null, 401);
         }
     } else if ($url == "serverStats") {

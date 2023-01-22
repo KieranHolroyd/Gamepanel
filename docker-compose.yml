@@ -1,0 +1,33 @@
+# Run Dockerfile
+services:
+  gamepanel:
+    image: gamepanel:dev
+    build: .
+    ports:
+      - "4400:80"
+    volumes:
+      - ./:/var/www/html
+  
+  panel_database:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gamepanel
+      MYSQL_USER: gamepanel
+      MYSQL_PASSWORD: gamepanel
+    volumes:
+      - ./_cfg/panel_mysql:/var/lib/mysql
+    
+  game_database:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gamedb
+      MYSQL_USER: gamedb
+      MYSQL_PASSWORD: gamedb
+    volumes:
+      - ./_cfg/game_mysql:/var/lib/mysql

@@ -1,7 +1,7 @@
 {
   "require": {
-    "mashape/unirest-php": "3.*",
-    "pusher/pusher-php-server": "^3.2",
+    "mashape/unirest-php": "^3.0",
+    "pusher/pusher-php-server": "^7.2",
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-pdo": "*"

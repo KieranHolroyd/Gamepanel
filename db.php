@@ -5,7 +5,7 @@ $host = Config::$sql['host'];
 $user = Config::$sql['user'];
 $password = Config::$sql['pass'];
 $dbname = Config::$sql['name'];
-$dsn = 'mysql:host=' . $host . ';dbname=' . $dbname;
+$dsn = 'mysql:host=' . $host . ';port=' . Config::$sql['port'] . ';dbname=' . $dbname;
 $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
@@ -15,7 +15,7 @@ function game_pdo()
     $gameuser = Config::$gameSql['user'];
     $gamepassword = Config::$gameSql['pass'];
     $gamedbname = Config::$gameSql['name'];
-    $gamedsn = 'mysql:host=' . $gamehost . ';dbname=' . $gamedbname . ';charset=utf8';
+    $gamedsn = 'mysql:host=' . $gamehost . ';port=' . Config::$gameSql['port'] . ';dbname=' . $gamedbname . ';charset=utf8';
     static $_PDO = null;
 
     if ($_PDO === null) {
@@ -53,19 +53,19 @@ class GAMEDB extends PDO
         }
     }
 
-    public function query($query, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = [])
+    public function query(string $query, ?int $mode = PDO::ATTR_DEFAULT_FETCH_MODE, mixed...$fetchModeArgs): PDOStatement|false
     {
         $this->checkConnection();
-        return parent::query($query);
+        return parent::query($query, $mode, ...$fetchModeArgs);
     }
 
-    public function prepare($statement, $driver_options = NULL)
+    public function prepare(string $query, array $options = []): PDOStatement|false
     {
         $this->checkConnection();
-        return parent::prepare($statement, []);
+        return parent::prepare($query, $options);
     }
 
-    public function exec($query)
+    public function exec(string $query): int|false
     {
         $this->checkConnection();
         return parent::exec($query);

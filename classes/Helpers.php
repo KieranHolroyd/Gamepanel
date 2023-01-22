@@ -61,10 +61,10 @@ class Helpers
     {
         try {
             $pusher = new Pusher\Pusher(
-                Config::$pusher['AUTH_KEY'],
-                Config::$pusher['SECRET'],
-                Config::$pusher['APP_ID'],
-                Config::$pusher['DEFAULT_CONFIG']
+                    Config::$pusher['AUTH_KEY'],
+                    Config::$pusher['SECRET'],
+                    Config::$pusher['APP_ID'],
+                    Config::$pusher['DEFAULT_CONFIG']
             );
         } catch (\Pusher\PusherException $e) {
             return false;
@@ -91,7 +91,7 @@ class Helpers
         $stmt = $pdo->prepare('INSERT INTO audit_log (log_content, log_context, logged_in_user) VALUES (:content, :ctx, :liu)');
         $stmt->bindValue(':content', $content, PDO::PARAM_STR);
         $stmt->bindValue(':ctx', $ctx, PDO::PARAM_STR);
-        $stmt->bindValue(':liu', $user->info->id, PDO::PARAM_STR);
+        $stmt->bindValue(':liu', $user->info['id'], PDO::PARAM_STR);
         $stmt->execute();
     }
 
@@ -106,7 +106,8 @@ class Helpers
             '/leaderboard'
         ];
         foreach ($publicurls as $url) {
-            if (strpos($_SERVER['REQUEST_URI'], $url) !== false) return true;
+            if (strpos($_SERVER['REQUEST_URI'], $url) !== false)
+                return true;
         }
         return false;
     }
@@ -159,7 +160,7 @@ class Helpers
     {
         foreach ($players as $player) {
             $name = $player->name;
-            $player->name = "<a href='".Config::$base_url."search?type=players&query={$name}'>{$name}</a>";
+            $player->name = "<a href='" . Config::$base_url . "search?type=players&query={$name}'>{$name}</a>";
         }
         return $players;
     }
@@ -191,7 +192,7 @@ class Helpers
             }
         }
 
-//        $date = strtotime(date("Y-m-d", strtotime($b->timestamp)) . ' + ' . $b->length . ' days');
+        //        $date = strtotime(date("Y-m-d", strtotime($b->timestamp)) . ' + ' . $b->length . ' days');
 
         return "<div class='punishment_report{$custom_classes}'><span class='player'>{$b->player}'s Ban Report {$ban_expired_text}</span> <span class='points'>{$length}</span>
             <p>Ban Message: `{$b->message}`</p>
@@ -334,9 +335,11 @@ class Helpers
 
     public static function ValidateAPITokenPerms($keyInfo, $permission)
     {
-        if (!$keyInfo) return false;
+        if (!$keyInfo)
+            return false;
 
-        if (!$keyInfo[self::$APITokenPerms[$permission]]) return false;
+        if (!$keyInfo[self::$APITokenPerms[$permission]])
+            return false;
 
         return true;
     }
@@ -367,20 +370,20 @@ class Helpers
 
         $bl = substr(date("c", time() + 60 * 60 * 24 * $banLength), 0, 19) . '.962Z';
 
-        $realBanLength = ($banLength == 0) ? 'null' : '"'.$bl.'"';
+        $realBanLength = ($banLength == 0) ? 'null' : '"' . $bl . '"';
 
         $body = '{
   "data": {
     "type": "ban",
     "attributes": {
       "timestamp": "' . substr(date("c", time()), 0, 19) . '.962Z",
-      "reason": "'.$banReason.' - {{timeLeft}} - '.$banningAdminName.'",
+      "reason": "' . $banReason . ' - {{timeLeft}} - ' . $banningAdminName . '",
       "note": "",
-      "expires": '.$realBanLength.',
+      "expires": ' . $realBanLength . ',
       "identifiers": [
         {
           "type": "steamID",
-          "identifier": "'.$playerID.'",
+          "identifier": "' . $playerID . '",
           "manual": true
         }
       ],
@@ -391,7 +394,7 @@ class Helpers
     "relationships": {
       "organization": { "data": { "type": "organization", "id": "8030" } },
       "server": { "data": { "type": "server", "id": "2921049" } },
-      "player": { "data": { "type": "player", "id": "'. $bmPlayerInfo->body->data[0]->relationships->player->data->id .'" } },
+      "player": { "data": { "type": "player", "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '" } },
       "banList": {
         "data": {
           "type": "banList",
