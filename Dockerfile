@@ -22,10 +22,3 @@ RUN a2enmod rewrite
 # Copy existing application directory contents
 COPY . '/var/www/html'
 VOLUME [ "/var/www/html" ]
-
-# Install composer and add to PATH
-RUN curl -sS https://getcomposer.org/installer | php
-
-
-# Install dependencies
-RUN php /var/www/html/composer.phar install
