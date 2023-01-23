@@ -25,7 +25,7 @@ VOLUME [ "/var/www/html" ]
 
 # Install composer and add to PATH
 RUN curl -sS https://getcomposer.org/installer | php
-RUN mv /var/www/html/composer.phar /usr/local/bin/composer
+
 
 # Install dependencies
-RUN composer install
+RUN /var/www/html/composer.phar install
