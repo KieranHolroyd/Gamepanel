@@ -2,3 +2,4 @@ vendor/
 _cfg/
 node_modules/
 classes/Config.php
+composer.lock
