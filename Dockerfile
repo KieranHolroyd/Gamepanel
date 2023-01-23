@@ -28,4 +28,4 @@ RUN curl -sS https://getcomposer.org/installer | php
 
 
 # Install dependencies
-RUN /var/www/html/composer.phar install
+RUN php /var/www/html/composer.phar install
