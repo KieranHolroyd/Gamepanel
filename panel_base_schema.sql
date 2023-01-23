@@ -194,6 +194,12 @@ CREATE TABLE `rank_groups` (
   `position` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Dumping data for table gamepanel.rank_groups: ~4 rows (approximately)
+INSERT INTO `rank_groups` (`id`, `name`, `permissions`, `position`) VALUES
+	(6, 'BASIC', '["VIEW_GENERAL","VIEW_CASE","VIEW_SEARCH"]', 20),
+	(100, 'SMT', '["VIEW_GENERAL","VIEW_SLT","SPECIAL_DEVELOPER"]', 40),
+	(500, 'GOD', '["*"]', 10);
+
 -- --------------------------------------------------------
 
 --
@@ -258,35 +264,44 @@ CREATE TABLE `suggestions` (
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
   `username` varchar(200) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
   `rank_groups` varchar(4096) NOT NULL DEFAULT '[]',
+  `rank_lvl` tinyint(4) NOT NULL DEFAULT 0,
+  `rank` text NOT NULL,
   `staff_team` int(11) DEFAULT NULL,
-  `isServerOwner` tinyint(1) NOT NULL DEFAULT '0',
-  `isStaff` tinyint(1) DEFAULT '0',
-  `isCommand` tinyint(4) NOT NULL DEFAULT '0',
-  `isPD` tinyint(4) NOT NULL DEFAULT '0',
-  `isEMS` tinyint(4) NOT NULL DEFAULT '0',
+  `isServerOwner` tinyint(1) NOT NULL DEFAULT 0,
+  `isStaff` tinyint(1) DEFAULT 0,
+  `isCommand` tinyint(4) NOT NULL DEFAULT 0,
+  `isPD` tinyint(4) NOT NULL DEFAULT 0,
+  `isEMS` tinyint(4) NOT NULL DEFAULT 0,
   `SLT` tinyint(1) DEFAULT NULL,
   `Developer` tinyint(1) DEFAULT NULL,
-  `timezone` text,
-  `steamid` text,
+  `timezone` text DEFAULT NULL,
+  `steamid` text DEFAULT NULL,
   `active` tinyint(1) DEFAULT NULL,
   `strikes` int(11) DEFAULT NULL,
-  `notes` text,
-  `essentialNotification` text,
-  `readEssentialNotification` tinyint(4) DEFAULT '0',
+  `notes` text DEFAULT NULL,
+  `essentialNotification` text DEFAULT NULL,
+  `readEssentialNotification` tinyint(4) DEFAULT 0,
   `region` varchar(50) DEFAULT NULL,
-  `loa` text,
-  `suspended` tinyint(4) DEFAULT '0',
+  `loa` text DEFAULT NULL,
+  `suspended` tinyint(4) DEFAULT 0,
   `lastPromotion` date DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `createdAt` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Dumping data for table gamepanel.users: ~3 rows (approximately)
+DELETE FROM `users`;
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `username`, `email`, `password`, `rank_groups`, `rank_lvl`, `rank`, `staff_team`, `isServerOwner`, `isStaff`, `isCommand`, `isPD`, `isEMS`, `SLT`, `Developer`, `timezone`, `steamid`, `active`, `strikes`, `notes`, `essentialNotification`, `readEssentialNotification`, `region`, `loa`, `suspended`, `lastPromotion`, `createdAt`) VALUES
+	(1, 'gamepanel', 'master', 'gamepanelmaster', 'gamepanel@arma-life.com', '$2y$10$YMbh4o4nF.g5OdMnlBA/fObzHEJUF1FVQID0Hj35d7dcqRgwWz6wK', '[500]', 100, 'GOD', 1, 1, 1, 1, 1, 1, 1, 1, NULL, '76561199242507277', 1, 0, NULL, NULL, 0, 'EU', NULL, 0, NULL, '2023-01-23 07:10:40');
 
 --
 -- Indexes for dumped tables
