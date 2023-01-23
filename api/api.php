@@ -1,5 +1,5 @@
 <?php
-// error_reporting(E_ALL);
+//error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 session_start();
 include_once $_SERVER['DOCUMENT_ROOT'] . "/db.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/User.php";
