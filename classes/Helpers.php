@@ -91,7 +91,7 @@ class Helpers
         $stmt = $pdo->prepare('INSERT INTO audit_log (log_content, log_context, logged_in_user) VALUES (:content, :ctx, :liu)');
         $stmt->bindValue(':content', $content, PDO::PARAM_STR);
         $stmt->bindValue(':ctx', $ctx, PDO::PARAM_STR);
-        $stmt->bindValue(':liu', $user->info['id'], PDO::PARAM_STR);
+        $stmt->bindValue(':liu', $user->info->id, PDO::PARAM_STR);
         $stmt->execute();
     }
 

@@ -85,7 +85,7 @@ class User
     {
         if (!$this->infoExists())
             return false;
-        if ($this->verified() && $this->info['isStaff']) {
+        if ($this->verified() && $this->info->isStaff) {
             return true;
         }
         return false;
