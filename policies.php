@@ -75,7 +75,7 @@ Guard::init()->StaffRequired();
 
         function getGuides() {
             list = "";
-            $.get('api/v1/getGuides', function (data) {
+            $.get('api/v2/guide/get', function (data) {
                 let guides = JSON.parse(data);
                 for (let i = 1; i < Object.keys(guides).length + 1; i++) {
                     list += `<div class="selectionTab" onclick="getFullGuide(${guides[i].id})"><span style="float: right;font-size: 12px;">Effective: ${guides[i].effective}</span><span style="font-size: 25px;">${guides[i].title}<br></span></div>`;
@@ -88,7 +88,7 @@ Guard::init()->StaffRequired();
         function getFullGuide(id) {
             $('#guide_info').html("<img src='../../Before/Purple-Iron-Bulldog/img/loadw.svg'>");
             item = "";
-            $.post('api/v1/getFullGuide', {'id': id}, function (data) {
+            $.post('api/v2/guide/getFull', {'id': id}, function (data) {
                 currently_editing = id;
                 guide = JSON.parse(data);
                 item += `<h1>${guide.title}</h1><p>Last Updated: ${guide.time} | Effective: ${guide.effective} | Author: ${guide.author}</p><div>${guide.body}</div>`;
@@ -101,7 +101,7 @@ Guard::init()->StaffRequired();
 
         function newGuide() {
             if (userArray.info.slt == 1) {
-                $.post('api/v1/addGuide', {
+                $.post('api/v2/guide/add', {
                     'title': $('#Gtitle').val(),
                     'body': editor.getData()
                 }, function (data) {
@@ -130,7 +130,7 @@ Guard::init()->StaffRequired();
 
         function edit_open() {
             let id = currently_editing;
-            $.post('api/v1/getFullGuide', {'id': id}, function (data) {
+            $.post('api/v2/guide/getFull', {'id': id}, function (data) {
                 guide = JSON.parse(data);
                 $('#Gtitle_edit').val(guide.title);
                 edit_editor.setData(guide.body);
@@ -138,7 +138,7 @@ Guard::init()->StaffRequired();
         }
 
         function editGuide() {
-            $.post('api/v1/editGuide', {
+            $.post('api/v2/guide/edit', {
                 'id': currently_editing,
                 'title': $('#Gtitle_edit').val(),
                 'body': edit_editor.getData()
