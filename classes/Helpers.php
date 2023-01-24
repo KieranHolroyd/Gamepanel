@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: kiera
@@ -61,10 +62,10 @@ class Helpers
     {
         try {
             $pusher = new Pusher\Pusher(
-                    Config::$pusher['AUTH_KEY'],
-                    Config::$pusher['SECRET'],
-                    Config::$pusher['APP_ID'],
-                    Config::$pusher['DEFAULT_CONFIG']
+                Config::$pusher['AUTH_KEY'],
+                Config::$pusher['SECRET'],
+                Config::$pusher['APP_ID'],
+                Config::$pusher['DEFAULT_CONFIG']
             );
         } catch (\Pusher\PusherException $e) {
             return false;
@@ -316,7 +317,6 @@ class Helpers
             self::addAuditLog('ERROR::Unirest Error [Get Player SteamID Match] ' . $e->getMessage());
             return false;
         }
-
     }
 
     public static function isValidAPIToken(string $key)

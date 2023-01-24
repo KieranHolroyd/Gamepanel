@@ -294,8 +294,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `loa` text DEFAULT NULL,
   `suspended` tinyint(4) DEFAULT 0,
   `lastPromotion` date DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `createdAt` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table gamepanel.users: ~3 rows (approximately)

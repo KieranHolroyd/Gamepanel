@@ -82,7 +82,7 @@ Guard::init()->SLTRequired();
 
     function generateEditor(perms) {
         let editor = ``;
-        for(let p of available_permissions) {
+        for (let p of available_permissions) {
             let matched = false;
             for (let pp of perms) {
                 if (p === pp) matched = true;
@@ -106,8 +106,6 @@ Guard::init()->SLTRequired();
             }
         }
     }
-
-    getRoles();
 
     function createRole() {
         $.post('/api/v1/newRole', {
@@ -171,7 +169,7 @@ Guard::init()->SLTRequired();
     }
 
     function shuffle(direction, elID) {
-        switch(direction) {
+        switch (direction) {
             case 'UP':
                 $.post('/api/v1/shuffleUpRole', {
                     id: elID
@@ -227,6 +225,9 @@ Guard::init()->SLTRequired();
             }
         })
     }
+    window.addEventListener("load", () => {
+        getRoles();
+    })
 
     tippy('[data-tippy-content]', {
         placement: 'right'
