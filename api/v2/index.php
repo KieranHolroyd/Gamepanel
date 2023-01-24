@@ -1,4 +1,5 @@
 <?php
+
 namespace App\API\V2;
 
 require __DIR__ . '/include.php';
@@ -18,8 +19,8 @@ $router->post('/auth/check', 'AuthenticationController@Check');
 $router->post('/guide/add', 'GuideController@addGuide');
 $router->post('/guide/edit', 'GuideController@editGuide');
 //$router->post('/guide/delete', 'GuideController@deleteGuide');
-$router->post('/guide/getFull', 'GuideController@getFullGuide');
-$router->get('/guide/get', 'GuideController@getGuide');
+$router->post('/guide/full', 'GuideController@getFullGuide');
+$router->get('/guide/get', 'GuideController@getGuides');
 
 // Execute the router
 $router->run();
