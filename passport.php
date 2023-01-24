@@ -75,7 +75,7 @@ include "head.php";
                     password: $('#l-password').val(),
                 }, function (data) {
                     data = JSON.parse(data);
-                    if (data.token == "Failed") {
+                    if (data.Status != "Success") {
                         notify = "Login Failed. Try Again";
                         type = 'error';
                         $('#continue').text('Continue');
