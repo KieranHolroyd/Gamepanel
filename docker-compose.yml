@@ -14,7 +14,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 8e9f0e8f20ac30587d22d2113590e83c6010c215aceeefc94e3db55ba447fec968998767d57c45d968bfce36b03bfd1ff4cfbf60e9986e63dd6e3ee73801d982
       MYSQL_DATABASE: gamepanel
       MYSQL_USER: gamepanel
       MYSQL_PASSWORD: gamepanel
