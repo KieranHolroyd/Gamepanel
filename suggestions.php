@@ -15,7 +15,7 @@ include "head.php";
 <button onclick="submit();" class="submitBtn">Submit</button>
 <script>
     function submit() {
-        $.post('api/addSuggestion', {
+        $.post('api/v1/addSuggestion', {
             'name': $('#sas').text(),
             'suggestion': $('#suggestion').val()
         }, function (data) {

@@ -55,7 +55,7 @@ Guard::init()->SLTRequired();
         },
         methods: {
             loadFullCase(id) {
-                $.post('api/getMoreInfo', {'id': id}, data => {
+                $.post('api/v1/getMoreInfo', {'id': id}, data => {
                     data = JSON.parse(data);
 
                     if (data.code === 200) {
@@ -65,7 +65,7 @@ Guard::init()->SLTRequired();
                 });
             },
             loadCases() {
-                $.post('api/getCases', {'offset': this.offset}, data => {
+                $.post('api/v1/getCases', {'offset': this.offset}, data => {
                     data = JSON.parse(data);
                     this.reports = [];
                     for (let i = 0; i < Object.keys(data.caseno).length; i++) {

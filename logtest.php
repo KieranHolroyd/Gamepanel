@@ -229,7 +229,7 @@ include "head.php"; ?>
     });
 
     function addPunishmentReport() {
-        $.post('/api/punishment', {
+        $.post('/api/v1/punishment', {
             points: $('#amountOfPoints').val(),
             rules: $('#rulesBroken').val(),
             comments: $('#punishmentComments').val(),
@@ -255,7 +255,7 @@ include "head.php"; ?>
     }
 
     function addBanReport() {
-        $.post('/api/ban', {
+        $.post('/api/v1/ban', {
             length: $('#bl').val(),
             message: $('#bm').val(),
             teamspeak: $('#ts').val(),
@@ -491,7 +491,7 @@ include "head.php"; ?>
                 };
             });
             playerArray.splice(0, 1);
-            $.post('api/submitCase', {
+            $.post('api/v1/submitCase', {
                 'lead_staff': $('#lsm').val(),
                 'other_staff': otherStaffParsed,
                 'description_of_events': $('#doi').val(),
@@ -651,7 +651,7 @@ include "head.php"; ?>
     }
 
     function gsl() {
-        $.get('api/getStaffList', function (data) {
+        $.get('api/v1/getStaffList', function (data) {
             let staff = JSON.parse(data);
             for (let i = 1; i < Object.keys(staff).length + 1; i++) {
                 staffList += `<option value='${staff[i].name}'>${staff[i].display}</option>`;

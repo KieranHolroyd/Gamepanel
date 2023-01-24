@@ -70,7 +70,7 @@ if (!empty($_GET['query'])) {
         "onlyAdmins": false,
     };
 
-    $.get('/api/levelSettings', data => {
+    $.get('/api/v1/levelSettings', data => {
         levels = JSON.parse(data).response;
     });
 
@@ -87,7 +87,7 @@ if (!empty($_GET['query'])) {
         $('#reports').html("<img src='../img/loadw.svg'>");
         list = "";
         let jsonFilters = JSON.stringify(filters);
-        $.get(`/api/gamePlayers?q=${query}&filters=${jsonFilters}`, function (data) {
+        $.get(`/api/v1/gamePlayers?q=${query}&filters=${jsonFilters}`, function (data) {
             data = JSON.parse(data);
             let players = data.response;
             let list = '';
@@ -103,7 +103,7 @@ if (!empty($_GET['query'])) {
     function getPlayerInfo(id) {
         $('#case_info').html("<img src='../img/loadw.svg'>");
         list = "";
-        $.get(`/api/gamePlayer?id=${id}`, function (data) {
+        $.get(`/api/v1/gamePlayer?id=${id}`, function (data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -190,7 +190,7 @@ if (!empty($_GET['query'])) {
     function getPlayerVehicles(id) {
         $('#case_info').html("<img src='../img/loadw.svg'>");
         let list = "";
-        $.get(`/api/gamePlayerVehicles?id=${id}`, function (data) {
+        $.get(`/api/v1/gamePlayerVehicles?id=${id}`, function (data) {
             data = JSON.parse(data);
 
             console.log(data);
@@ -215,7 +215,7 @@ if (!empty($_GET['query'])) {
     }
 
     function updateAdminLevel(id) {
-        $.post(`/api/playerChangeAdminLevel`, {
+        $.post(`/api/v1/playerChangeAdminLevel`, {
             id: id,
             al: $('#AdminLevelValue').val()
         }, function (data) {
@@ -239,7 +239,7 @@ if (!empty($_GET['query'])) {
     }
 
     function updateMedicLevel(id) {
-        $.post(`/api/playerChangeMedicLevel`, {
+        $.post(`/api/v1/playerChangeMedicLevel`, {
             id: id,
             ml: $('#MedicLevelValue').val()
         }, function (data) {
@@ -263,7 +263,7 @@ if (!empty($_GET['query'])) {
     }
 
     function updateMedicDepartment(id) {
-        $.post(`/api/playerChangeMedicDepartment`, {
+        $.post(`/api/v1/playerChangeMedicDepartment`, {
             id: id,
             md: $('#MedicDepartmentValue').val()
         }, function (data) {
@@ -287,7 +287,7 @@ if (!empty($_GET['query'])) {
     }
 
     function updatePoliceLevel(id) {
-        $.post(`/api/playerChangePoliceLevel`, {
+        $.post(`/api/v1/playerChangePoliceLevel`, {
             id: id,
             pl: $('#PoliceLevelValue').val()
         }, function (data) {
@@ -311,7 +311,7 @@ if (!empty($_GET['query'])) {
     }
 
     function updatePoliceDepartment(id) {
-        $.post(`/api/playerChangePoliceDepartment`, {
+        $.post(`/api/v1/playerChangePoliceDepartment`, {
             id: id,
             pd: $('#PoliceDepartmentValue').val()
         }, function (data) {
@@ -336,7 +336,7 @@ if (!empty($_GET['query'])) {
 
     function updatePlayerBalance(id) {
         if ($('#PlayerBankValue').val() !== playerBalance) {
-            $.post(`/api/playerChangeBalance`, {
+            $.post(`/api/v1/playerChangeBalance`, {
                 id: id,
                 pb: $('#PlayerBankValue').val()
             }, function (data) {
@@ -367,7 +367,7 @@ if (!empty($_GET['query'])) {
     }
 
     function issueCompensation() {
-        $.post(`/api/playerChangeBalance`, {
+        $.post(`/api/v1/playerChangeBalance`, {
             id: playerID,
             pb: parseInt($('#PlayerBankValue').val()) + parseInt($('#compensationAmount').val()),
             comp: true

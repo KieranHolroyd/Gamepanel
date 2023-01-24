@@ -7,9 +7,10 @@ services:
       - "4400:80"
     volumes:
       - ./:/var/www/html
+      - ./_cfg/gamepanel/logs:/var/log/apache2
   
   panel_database:
-    image: mysql:5.7
+    image: mysql:8
     ports:
       - "3306:3306"
     environment:
@@ -21,7 +22,7 @@ services:
       - ./_cfg/panel_mysql:/var/lib/mysql
     
   game_database:
-    image: mysql:5.7
+    image: mysql:8
     ports:
       - "3307:3306"
     environment:

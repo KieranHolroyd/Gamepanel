@@ -45,9 +45,9 @@ Guard::init()->StaffRequired();
             <button style='width:100%;margin: 0;' id="editButton">Update Policy</button>
         </div>
     </div>
-    <?php if($user->isSLT()): ?>
-    <button id="modalLaunch" launch="createGuide" class="newPointBtn">+</button>
-    <button id="modalLaunch" launch="editGuide" onclick="edit_open()" class="newEditBtn"><i style="font-size: 14px;" class="fas fa-pen"></i></button>
+    <?php if ($user->isSLT()): ?>
+        <button id="modalLaunch" launch="createGuide" class="newPointBtn">+</button>
+        <button id="modalLaunch" launch="editGuide" onclick="edit_open()" class="newEditBtn"><i style="font-size: 14px;" class="fas fa-pen"></i></button>
     <?php endif; ?>
     <style>
         .ck-editor__editable p {
@@ -75,7 +75,7 @@ Guard::init()->StaffRequired();
 
         function getGuides() {
             list = "";
-            $.get('api/getGuides', function (data) {
+            $.get('api/v1/getGuides', function (data) {
                 let guides = JSON.parse(data);
                 for (let i = 1; i < Object.keys(guides).length + 1; i++) {
                     list += `<div class="selectionTab" onclick="getFullGuide(${guides[i].id})"><span style="float: right;font-size: 12px;">Effective: ${guides[i].effective}</span><span style="font-size: 25px;">${guides[i].title}<br></span></div>`;
@@ -88,7 +88,7 @@ Guard::init()->StaffRequired();
         function getFullGuide(id) {
             $('#guide_info').html("<img src='../../Before/Purple-Iron-Bulldog/img/loadw.svg'>");
             item = "";
-            $.post('api/getFullGuide', {'id': id}, function (data) {
+            $.post('api/v1/getFullGuide', {'id': id}, function (data) {
                 currently_editing = id;
                 guide = JSON.parse(data);
                 item += `<h1>${guide.title}</h1><p>Last Updated: ${guide.time} | Effective: ${guide.effective} | Author: ${guide.author}</p><div>${guide.body}</div>`;
@@ -101,7 +101,7 @@ Guard::init()->StaffRequired();
 
         function newGuide() {
             if (userArray.info.slt == 1) {
-                $.post('api/addGuide', {
+                $.post('api/v1/addGuide', {
                     'title': $('#Gtitle').val(),
                     'body': editor.getData()
                 }, function (data) {
@@ -130,7 +130,7 @@ Guard::init()->StaffRequired();
 
         function edit_open() {
             let id = currently_editing;
-            $.post('api/getFullGuide', {'id': id}, function (data) {
+            $.post('api/v1/getFullGuide', {'id': id}, function (data) {
                 guide = JSON.parse(data);
                 $('#Gtitle_edit').val(guide.title);
                 edit_editor.setData(guide.body);
@@ -138,7 +138,7 @@ Guard::init()->StaffRequired();
         }
 
         function editGuide() {
-            $.post('api/editGuide', {
+            $.post('api/v1/editGuide', {
                 'id': currently_editing,
                 'title': $('#Gtitle_edit').val(),
                 'body': edit_editor.getData()

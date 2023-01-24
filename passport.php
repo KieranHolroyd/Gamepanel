@@ -53,7 +53,7 @@ include "head.php";
         $('#continue').click(function () {
             $(this).html('<img src="/img/loadw.svg" width="25px">');
             if (selected === 0) {
-                $.post('api/signupUser', {
+                $.post('api/v2/auth/signup', {
                     first_name: $('#s-firstname').val(),
                     last_name: $('#s-lastname').val(),
                     email: $('#s-email').val(),
@@ -70,7 +70,7 @@ include "head.php";
                     $('#continue').text('Continue');
                 });
             } else if (selected === 1) {
-                $.post('api/loginUser', {
+                $.post('api/v2/auth/login', {
                     email: $('#l-email').val(),
                     password: $('#l-password').val(),
                 }, function (data) {
@@ -89,7 +89,7 @@ include "head.php";
                         type: type
                     }).show();
                     userArraySet();
-                    $.post("api/checkLogin", {},
+                    $.post("api/v2/auth/check", {},
                         function (data) {
                             console.log(data)
                             if (!data) {

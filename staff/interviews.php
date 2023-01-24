@@ -156,7 +156,7 @@ Guard::init()->SLTRequired();
             }
         }
         console.log(params);
-        $.post('/api/interview', {
+        $.post('/api/v1/interview', {
             ...params
         }, data => {
             data = JSON.parse(data);
@@ -187,7 +187,7 @@ Guard::init()->SLTRequired();
                 }
             }
             console.log(params);
-            $.post('/api/editInterview', {
+            $.post('/api/v1/editInterview', {
                 ...params,
                 updateID
             }, data => {
@@ -220,7 +220,7 @@ Guard::init()->SLTRequired();
 
     function getInterviewDetails(id) {
         if (id !== null) {
-            $.get(`/api/interviewDetails?id=${id}`, data => {
+            $.get(`/api/v1/interviewDetails?id=${id}`, data => {
                 data = JSON.parse(data);
                 let interview = data.response;
                 updateID = interview.id;

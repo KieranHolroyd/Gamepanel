@@ -284,7 +284,7 @@ Guard::init()->StaffRequired();
                         return e.id;
                     }) + ']';
 
-                    $.post('/api/submitCase', {
+                    $.post('/api/v1/submitCase', {
                         lead_staff: '<?= $user->info->username; ?>',
                         other_staff: other_staff.replace(',', ' '),
                         description_of_events: this.info.description,
@@ -352,7 +352,7 @@ Guard::init()->StaffRequired();
                 return true;
             },
             addPunishment() {
-                $.post('/api/punishment', {
+                $.post('/api/v1/punishment', {
                     ...this.reports.punishment
                 }, data => {
                     data = JSON.parse(data);
@@ -383,7 +383,7 @@ Guard::init()->StaffRequired();
                 })
             },
             addBan() {
-                $.post('/api/ban', {
+                $.post('/api/v1/ban', {
                     ...this.reports.ban
                 }, data => {
                     data = JSON.parse(data);
@@ -427,7 +427,7 @@ Guard::init()->StaffRequired();
             }
         },
         mounted() {
-            $.get('api/getStaffList', this.updateStaffList);
+            $.get('api/v1/getStaffList', this.updateStaffList);
         },
         computed: {
             /**

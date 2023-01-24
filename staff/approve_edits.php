@@ -17,11 +17,11 @@
     </div>
     <script>
         function test() {
-            $.post('/api/getMoreInfo', {id: 100}, data => {
+            $.post('/api/v1/getMoreInfo', {id: 100}, data => {
                 data = JSON.parse(data);
                 console.log(data);
                 let editedString = `On 12/21/2018 @7:30 pm we had a user that was getting back into Arma 3 life he needed the mods and the Arma 3 sync-able to update the mods we gave him, he had general questions about gameplay that Fini and I answered and we told him the style of gameplay the server will be.`;
-                $.get(`/api/stringDiffHTML?string1=${data.response.report.doe}&string2=${editedString}`, data => {
+                $.get(`/api/v1/stringDiffHTML?string1=${data.response.report.doe}&string2=${editedString}`, data => {
                     data = JSON.parse(data);
                     let diffHTML = ``;
                     for(let diff of data.response[0]) {

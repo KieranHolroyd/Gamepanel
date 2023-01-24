@@ -12,7 +12,7 @@ $lk = (isset($_GET['lk'])) ? htmlspecialchars($_GET['lk']) : '';
             <h1>Activate Your Purchase</h1>
             <div class="field">
                 <div class="fieldTitle">License Key</div>
-                <input class="fieldInput" type="text" id="lk" placeholder="Enter License Key" value="<?=$lk;?>">
+                <input class="fieldInput" type="text" id="lk" placeholder="Enter License Key" value="<?= $lk; ?>">
             </div>
             <div class="btnGroup">
                 <button onclick="activate()">Activate</button>
@@ -23,7 +23,7 @@ $lk = (isset($_GET['lk'])) ? htmlspecialchars($_GET['lk']) : '';
 <script>
     function activate() {
         const lk = $('#lk').val();
-        $.post('/api/activatePurchase', {
+        $.post('/api/v1/activatePurchase', {
             license: lk
         }, data => {
             data = JSON.parse(data);

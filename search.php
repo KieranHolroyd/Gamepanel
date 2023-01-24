@@ -71,7 +71,7 @@ Guard::init()->SLTRequired();
 
         function searchCases() {
             $('#reports').html('<img src="/img/loadw.svg">');
-            $.post('api/getSearchResults', {'query': query, 'type': searchType}, function (data) {
+            $.post('api/v1/getSearchResults', {'query': query, 'type': searchType}, function (data) {
                 let activity = "";
                 moreinfo = JSON.parse(data);
                 $('#resultsfound').html(moreinfo.message);
@@ -135,7 +135,7 @@ Guard::init()->SLTRequired();
             players_involved = "";
             playersArray = "";
             player_title = "";
-            $.get('api/player', {'name': name}, function (data) {
+            $.get('api/v1/player', {'name': name}, function (data) {
                 let res = JSON.parse(data);
                 if (res.code === 200) {
                     moreinfo = res.response;
@@ -164,7 +164,7 @@ Guard::init()->SLTRequired();
             players_involved = "";
             playersArray = "";
             player_title = "";
-            $.post('api/getMoreInfo', {'id': id}, function (data) {
+            $.post('api/v1/getMoreInfo', {'id': id}, function (data) {
                 let res = JSON.parse(data);
                 if (res.code === 200) {
                     moreinfo = res.response;

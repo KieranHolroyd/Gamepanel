@@ -67,7 +67,7 @@ Guard::init()->CommandRequired();
         },
         methods: {
             loadPlayerList() {
-                $.get('/api/factionPlayerList', data => {
+                $.get('/api/v1/factionPlayerList', data => {
                     data = JSON.parse(data);
 
                     if (data.code === 200) {
@@ -76,7 +76,7 @@ Guard::init()->CommandRequired();
                 });
             },
             loadFullPlayer(id, k) {
-                $.get('/api/factionPlayerFull', {'id': id}, data => {
+                $.get('/api/v1/factionPlayerFull', {'id': id}, data => {
                     data = JSON.parse(data);
 
                     if (data.code === 200) {
@@ -90,12 +90,12 @@ Guard::init()->CommandRequired();
                 return this.faction_players[key].first_name + ' ' + this.faction_players[key].last_name;
             },
             loadConfig() {
-                $.get('/api/factionConfigs', data => {
+                $.get('/api/v1/factionConfigs', data => {
                     this.factionConfig = JSON.parse(data);
                 });
             },
             savePlayerRank() {
-                $.post('/api/factionSaveRank', {
+                $.post('/api/v1/factionSaveRank', {
                     playerID: this.current_player.id,
                     rank: this.current_player.faction_rank_real
                 }, data => {
@@ -114,7 +114,7 @@ Guard::init()->CommandRequired();
                 });
             },
             makeMedic() {
-                $.post('/api/factionInitializePlayer', {
+                $.post('/api/v1/factionInitializePlayer', {
                     type: 'medic',
                     playerID: this.current_player.id
                 }, data => {
@@ -144,7 +144,7 @@ Guard::init()->CommandRequired();
                 });
             },
             makePolice() {
-                $.post('/api/factionInitializePlayer', {
+                $.post('/api/v1/factionInitializePlayer', {
                     type: 'police',
                     playerID: this.current_player.id
                 }, data => {

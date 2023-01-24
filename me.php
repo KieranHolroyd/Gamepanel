@@ -97,7 +97,7 @@ Guard::init()->StaffRequired();
             $('#reports').html('<img src="/img/loadw.svg">');
             let other_staff;
             let other_staff_text;
-            $.post('api/getMyActivity', {field: 'bans'}, function (data) {
+            $.post('api/v1/getMyActivity', {field: 'bans'}, function (data) {
                 let activity = "";
                 let res = JSON.parse(data);
                 if (res.code === 200) {
@@ -121,7 +121,7 @@ Guard::init()->StaffRequired();
 
         function getStaffAudit() {
             $('#reports').html('<img src="/img/loadw.svg">');
-            $.get(`/api/staffAuditLogs?id=<?=$user->info->id;?>`, data => {
+            $.get(`/api/v1/staffAuditLogs?id=<?= $user->info->id; ?>`, data => {
                 data = JSON.parse(data);
                 if (data.code === 200) {
                     let audit = '';
@@ -141,7 +141,7 @@ Guard::init()->StaffRequired();
             $('#reports').html('<img src="/img/loadw.svg">');
             let other_staff;
             let other_staff_text;
-            $.post('api/getMyActivity', {field: 'punishments'}, function (data) {
+            $.post('api/v1/getMyActivity', {field: 'punishments'}, function (data) {
                 let activity = "";
                 let res = JSON.parse(data);
                 if (res.code === 200) {
@@ -166,7 +166,7 @@ Guard::init()->StaffRequired();
             $('#reports').html('<img src="/img/loadw.svg">');
             let other_staff;
             let other_staff_text;
-            $.post('api/getMyActivity', {field: 'activity'}, function (data) {
+            $.post('api/v1/getMyActivity', {field: 'activity'}, function (data) {
                 let activity = "";
                 let res = JSON.parse(data);
                 if (res.code === 200) {
@@ -205,7 +205,7 @@ Guard::init()->StaffRequired();
             players_involved = "";
             playersArray = "";
             player_title = "";
-            $.post('api/getMoreInfo', {id: id}, function (data) {
+            $.post('api/v1/getMoreInfo', {id: id}, function (data) {
                 let res = JSON.parse(data);
                 if (res.code === 200) {
                     moreinfo = res.response;
@@ -242,7 +242,7 @@ Guard::init()->StaffRequired();
         function getMoreInfo() {
             let actwarn_start = "";
             let actwarn_end = "";
-            $.post('api/getMyInfo', {}, function (data) {
+            $.post('api/v1/getMyInfo', {}, function (data) {
                 let res = JSON.parse(data);
                 if (res.code === 200) {
                     moreinfo = res.response;
