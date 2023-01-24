@@ -49,7 +49,7 @@ $url = Config::$base_url; ?>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="<?php echo $url; ?>js/app.js"></script>
     <?php if (!isset($nonav)): ?>
-            <script src="<?php echo $url; ?>js/dragUI.js"></script>
+                <script src="<?php echo $url; ?>js/dragUI.js"></script>
     <?php endif; ?>
     <script src="<?php echo $url; ?>js/modal.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js"></script>
@@ -87,7 +87,7 @@ $url = Config::$base_url; ?>
         $(window).on('load', userArraySet());
 
         function logout() {
-            $.post("<?php echo $url; ?>api/v1/logoutUser", { token: loginToken }, function (data) {
+            $.post("<?php echo $url; ?>api/v2/auth/logout", function (data) {
                 window.location.replace("/passport");
                 console.log(data)
             });
@@ -115,35 +115,35 @@ $url = Config::$base_url; ?>
         }
     </script>
     <?php if ((!$user->error) && $user->info->essentialNotification != '' && !$user->info->readEssentialNotification): ?>
-            <div class="modal" id="essentialNotification" style="display: block;">
-                <button id="close">×</button>
-                <div class="content open" style="max-width: 500px;border-radius: 5px;">
-                    <h2>Attention!</h2>
-                    <?= $user->info->essentialNotification; ?>
-                    <div class="btnGroup">
-                        <button onclick="markNotificationRead()">Mark As Read</button>
+                <div class="modal" id="essentialNotification" style="display: block;">
+                    <button id="close">×</button>
+                    <div class="content open" style="max-width: 500px;border-radius: 5px;">
+                        <h2>Attention!</h2>
+                        <?= $user->info->essentialNotification; ?>
+                        <div class="btnGroup">
+                            <button onclick="markNotificationRead()">Mark As Read</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <script>
-                function markNotificationRead() {
-                    closeAllModal();
-                    $.post('/api/v1/markEssentialRead', {}, data => {
-                        data = JSON.parse(data);
-                        if (data.code === 200) {
-                            new Noty({
-                                type: 'success',
-                                text: 'Marked As Read',
-                                timeout: 4000
-                            }).show();
-                        } else {
-                            new Noty({
-                                type: 'error',
-                                text: data.message,
-                                timeout: 4000
-                            }).show();
-                        }
-                    });
-                }
-            </script>
+                <script>
+                    function markNotificationRead() {
+                        closeAllModal();
+                        $.post('/api/v1/markEssentialRead', {}, data => {
+                            data = JSON.parse(data);
+                            if (data.code === 200) {
+                                new Noty({
+                                    type: 'success',
+                                    text: 'Marked As Read',
+                                    timeout: 4000
+                                }).show();
+                            } else {
+                                new Noty({
+                                    type: 'error',
+                                    text: data.message,
+                                    timeout: 4000
+                                }).show();
+                            }
+                        });
+                    }
+                </script>
     <?php endif; ?>

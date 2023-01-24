@@ -93,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "All Fields Are Required To Sign Up.";
         }
     } else if ($url == "logoutUser") {
-        if (isset($_POST['token'])) {
-            $token = sha1($_POST['token']);
+        if (isset($_COOKIE['LOGINTOKEN'])) {
+            $token = sha1($_COOKIE['LOGINTOKEN']);
             $sql = "SELECT token FROM login_tokens WHERE token = :token";
             $query = $pdo->prepare($sql);
             $query->bindValue(':token', $token, PDO::PARAM_STR);
@@ -102,10 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $result = $query->fetch();
             if ($result) {
                 $sql2 = 'DELETE FROM login_tokens WHERE token = :token';
-                $query = $pdo->prepare($sql);
+                $query = $pdo->prepare($sql2);
                 $query->bindValue(':token', $token, PDO::PARAM_STR);
                 $query->execute();
-                setcookie("LOGINTOKEN", 0, time() - 3600, "/", null, null, true);
+                setcookie("LOGINTOKEN", 0, 1, "/");
                 echo '{ "Status": "Success" }';
                 http_response_code(200);
             } else {
