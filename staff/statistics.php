@@ -42,7 +42,7 @@
         });
 
         function getStats() {
-            $.get('/api/serverStats', data => {
+            $.get('/api/v1/serverStats', data => {
                 data = JSON.parse(data);
                 if (data.code === 200) {
                     $('#totalplayers').text(data.response.players.total);
@@ -60,7 +60,7 @@
         }
 
         function getGraphs() {
-            $.get('/api/dailyCases', function (data) {
+            $.get('/api/v1/dailyCases', function (data) {
                 let cases = JSON.parse(data);
                 new Chartist.Line('.daily-cases', {
                     labels: ['Four Days Ago', 'Three Days Ago', 'Two Days Ago', 'Yesterday', 'Today'],
@@ -75,7 +75,7 @@
                     color: 'red'
                 });
             });
-            $.get('/api/weeklyCases', function (data) {
+            $.get('/api/v1/weeklyCases', function (data) {
                 let cases = JSON.parse(data);
                 new Chartist.Line('.weekly-cases', {
                     labels: ['A Month Ago', 'Three Weeks Ago', 'Two Weeks Ago', 'Last Week', 'This Week'],

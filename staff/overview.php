@@ -62,7 +62,7 @@ Guard::init()->SLTRequired();
 
     function getTeamStats(key) {
         if (key === undefined) key = '0';
-        $.get(`/api/teamStats?team=${key}`, data => {
+        $.get(`/api/v1/teamStats?team=${key}`, data => {
             data = JSON.parse(data);
 
             let setHTML = getTeamTitle(key);

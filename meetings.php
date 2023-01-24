@@ -11,9 +11,9 @@ Guard::init()->StaffRequired();
     </div>
     <div id="meetings"></div>
     <?php if ($user->isSLT()): ?>
-    <button style="border-radius:4px;position:fixed;bottom:10px;left:10px;box-shadow:0 0 5px 0 rgba(0,0,0,0.2);"
-            class="newMeeting" id="modalLaunch" launch="createMeeting">Schedule New Meeting
-    </button>
+        <button style="border-radius:4px;position:fixed;bottom:10px;left:10px;box-shadow:0 0 5px 0 rgba(0,0,0,0.2);"
+                class="newMeeting" id="modalLaunch" launch="createMeeting">Schedule New Meeting
+        </button>
     <?php endif; ?>
     <div class="modal" id="createMeeting">
         <button id="close">×</button>
@@ -34,7 +34,7 @@ Guard::init()->StaffRequired();
         tippy('h1');
 
         function getMeetings() {
-            $.get('https://www.nitrexdesign.co.uk/caselogger/api/getMeetings', function (data) {
+            $.get('https://www.nitrexdesign.co.uk/caselogger/api/v1/getMeetings', function (data) {
                 var list = "";
                 var json = JSON.parse(data);
                 for (var i = 1; i < Object.keys(json).length + 1; i++) {
@@ -58,7 +58,7 @@ Guard::init()->StaffRequired();
         getMeetings();
 
         function addNewMeeting() {
-            $.post('https://www.nitrexdesign.co.uk/caselogger/api/addMeeting', {
+            $.post('https://www.nitrexdesign.co.uk/caselogger/api/v1/addMeeting', {
                 "date": $('#date').val(),
                 "slt": $('#sltonly').val()
             }, function (data) {

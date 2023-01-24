@@ -29,11 +29,11 @@ Guard::init()->SLTRequired();
     let open = false;
     let roles = [];
     let current_role_id;
-    let available_permissions = <?= json_encode(Config::$permissions)?>;
-    let permissions_dictionary = <?= json_encode(Config::$permissions_dictionary)?>;
+    let available_permissions = <?= json_encode(Config::$permissions) ?>;
+    let permissions_dictionary = <?= json_encode(Config::$permissions_dictionary) ?>;
 
     function getRoles(id = false) {
-        $.get('/api/roles', data => {
+        $.get('/api/v1/roles', data => {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -110,7 +110,7 @@ Guard::init()->SLTRequired();
     getRoles();
 
     function createRole() {
-        $.post('/api/newRole', {
+        $.post('/api/v1/newRole', {
             name: $('#roleName').val()
         }, data => {
             data = JSON.parse(data);
@@ -152,7 +152,7 @@ Guard::init()->SLTRequired();
             }
         });
 
-        $.post('/api/updateRolePermissions', {
+        $.post('/api/v1/updateRolePermissions', {
             perms: perms,
             roleID: current_role_id
         }, data => {
@@ -173,7 +173,7 @@ Guard::init()->SLTRequired();
     function shuffle(direction, elID) {
         switch(direction) {
             case 'UP':
-                $.post('/api/shuffleUpRole', {
+                $.post('/api/v1/shuffleUpRole', {
                     id: elID
                 }, data => {
                     data = JSON.parse(data);
@@ -190,7 +190,7 @@ Guard::init()->SLTRequired();
                 });
                 break;
             case 'DOWN':
-                $.post('/api/shuffleDownRole', {
+                $.post('/api/v1/shuffleDownRole', {
                     id: elID
                 }, data => {
                     data = JSON.parse(data);
@@ -210,7 +210,7 @@ Guard::init()->SLTRequired();
     }
 
     function deleteRole() {
-        $.post('/api/deleteRole', {
+        $.post('/api/v1/deleteRole', {
             id: current_role_id
         }, data => {
             data = JSON.parse(data);

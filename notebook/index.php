@@ -104,7 +104,7 @@ Guard::init()->LoginRequired();
     let currentlyOpen;
 
     function createPage() {
-        $.post('/api/createPage', {
+        $.post('/api/v1/createPage', {
             title: $('#p-title').val()
         }, data => {
             data = JSON.parse(data);
@@ -128,7 +128,7 @@ Guard::init()->LoginRequired();
     }
 
     function getPages() {
-        $.get('/api/pages', data => {
+        $.get('/api/v1/pages', data => {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -150,7 +150,7 @@ Guard::init()->LoginRequired();
     }
 
     function getPage(id) {
-        $.get('/api/page?id=' + id, data => {
+        $.get('/api/v1/page?id=' + id, data => {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -172,7 +172,7 @@ Guard::init()->LoginRequired();
 
     function getPageFormatted(current = false, id = 0) {
         if (current) id = currentlyOpen;
-        $.get('/api/page_formatted?id=' + id, data => {
+        $.get('/api/v1/page_formatted?id=' + id, data => {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -191,7 +191,7 @@ Guard::init()->LoginRequired();
     }
 
     function save() {
-        $.post('/api/savePage', {
+        $.post('/api/v1/savePage', {
             content: editor.getValue(),
             id: currentlyOpen
         }, data => {

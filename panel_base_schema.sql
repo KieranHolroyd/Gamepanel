@@ -274,7 +274,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(100) NOT NULL,
   `rank_groups` varchar(4096) NOT NULL DEFAULT '[]',
   `rank_lvl` tinyint(4) NOT NULL DEFAULT 0,
-  `rank` text NOT NULL,
+  `rank` varchar(200) NOT NULL DEFAULT 'Guest',
   `staff_team` int(11) DEFAULT NULL,
   `isServerOwner` tinyint(1) NOT NULL DEFAULT 0,
   `isStaff` tinyint(1) DEFAULT 0,

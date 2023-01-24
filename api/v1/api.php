@@ -1757,7 +1757,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($lk) {
             try {
-                $url_lkInfo = 'https://forums.arma-life.com/api/nexus/lkey/' . $lk . '?key=5233a48be88f86b0cd4ffb7013f0cf33';
+                $url_lkInfo = 'https://forums.arma-life.com/api/v1/nexus/lkey/' . $lk . '?key=5233a48be88f86b0cd4ffb7013f0cf33';
 
                 $tok = Config::$battleMetrics['apiKey'];
 

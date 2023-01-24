@@ -46,7 +46,7 @@ Guard::init()->SLTRequired();
     }
 
     function changeName() {
-        $.post('/api/changeStaffName', {
+        $.post('/api/v1/changeStaffName', {
             newName: $('#newname').val(),
             id: changeNameID
         }, data => {
@@ -67,7 +67,7 @@ Guard::init()->SLTRequired();
     function getStaffTeam() {
         $('#staff').html("<img src='../img/loadw.svg'>");
         list = "";
-        $.get('/api/getStaffTeam', function (data) {
+        $.get('/api/v1/getStaffTeam', function (data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -175,7 +175,7 @@ Guard::init()->SLTRequired();
         $('#staff_info').html("<p><img src='../img/loadw.svg'></p>");
         actwarn_start = "";
         actwarn_end = "";
-        $.post('/api/getStaffMoreInfo', {'id': id}, function (data) {
+        $.post('/api/v1/getStaffMoreInfo', {'id': id}, function (data) {
             let res = JSON.parse(data);
             if (res.code === 200) {
                 moreinfo = res.response;
@@ -362,7 +362,7 @@ Guard::init()->SLTRequired();
     }
 
     function assign_rank(id, rank, s = 'no') {
-        $.post('/api/setStaffRank', {
+        $.post('/api/v1/setStaffRank', {
             id: id,
             rank: rank,
             selected: s
@@ -388,7 +388,7 @@ Guard::init()->SLTRequired();
     }
 
     function assign_team(id, team) {
-        $.post('/api/setStaffTeam', {'id': id, 'team': team}, function (data) {
+        $.post('/api/v1/setStaffTeam', {'id': id, 'team': team}, function (data) {
             getStaffTeam();
             getMoreInfo(id);
         });
@@ -404,14 +404,14 @@ Guard::init()->SLTRequired();
     }
 
     function removeFromLoggerConfirm(id) {
-        $.post('/api/removeStaff', {'id': id}, function (data) {
+        $.post('/api/v1/removeStaff', {'id': id}, function (data) {
             getStaffTeam();
             $('#staff_info').html("<h1>Select A Staff Member To Get Statistics</h1>");
         });
     }
 
     function sendOnLOA(id) {
-        $.post('/api/sendOnLOA', {
+        $.post('/api/v1/sendOnLOA', {
             id: id,
             time: $('#timeOfReturn').val()
         }, data => {
@@ -422,7 +422,7 @@ Guard::init()->SLTRequired();
     }
 
     function bringOffLOA(id) {
-        $.post('/api/sendOnLOA', {
+        $.post('/api/v1/sendOnLOA', {
             id: id,
             time: '1999-00-00'
         }, data => {
@@ -433,7 +433,7 @@ Guard::init()->SLTRequired();
     }
 
     function suspend(id) {
-        $.post('/api/suspend', {
+        $.post('/api/v1/suspend', {
             id: id,
             remove: 0
         }, data => {
@@ -444,7 +444,7 @@ Guard::init()->SLTRequired();
     }
 
     function bringOffSuspension(id) {
-        $.post('/api/suspend', {
+        $.post('/api/v1/suspend', {
             id: id,
             remove: 1
         }, data => {
@@ -455,7 +455,7 @@ Guard::init()->SLTRequired();
     }
 
     function getStaffAudit(id) {
-        $.get(`/api/staffAuditLogs?id=${id}`, data => {
+        $.get(`/api/v1/staffAuditLogs?id=${id}`, data => {
             data = JSON.parse(data);
             window.history.pushState({}, `Audit Log`, `#Audit:${id}`);
             if (data.code === 200) {
@@ -477,7 +477,7 @@ Guard::init()->SLTRequired();
         $('#staff_info').html("<img src='../img/loadw.svg'>");
         let other_staff;
         let other_staff_text;
-        $.post('/api/getStaffActivity', {'id': id, 'field': type}, function (data) {
+        $.post('/api/v1/getStaffActivity', {'id': id, 'field': type}, function (data) {
             activity = "";
             let res = JSON.parse(data);
             if (res.code === 200) {
@@ -546,7 +546,7 @@ Guard::init()->SLTRequired();
         players_involved = "";
         playersArray = "";
         player_title = "";
-        $.post('/api/getMoreInfo', {'id': id}, function (data) {
+        $.post('/api/v1/getMoreInfo', {'id': id}, function (data) {
             let res = JSON.parse(data);
             if (res.code === 200) {
                 moreinfo = res.response;
@@ -601,7 +601,7 @@ Guard::init()->SLTRequired();
     }
 
     function setStaffNotes(id) {
-        $.post('/api/saveStaffNotes', {
+        $.post('/api/v1/saveStaffNotes', {
             notes: $('#staffNotesTextarea').val(),
             id: id
         }, data => {
@@ -610,7 +610,7 @@ Guard::init()->SLTRequired();
     }
 
     function setStaffUID(id) {
-        $.post('/api/saveStaffUID', {
+        $.post('/api/v1/saveStaffUID', {
             uid: $('#staffUIDInput').val(),
             id: id
         }, data => {
@@ -619,7 +619,7 @@ Guard::init()->SLTRequired();
     }
 
     function updateLastPromotion(id) {
-        $.post('/api/saveStaffPromotion', {
+        $.post('/api/v1/saveStaffPromotion', {
             promotionTime: $('#promotionDate').val(),
             id: id
         }, data => {
