@@ -7,6 +7,7 @@ services:
       - "4400:80"
     volumes:
       - ./:/var/www/html
+      - ./_cfg/gamepanel/logs:/var/log/apache2
   
   panel_database:
     image: mysql:8
