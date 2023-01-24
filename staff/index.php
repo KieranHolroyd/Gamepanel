@@ -3,12 +3,9 @@ Guard::init()->SLTRequired();
 ?>
 <div class="grid new">
     <div class="grid__col grid__col--2-of-6" style="padding-left: 20px !important;">
-        <h1 class="info-title new"><?= Config::$name; ?> Team <i onclick="openSearchBox();" style="float: right;"
-                                                                 class="fas fa-search"></i></h1>
+        <h1 class="info-title new"><?= Config::$name; ?> Team <i onclick="openSearchBox();" style="float: right;" class="fas fa-search"></i></h1>
         <div class="field" id="searchStaffMembers" style="display: none;">
-            <input class="fieldInput" type="text"
-                   onkeyup="initSearch(event)"
-                   placeholder="Search Staff (Case Sensitive)">
+            <input class="fieldInput" type="text" onkeyup="initSearch(event)" placeholder="Search Staff (Case Sensitive)">
         </div>
         <div id="staff" class="selectionPanel">
             <img src="/img/loadw.svg" alt="Loading...">
@@ -42,7 +39,7 @@ Guard::init()->SLTRequired();
 
     function openChangeName(id, name) {
         changeNameID = id;
-        $('#cn'+id).html(`<input type="text" style="width: auto;" id="newname" value="${name}"><button class="inline-button" onclick="changeName()">Change Name</button>`)
+        $('#cn' + id).html(`<input type="text" style="width: auto;" id="newname" value="${name}"><button class="inline-button" onclick="changeName()">Change Name</button>`)
     }
 
     function changeName() {
@@ -65,9 +62,10 @@ Guard::init()->SLTRequired();
     }
 
     function getStaffTeam() {
+        console.log(`IM BEING CALLED`)
         $('#staff').html("<img src='../img/loadw.svg'>");
         list = "";
-        $.get('/api/v1/getStaffTeam', function (data) {
+        $.get('/api/v2/staff/list', function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -175,7 +173,9 @@ Guard::init()->SLTRequired();
         $('#staff_info').html("<p><img src='../img/loadw.svg'></p>");
         actwarn_start = "";
         actwarn_end = "";
-        $.post('/api/v1/getStaffMoreInfo', {'id': id}, function (data) {
+        $.post('/api/v1/getStaffMoreInfo', {
+            'id': id
+        }, function(data) {
             let res = JSON.parse(data);
             if (res.code === 200) {
                 moreinfo = res.response;
@@ -239,9 +239,10 @@ Guard::init()->SLTRequired();
                             setMoreInfo += `<div id='assignRankMenu' style='display: none;color: ${staffbgc};'>`;
                             for (let r of moreinfo.ranks_available) {
                                 let selected = false;
-                                for (let rr of moreinfo.all_ranks) if (rr.id === r.id) selected = true;
+                                for (let rr of moreinfo.all_ranks)
+                                    if (rr.id === r.id) selected = true;
 
-                                let icon = (selected) ? '<i id="selected-icon-' + r.id + '" class="fas fa-check"></i>' : '<i id="selected-icon-'+r.id+'" class="fas fa-times"></i>';
+                                let icon = (selected) ? '<i id="selected-icon-' + r.id + '" class="fas fa-check"></i>' : '<i id="selected-icon-' + r.id + '" class="fas fa-times"></i>';
 
                                 setMoreInfo += `<div class='staffActivityCard' onclick='assign_rank(\`${id}\`, \`${r.id}\`, \`${(selected) ? 'yes' : 'no'}\`);'>${icon} ${r.name} <i style="float: right;" data-tippy-content="Permission: ${JSON.parse(r.permissions).join(', ')}" class="fas fa-question-circle"></i></div>`;
                             }
@@ -256,7 +257,9 @@ Guard::init()->SLTRequired();
 
                         setMoreInfo += `<div id='activityGraph'></div>`;
 
-                        google.charts.load('current', {'packages': ['line']});
+                        google.charts.load('current', {
+                            'packages': ['line']
+                        });
 
                         google.charts.setOnLoadCallback(finishDisplay);
 
@@ -286,7 +289,9 @@ Guard::init()->SLTRequired();
                                 },
                                 curveType: 'function',
                                 backgroundColor: '#3c3b62',
-                                legend: {position: 'bottom'}
+                                legend: {
+                                    position: 'bottom'
+                                }
                             };
 
                             $('#staff_info').html(setMoreInfo);
@@ -362,7 +367,7 @@ Guard::init()->SLTRequired();
     }
 
     function assign_rank(id, rank, s = 'no') {
-        $.post('/api/v1/setStaffRank', {
+        $.post('/api/v2/staff/rank/update', {
             id: id,
             rank: rank,
             selected: s
@@ -388,7 +393,10 @@ Guard::init()->SLTRequired();
     }
 
     function assign_team(id, team) {
-        $.post('/api/v1/setStaffTeam', {'id': id, 'team': team}, function (data) {
+        $.post('/api/v2/staff/team/update', {
+            'id': id,
+            'team': team
+        }, function(data) {
             getStaffTeam();
             getMoreInfo(id);
         });
@@ -397,14 +405,16 @@ Guard::init()->SLTRequired();
     function removeFromLogger(id) {
         $('#rfl' + id).attr('onclick', 'removeFromLoggerConfirm(' + id + ')');
         $('#rfl' + id).text('Confirm');
-        setTimeout(function () {
+        setTimeout(function() {
             $('#rfl' + id).attr('onclick', 'removeFromLogger(' + id + ')');
             $('#rfl' + id).text('Remove From Logger');
         }, 3000)
     }
 
     function removeFromLoggerConfirm(id) {
-        $.post('/api/v1/removeStaff', {'id': id}, function (data) {
+        $.post('/api/v1/removeStaff', {
+            'id': id
+        }, function(data) {
             getStaffTeam();
             $('#staff_info').html("<h1>Select A Staff Member To Get Statistics</h1>");
         });
@@ -477,7 +487,10 @@ Guard::init()->SLTRequired();
         $('#staff_info').html("<img src='../img/loadw.svg'>");
         let other_staff;
         let other_staff_text;
-        $.post('/api/v1/getStaffActivity', {'id': id, 'field': type}, function (data) {
+        $.post('/api/v1/getStaffActivity', {
+            'id': id,
+            'field': type
+        }, function(data) {
             activity = "";
             let res = JSON.parse(data);
             if (res.code === 200) {
@@ -546,7 +559,9 @@ Guard::init()->SLTRequired();
         players_involved = "";
         playersArray = "";
         player_title = "";
-        $.post('/api/v1/getMoreInfo', {'id': id}, function (data) {
+        $.post('/api/v1/getMoreInfo', {
+            'id': id
+        }, function(data) {
             let res = JSON.parse(data);
             if (res.code === 200) {
                 moreinfo = res.response;
@@ -589,9 +604,6 @@ Guard::init()->SLTRequired();
         if ((userArray.info.slt === "0" && userArray.info.dev === "0") || userArray.info.slt === "") {
             location.replace('holdingpage');
         }
-        if ((userArray.info.slt === "1" || userArray.info.dev === "1") && userArray.info.id !== "") {
-            getStaffTeam();
-        }
         $('#welcome').html("Hello, " + userArray.info.username);
     }
 
@@ -627,4 +639,6 @@ Guard::init()->SLTRequired();
             console.log(data);
         });
     }
+
+    window.addEventListener("load", getStaffTeam);
 </script>

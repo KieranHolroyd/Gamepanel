@@ -881,92 +881,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetCases`");
         }
-    } else if ($url == "setStaffTeam") {
-        $user = new User;
-
-        $id = (isset($_POST['id'])) ? $_POST['id'] : null;
-        $team = (isset($_POST['team'])) ? $_POST['team'] : null;
-
-        if (Permissions::init()->hasPermission("EDIT_USER_TEAM")) {
-            $sql = "UPDATE users SET staff_team = :team WHERE id = :id";
-            $exec = $pdo->prepare($sql);
-            $exec->execute(['team' => $team, 'id' => $id]);
-            $updatedUsername = Helpers::IDToUsername($id);
-            Helpers::addAuditLog("{$user->info->username} Updated {$updatedUsername}'s Team To {$team}");
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SetStaffTeam`");
-        }
-    } else if ($url == "setStaffRank") {
-        $user = new User;
-
-        $id = ($_POST['id']) ? $_POST['id'] : null;
-        $rank = ($_POST['rank']) ? $_POST['rank'] : null;
-        $selected = ($_POST['selected']) ? $_POST['selected'] : null;
-
-        if (Permissions::init()->hasPermission("EDIT_USER_RANK")) {
-            if ($id === null || $rank === null || $selected === null) {
-                echo Helpers::APIResponse("Invalid Request", [$id, $rank, $selected], 400);
-                exit;
-            }
-
-            $user_highest_rank_position = Permissions::getHighestRank(json_decode($user->info->rank_groups, true));
-
-            $stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE position = :i');
-            $stmt->bindValue(':i', $user_highest_rank_position, PDO::PARAM_INT);
-            $stmt->execute();
-            $highest_rank = $stmt->fetch();
-
-            if ($user_highest_rank_position == 10)
-                $user_highest_rank_position = 0;
-
-            if (Permissions::init()->isOverlord())
-                $user_highest_rank_position = 0;
-
-            $stmt = $pdo->prepare("SELECT * FROM rank_groups WHERE position > :p");
-            $stmt->bindValue(':p', $user_highest_rank_position, PDO::PARAM_INT);
-            $stmt->execute();
-            $ranks_available = $stmt->fetchAll();
-
-            foreach ($ranks_available as $rr) {
-                if ($rr->id === $rank)
-                    $passed_auth = true;
-            }
-
-            if (!$passed_auth) {
-                echo Helpers::APIResponse("Unauthorised", [$rank, $ranks_available], 403);
-                exit;
-            }
-
-            $stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            $usr = $stmt->fetch();
-
-            $promotion = date("Y-m-d", time());
-
-            $usr_ranks = json_decode($usr->rank_groups, true);
-
-            if ($selected == 'yes') {
-                foreach ($usr_ranks as $k => $rr) {
-                    if ($rr == $rank)
-                        unset($usr_ranks[$k]);
-                }
-            } else {
-                array_push($usr_ranks, (int) $rank);
-            }
-
-            $stmt = $pdo->prepare("UPDATE users SET rank_groups = :rg, lastPromotion = :lp WHERE id = :i");
-            $stmt->bindValue(':rg', json_encode($usr_ranks), PDO::PARAM_STR);
-            $stmt->bindValue(':lp', $promotion, PDO::PARAM_STR);
-            $stmt->bindValue(':i', $usr->id, PDO::PARAM_STR);
-            $stmt->execute();
-            $updatedUsername = Helpers::IDToUsername($usr->id);
-            echo Helpers::APIResponse("Success", null, 200);
-            Helpers::addAuditLog("{$user->info->username} Updated {$updatedUsername}'s Ranks Added: {$rank}, Now: " . json_encode($usr_ranks));
-        } else {
-            echo Helpers::APIResponse("Unauthorised", null, 403);
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SetStaffRank`");
-        }
     } else if ($url == "submitCase") {
         $user = new User;
 
@@ -1169,7 +1083,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddPointNew`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
-
     } else if ($url == "sendMessage") {
         $li = new User();
 
@@ -1886,8 +1799,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "suspend") {
         $user = new User;
 
-        $id = (isset($_POST{ 'id'})) ? $_POST['id'] : false;
-        $remove = (isset($_POST{ 'remove'})) ? $_POST['remove'] : false;
+        $id = (isset($_POST{
+            'id'})) ? $_POST['id'] : false;
+        $remove = (isset($_POST{
+            'remove'})) ? $_POST['remove'] : false;
 
         if (Permissions::init()->hasPermission("SEND_USER_ON_SUSPENSION")) {
             if (!$id) {
@@ -1917,7 +1832,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "newRole") {
         $user = new User;
 
-        $name = (isset($_POST{ 'name'})) ? $_POST['name'] : false;
+        $name = (isset($_POST{
+            'name'})) ? $_POST['name'] : false;
 
         if (Permissions::init()->hasPermission("CREATE_ROLE")) {
             if (!$name) {
@@ -2193,89 +2109,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $i += 1;
         }
         echo json_encode($guides);
-    } else if ($url == "getStaffList") {
-        $user = new User;
-
-        if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
-            $staff = [];
-            $i = 1;
-            foreach ($pdo->query('SELECT id, first_name, last_name, username FROM users WHERE staff_team BETWEEN 0 AND 200 ORDER BY username') as $r) {
-                if ($r->id !== $user->info->id) {
-                    $staff[$i]['name'] = $r->username;
-                    $staff[$i]['display'] = $r->first_name . ' ' . $r->last_name;
-                    $i += 1;
-                }
-            }
-            echo json_encode($staff);
-        }
-    } else if ($url == "getStaffTeam") {
-        $user = new User;
-
-        if (Permissions::init()->hasPermission("VIEW_SLT")) {
-            $staff = [];
-            $i = 1;
-            $stmt = $pdo->prepare('SELECT * FROM users WHERE staff_team BETWEEN 0 AND 200 ORDER BY staff_team, username, id ASC;');
-            $stmt->execute();
-            $users = $stmt->fetchAll();
-            foreach ($users as $r) {
-                $staffname = $r->username;
-                $stmt = $pdo->prepare("SELECT count(*) as Count FROM case_logs WHERE `timestamp` > NOW() - INTERVAL 7 DAY AND (`lead_staff` LIKE :uname OR `other_staff` LIKE :uname)");
-                $stmt->bindValue(':uname', '%' . $staffname . '%', PDO::PARAM_STR);
-                $stmt->execute();
-                $Recent = $stmt->fetch()->Count;
-                $activity = 'Good';
-                if ($r->rank_lvl < 4) {
-                    $activity = 'God';
-                }
-                if (($r->rank_lvl != 9 || (time() - strtotime($r->lastPromotion)) > 128000) && $r->rank_lvl > 6) {
-                    if ($Recent < 20) {
-                        $activity = 'Initial Warning';
-                    }
-                    if ($Recent < 10) {
-                        $activity = '<span style="color: #ff8a00;">Warning</span>';
-                    }
-                    if ($Recent < 3) {
-                        $activity = '<span style="color: #ff0000;">Terrible</span>';
-                    }
-                }
-
-                $loa = '';
-                if ($r->loa !== null) {
-                    /** @noinspection PhpUnhandledExceptionInspection */
-                    if (new DateTime() < new DateTime($r->loa)) {
-                        $loa = '<span title="Leave Of Absence" class="punishmentincase" style="font-size: 12px;vertical-align: middle;">LOA</span>';
-                    }
-                }
-                if ($r->suspended) {
-                    $loa = '<span title="Leave Of Absence" class="punishmentincase" style="font-size: 12px;vertical-align: middle;">SUSPENDED</span>';
-                }
-                $staff[$i]['id'] = $r->id;
-                $staff[$i]['name'] = $loa . $staffname;
-                $staff[$i]['displayName'] = $loa . $r->first_name . " " . $r->last_name;
-                $staff[$i]['team'] = $r->staff_team;
-                $staff[$i]['highest_rank_position'] = Permissions::getHighestRank(json_decode($r->rank_groups, true));
-                $stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE position = :i');
-                $stmt->bindValue(':i', $staff[$i]['highest_rank_position'], PDO::PARAM_INT);
-                $stmt->execute();
-                $ri = $stmt->fetch();
-                $rank = ($ri !== false) ? $ri : 'Unranked';
-                $staff[$i]['rank'] = $rank;
-                $staff[$i]['region'] = $r->region;
-                $staff[$i]['activity'] = $activity;
-                $i += 1;
-            }
-
-            function sortByHighRank($a, $b)
-            {
-                return $a['highest_rank_position'] - $b['highest_rank_position'];
-            }
-
-            usort($staff, 'sortByHighRank');
-
-            echo Helpers::APIResponse("Success", $staff, 200);
-        } else {
-            echo Helpers::APIResponse("Unauthorised", null, 403);
-        }
     } else if ($url == "getSuggestions") {
         $user = new User;
 

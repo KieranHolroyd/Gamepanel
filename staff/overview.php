@@ -6,6 +6,7 @@ Guard::init()->SLTRequired();
         <h1 class="info-title new">Team Overview</h1>
         <div id="staff" class="selectionPanel">
             <?php
+            ini_set("display_errors", "0");
             $teams = [null => 0];
             foreach ($pdo->query("SELECT * FROM users WHERE (isStaff = 1 OR (isStaff = 0 AND isEMS = 0 AND isPD = 0))") as $r) {
                 $teams[$r->staff_team]++;

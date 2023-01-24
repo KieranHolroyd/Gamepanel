@@ -22,5 +22,11 @@ $router->post('/guide/edit', 'GuideController@editGuide');
 $router->post('/guide/full', 'GuideController@getFullGuide');
 $router->get('/guide/get', 'GuideController@getGuides');
 
+//-- Staff Routes
+$router->get('/staff/cases/list', 'StaffController@List');
+$router->get('/staff/list', 'StaffController@ListStaffTeam');
+$router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
+$router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
+
 // Execute the router
 $router->run();

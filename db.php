@@ -66,7 +66,7 @@ class GAMEDB extends PDO
         return parent::exec($query);
     }
 }
-
+//TODO FIX THIS SHIT
 function game_pdo()
 {
     $gamehost = Config::$gameSql['host'];
@@ -84,4 +84,3 @@ function game_pdo()
 }
 
 game_pdo();
-?>
