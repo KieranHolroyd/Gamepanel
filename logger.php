@@ -284,7 +284,7 @@ Guard::init()->StaffRequired();
                         return e.id;
                     }) + ']';
 
-                    $.post('/api/v1/submitCase', {
+                    $.post('/api/v2/cases/submit', {
                         lead_staff: '<?= $user->info->username; ?>',
                         other_staff: other_staff.replace(',', ' '),
                         description_of_events: this.info.description,

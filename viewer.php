@@ -65,7 +65,7 @@ Guard::init()->SLTRequired();
                 });
             },
             loadCases() {
-                $.post('api/v1/getCases', {'offset': this.offset}, data => {
+                $.post('api/v2/cases/getfull', {'offset': this.offset}, data => {
                     data = JSON.parse(data);
                     this.reports = [];
                     for (let i = 0; i < Object.keys(data.caseno).length; i++) {

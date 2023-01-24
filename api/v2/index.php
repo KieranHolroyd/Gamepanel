@@ -15,6 +15,10 @@ $router->post('/auth/logout', 'AuthenticationController@Logout');
 $router->post('/auth/signup', 'AuthenticationController@Signup');
 $router->post('/auth/check', 'AuthenticationController@Check');
 
+//-- Case Routes
+$router->post('/cases/getfull', 'CasesController@getCases');
+$router->post('/cases/submit', 'CasesController@submitCase');
+
 //-- Guide Routes
 $router->post('/guide/add', 'GuideController@addGuide');
 $router->post('/guide/edit', 'GuideController@editGuide');
