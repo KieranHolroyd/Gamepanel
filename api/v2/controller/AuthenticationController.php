@@ -14,7 +14,15 @@ class AuthenticationController
 		$query->bindValue(':email', $email, \PDO::PARAM_STR);
 		$query->execute();
 		$selected_user = $query->fetch();
+
 		$arr = ['token' => '', 'uid' => ''];
+		// Check if user exists
+		if (!$selected_user) {
+			$arr['token'] .= "Failed";
+			$json = json_encode($arr);
+			echo $json;
+			exit();
+		}
 		if (password_verify($password, $selected_user->password)) {
 			$userid = $selected_user->id;
 			$cstrong = true;
