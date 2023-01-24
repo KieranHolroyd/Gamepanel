@@ -1,6 +1,7 @@
 <?php include "../head.php";
 $auth = new Auth;
 $auth->RequireGameAccess();
+$searchQuery = ""; // HotFix for undefined variable and breaking full page
 if (!empty($_GET['query'])) {
     $searchQuery = htmlspecialchars($_GET['query']);
 }

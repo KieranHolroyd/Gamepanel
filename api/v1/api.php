@@ -2499,11 +2499,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $gamepdo = game_pdo();
 
-            $stmt = $gamepdo->prepare("SELECT uid, playerid, name FROM `players` WHERE (`uid` LIKE :q OR `playerid` LIKE :q OR `name` LIKE :q OR `aliases` LIKE :q) {$sqlFilters} ORDER BY uid ASC LIMIT 100");
+            $stmt = $gamepdo->prepare("SELECT uid, pid, name FROM `players` WHERE (`uid` LIKE :q OR `pid` LIKE :q OR `name` LIKE :q OR `aliases` LIKE :q) {$sqlFilters} ORDER BY uid ASC LIMIT 100");
             $stmt->bindValue(':q', '%' . $q . '%', PDO::PARAM_INT);
             $stmt->execute();
             $players = $stmt->fetchAll(PDO::FETCH_OBJ);
-            $stmt = $gamepdo->prepare("SELECT COUNT(*) as count FROM `players` WHERE (`uid` LIKE :q OR `playerid` LIKE :q OR `name` LIKE :q OR `aliases` LIKE :q) {$sqlFilters}");
+            $stmt = $gamepdo->prepare("SELECT COUNT(*) as count FROM `players` WHERE (`uid` LIKE :q OR `pid` LIKE :q OR `name` LIKE :q OR `aliases` LIKE :q) {$sqlFilters}");
             $stmt->bindValue(':q', '%' . $q . '%', PDO::PARAM_INT);
             $stmt->execute();
             $playerTotalCount = $stmt->fetch(PDO::FETCH_OBJ);
@@ -2565,7 +2565,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit;
             }
 
-            $stmt = $gamepdo->prepare('SELECT * FROM `vehicles` WHERE playerid = :pid');
+            $stmt = $gamepdo->prepare('SELECT * FROM `vehicles` WHERE pid = :pid');
             $stmt->bindValue(':pid', $pid, PDO::PARAM_STR);
             $stmt->execute();
             $playerVehicles = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -2671,7 +2671,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $gamepdo->prepare('SELECT SUM(bankacc) AS total from `players`');
             $stmt->execute();
             $serverBalance = $stmt->fetch(PDO::FETCH_OBJ);
-            $stmt = $gamepdo->prepare('SELECT `bankacc`, `aliases`, `name`, `uid`, `playerid`, `last_seen` from `players` ORDER BY bankacc DESC LIMIT 10');
+            $stmt = $gamepdo->prepare('SELECT `bankacc`, `aliases`, `name`, `uid`, `pid`, `last_seen` from `players` ORDER BY bankacc DESC LIMIT 10');
             $stmt->execute();
             $richList = $stmt->fetchAll(PDO::FETCH_OBJ);
             foreach ($richList as $user) {
@@ -2751,7 +2751,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Success", ['player' => $player->name], 200);
                 exit;
             }
-            $stmt = $gamepdo->prepare("SELECT * FROM players WHERE playerid = :id");
+            $stmt = $gamepdo->prepare("SELECT * FROM players WHERE pid = :id");
             $stmt->bindValue(':id', $sid, PDO::PARAM_INT);
             $stmt->execute();
             $player = $stmt->fetch(PDO::FETCH_OBJ);
