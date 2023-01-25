@@ -88,7 +88,7 @@ if (!empty($_GET['query'])) {
         $('#reports').html("<img src='../img/loadw.svg'>");
         list = "";
         let jsonFilters = JSON.stringify(filters);
-        $.get(`/api/v1/gamePlayers?q=${query}&filters=${jsonFilters}`, function (data) {
+        $.get(`/api/v2/search/players?q=${query}&filters=${jsonFilters}`, function (data) {
             data = JSON.parse(data);
             let players = data.response;
             let list = '';

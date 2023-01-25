@@ -12,7 +12,7 @@ class Config
 {
     // Personalisation/Root Options
     public static $name = 'Arma-Life';
-    public static $base_url = "http://localhost:4400/";
+    public static $base_url = "https://ni1kko-organic-yodel-x9w46x9rjj5cp469-4400.preview.app.github.dev/";
     public static $enableGamePanel = true;
 
     // SQL Settings
