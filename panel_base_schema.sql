@@ -260,17 +260,15 @@ CREATE TABLE `suggestions` (
 
 DROP TABLE IF EXISTS `notifications`;
 CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `callback_url` varchar(255) NOT NULL,
   `for_user_id` int(11) NOT NULL,
   `viewed` tinyint(1) NOT NULL DEFAULT 0,
-  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`notifications`);
   
 -- --------------------------------------------------------
 
