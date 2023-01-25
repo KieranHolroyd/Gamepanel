@@ -26,6 +26,9 @@ $router->post('/guide/edit', 'GuideController@editGuide');
 $router->post('/guide/full', 'GuideController@getFullGuide');
 $router->get('/guide/get', 'GuideController@getGuides');
 
+//-- Search Routes
+$router->get('/search/players', 'SearchController@players');
+
 //-- Staff Routes
 $router->get('/staff/cases/list', 'StaffController@List');
 $router->get('/staff/list', 'StaffController@ListStaffTeam');
