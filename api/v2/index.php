@@ -48,6 +48,7 @@ $router->before('GET|POST|PUT|DELETE', '/.*', function () {
 	$http_origin = $_SERVER['HTTP_ORIGIN'];
 	header("Access-Control-Allow-Origin: $http_origin");
 	header("Access-Control-Allow-Headers: *");
+	header("Access-Control-Allow-Credentials: true");
 });
 
 // Execute the router
