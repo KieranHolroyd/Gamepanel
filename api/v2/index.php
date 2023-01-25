@@ -44,7 +44,7 @@ $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 
 // Add CORS headers to all responses (for development)
-$router->before('GET|POST|PUT|DELETE', '/.*', function () {
+$router->before('GET|POST|PUT|DELETE|OPTIONS', '/.*', function () {
 	header("Access-Control-Allow-Origin: *");
 	header("Access-Control-Allow-Headers: *");
 	header("Access-Control-Allow-Credentials: true");
