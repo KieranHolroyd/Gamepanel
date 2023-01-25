@@ -1887,7 +1887,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $arr['threeweeks'] .= $threeweeks;
         $arr['onemonth'] .= $onemonth;
         echo json_encode($arr);
-    } else if ($url == "getUserInfo") {
+    } else if ($url == "getUserInfo") { // KEEP ME FOR NOW (PS. SEND HELP)
         if (!isset($_COOKIE['LOGINTOKEN'])) {
             echo Helpers::APIResponse('Invalid API Token', null, 401);
             exit;

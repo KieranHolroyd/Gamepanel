@@ -15,6 +15,9 @@ $router->post('/auth/logout', 'AuthenticationController@Logout');
 $router->post('/auth/signup', 'AuthenticationController@Signup');
 $router->post('/auth/check', 'AuthenticationController@Check');
 
+//-- User Routes
+$router->get('/user/get', 'UserController@GetUserInformation');
+
 //-- Case Routes
 $router->post('/cases/getfull', 'CasesController@getCases');
 $router->post('/cases/submit', 'CasesController@submitCase');
