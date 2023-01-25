@@ -98,8 +98,8 @@ class Helpers
         $stmt->bindValue(':content', $content, PDO::PARAM_STR);
         $stmt->bindValue(':ctx', $ctx, PDO::PARAM_STR);
         //TODO: Fix this
-        // $stmt->bindValue(':liu', $user->info->id, PDO::PARAM_STR);
-        $stmt->bindValue(':liu', 0, PDO::PARAM_STR);
+        // $stmt->bindValue(':liu', $user->info->id, PDO::PARAM_INT);
+        $stmt->bindValue(':liu', 0, PDO::PARAM_INT);
         $stmt->execute();
     }
 
@@ -424,7 +424,8 @@ class Helpers
         return $stmt->fetch()->name;
     }
 
-    public static function getAuth() {
+    public static function getAuth()
+    {
         if (isset($_COOKIE['LOGINTOKEN'])) {
             return $_COOKIE['LOGINTOKEN'];
         }
