@@ -435,8 +435,4 @@ class Helpers
 
         return null;
     }
-
-    public static function setAuth() {
-        
-    }
 }
