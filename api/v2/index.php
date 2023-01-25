@@ -40,5 +40,11 @@ $router->get('/staff/list', 'StaffController@ListStaffTeam');
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 
+// Add CORS headers to all responses (for development)
+$router->before('GET|POST|PUT|DELETE', '/.*', function () {
+	header("Access-Control-Allow-Origin: *");
+	header("Access-Control-Allow-Headers: *");
+});
+
 // Execute the router
 $router->run();
