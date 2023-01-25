@@ -11,6 +11,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Parsedown.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Interviews.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/vendor/autoload.php";
 $url = $_GET['url'];
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($url == "loginUser") {
         $email = $_POST['email'];
@@ -1668,7 +1672,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user = new User;
 
         $name = (isset($_POST['name'])) ? $_POST['name'] : false;
-        
+
         if (Permissions::init()->hasPermission("CREATE_ROLE")) {
             if (!$name) {
                 echo Helpers::APIResponse("Name Required", null, 400);
