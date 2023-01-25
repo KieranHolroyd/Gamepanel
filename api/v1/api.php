@@ -97,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "All Fields Are Required To Sign Up.";
         }
     } else if ($url == "logoutUser") {
-        if (isset($_COOKIE['LOGINTOKEN'])) {
-            $token = sha1($_COOKIE['LOGINTOKEN']);
+        if (Helpers::getAuth()) {
+            $token = sha1(Helpers::getAuth());
             $sql = "SELECT token FROM login_tokens WHERE token = :token";
             $query = $pdo->prepare($sql);
             $query->bindValue(':token', $token, PDO::PARAM_STR);
@@ -121,8 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             http_response_code(400);
         }
     } else if ($url == "checkLogin") {
-        if (isset($_COOKIE['LOGINTOKEN'])) {
-            $token = sha1($_COOKIE['LOGINTOKEN']);
+        if (Helpers::getAuth()) {
+            $token = sha1(Helpers::getAuth());
             $sql = "SELECT * FROM login_tokens WHERE token = :token";
             $query = $pdo->prepare($sql);
             $query->bindValue(':token', $token, PDO::PARAM_STR);
@@ -1888,12 +1888,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $arr['onemonth'] .= $onemonth;
         echo json_encode($arr);
     } else if ($url == "getUserInfo") { // KEEP ME FOR NOW (PS. SEND HELP)
-        if (!isset($_COOKIE['LOGINTOKEN'])) {
+        if (!Helpers::getAuth()) {
             echo Helpers::APIResponse('Invalid API Token', null, 401);
             exit;
         }
 
-        $cookietoken = sha1($_COOKIE['LOGINTOKEN']);
+        $cookietoken = sha1(Helpers::getAuth());
         //Get User ID From Login Tokens
         $sql = "SELECT * FROM login_tokens WHERE token = :token";
         $query = $pdo->prepare($sql);

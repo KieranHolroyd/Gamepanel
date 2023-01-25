@@ -9,12 +9,12 @@ class UserController
 	public function GetUserInformation()
 	{
 		global $pdo;
-		if (!isset($_COOKIE['LOGINTOKEN'])) {
+		if (!Helpers::getAuth()) {
 			echo Helpers::APIResponse('Invalid API Token', null, 401);
 			exit;
 		}
 
-		$cookietoken = sha1($_COOKIE['LOGINTOKEN']);
+		$cookietoken = sha1(Helpers::getAuth());
 		//Get User ID From Login Tokens
 		$sql = "SELECT * FROM login_tokens WHERE token = :token";
 		$query = $pdo->prepare($sql);

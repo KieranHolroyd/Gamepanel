@@ -48,8 +48,8 @@ class AuthenticationController
 	public function Logout()
 	{
 		global $pdo;
-		if (isset($_COOKIE['LOGINTOKEN'])) {
-			$token = sha1($_COOKIE['LOGINTOKEN']);
+		if (Helpers::getAuth()) {
+			$token = sha1(Helpers::getAuth());
 			$sql = "SELECT token FROM login_tokens WHERE token = :token";
 			$query = $pdo->prepare($sql);
 			$query->bindValue(':token', $token, \PDO::PARAM_STR);
@@ -124,8 +124,8 @@ class AuthenticationController
 	{
 		global $pdo;
 
-		if (isset($_COOKIE['LOGINTOKEN'])) {
-			$token = sha1($_COOKIE['LOGINTOKEN']);
+		if (Helpers::getAuth()) {
+			$token = sha1(Helpers::getAuth());
 			$sql = "SELECT * FROM login_tokens WHERE token = :token";
 			$query = $pdo->prepare($sql);
 			$query->bindValue(':token', $token, \PDO::PARAM_STR);

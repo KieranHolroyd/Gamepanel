@@ -423,4 +423,20 @@ class Helpers
         $stmt->execute();
         return $stmt->fetch()->name;
     }
+
+    public static function getAuth() {
+        if (isset($_COOKIE['LOGINTOKEN'])) {
+            return $_COOKIE['LOGINTOKEN'];
+        }
+
+        if (isset($_SERVER['HTTP_X_TOKEN'])) {
+            return $_SERVER['HTTP_X_TOKEN'];
+        }
+
+        return null;
+    }
+
+    public static function setAuth() {
+        
+    }
 }
