@@ -3,3 +3,4 @@ _cfg/
 node_modules/
 classes/Config.php
 composer.lock
+.env
