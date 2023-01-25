@@ -129,7 +129,7 @@ $url = Config::$base_url; ?>
                     <script>
                         function markNotificationRead() {
                             closeAllModal();
-                            $.post('/api/v1/markEssentialRead', {}, data => {
+                            $.post('/api/v2/notifications/essential/mark', {}, data => {
                                 data = JSON.parse(data);
                                 if (data.code === 200) {
                                     new Noty({
