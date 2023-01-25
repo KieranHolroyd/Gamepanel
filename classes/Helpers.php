@@ -58,6 +58,11 @@ class Helpers
         return json_encode(['response' => $array, 'code' => $code, 'message' => $message]);
     }
 
+    public static function NewAPIResponse($array = null)
+    {
+        return json_encode([...$array]);
+    }
+
     public static function PusherSend($data, $channel, $event)
     {
         try {

@@ -1,11 +1,18 @@
 <?php
+
 namespace App\API\V2\Controller;
+
+use Helpers;
 
 class AuthenticationController
 {
 	public function Login()
 	{
 		global $pdo;
+
+		if (!isset($_POST['email']) || !isset($_POST['password'])) {
+			return json_encode(['token' => 'Failed']);
+		}
 
 		$email = $_POST['email'];
 		$password = $_POST['password'];
@@ -15,12 +22,9 @@ class AuthenticationController
 		$query->execute();
 		$selected_user = $query->fetch();
 
-		$arr = ['token' => '', 'uid' => ''];
 		// Check if user exists
 		if (!$selected_user) {
-			$arr['token'] .= "Failed";
-			$json = json_encode($arr);
-			echo $json;
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "User does not exist"]);
 			exit();
 		}
 		if (password_verify($password, $selected_user->password)) {
@@ -34,16 +38,11 @@ class AuthenticationController
 			$query2->bindValue(':userid', $userid, \PDO::PARAM_STR);
 			$query2->execute();
 			setcookie("LOGINTOKEN", $token, time() + 60 * 60 * 24 * 365, "/");
-			$arr['token'] .= $token;
-			$arr['uid'] .= $userid;
-			$json = json_encode($arr);
-			\Helpers::addAuditLog("LOGGED_IN::{$_SERVER['REMOTE_ADDR']} Logged Into Account ID:{$userid} Username:{$selected_user->username}");
-			echo $json;
+			Helpers::addAuditLog("LOGGED_IN::{$_SERVER['REMOTE_ADDR']} Logged Into Account ID:{$userid} Username:{$selected_user->username}");
+			echo Helpers::NewAPIResponse(["success" => true, "message" => "Logged in", "token" => $token, "uid" => $userid]);
 		} else {
-			\Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `Login`");
-			$arr['token'] .= "Failed";
-			$json = json_encode($arr);
-			echo $json;
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `Login`");
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "Invalid credentials"]);
 		}
 	}
 	public function Logout()
@@ -62,15 +61,12 @@ class AuthenticationController
 				$query->bindValue(':token', $token, \PDO::PARAM_STR);
 				$query->execute();
 				setcookie("LOGINTOKEN", 0, 1, "/");
-				echo '{ "Status": "Success" }';
-				http_response_code(200);
+				echo Helpers::NewAPIResponse(["success" => true, "message" => "Logged out"]);
 			} else {
-				echo '{ "Error": "Invalid token" }';
-				http_response_code(400);
+				echo Helpers::NewAPIResponse(["success" => false, "message" => "Invalid token"]);
 			}
 		} else {
-			echo '{ "Error": "Malformed request" }';
-			http_response_code(400);
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "Malformed request"]);
 		}
 	}
 	public function Signup()
@@ -93,13 +89,13 @@ class AuthenticationController
 				$query->bindValue(':email', $email, \PDO::PARAM_STR);
 				$query->execute();
 				$result = $query->fetch();
-				if ($result->email == "") {
+				if ($result) {
 					$sql2 = "SELECT username FROM users WHERE username = :username";
 					$query2 = $pdo->prepare($sql2);
 					$query2->bindValue(':username', $username, \PDO::PARAM_STR);
 					$query2->execute();
 					$result2 = $query2->fetch();
-					if ($result2->username == "") {
+					if ($result2) {
 						$sql3 = "INSERT INTO users (`username`, `first_name`, `last_name`, `email`, `password`) VALUES (:username , :firstname , :lastname , :email , :password)";
 						$query3 = $pdo->prepare($sql3);
 						$query3->bindValue(':username', $username, \PDO::PARAM_STR);
@@ -109,19 +105,19 @@ class AuthenticationController
 						$query3->bindValue(':password', $password, \PDO::PARAM_STR);
 						$query3->execute();
 						$latestID = $pdo->lastInsertId();
-						\Helpers::addAuditLog("ACCOUNT_CREATED::{$_SERVER['REMOTE_ADDR']} Created Account {$username} With ID {$latestID}");
-						echo "Account Created.";
+						Helpers::addAuditLog("ACCOUNT_CREATED::{$_SERVER['REMOTE_ADDR']} Created Account {$username} With ID {$latestID}");
+						echo Helpers::NewAPIResponse(["success" => true, "message" => "Account Created."]);
 					} else {
-						echo "Username Already Used.";
+						echo Helpers::NewAPIResponse(["success" => false, "message" => "Username Already Used."]);
 					}
 				} else {
-					echo "Email Already Used.";
+					echo Helpers::NewAPIResponse(["success" => false, "message" => "Email Already Used."]);
 				}
 			} else {
-				echo "Passwords Must Match.";
+				echo Helpers::NewAPIResponse(["success" => false, "message" => "Passwords Must Match."]);
 			}
 		} else {
-			echo "All Fields Are Required To Sign Up.";
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "All Fields Are Required To Sign Up."]);
 		}
 	}
 	public function Check()
@@ -139,9 +135,8 @@ class AuthenticationController
 				echo true;
 			}
 		} else {
-			\Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CheckLogin`");
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CheckLogin`");
 			echo false;
 		}
 	}
-
 }
