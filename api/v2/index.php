@@ -26,6 +26,11 @@ $router->post('/guide/edit', 'GuideController@editGuide');
 $router->post('/guide/full', 'GuideController@getFullGuide');
 $router->get('/guide/get', 'GuideController@getGuides');
 
+//-- Notification Routes
+$router->get('/notifications/get', 'NotificationController@getNotifications');
+$router->post('/notifications/set', 'NotificationController@setNotifications');
+$router->post('/notifications/essential/mark', 'NotificationController@markEssentialRead');
+
 //-- Search Routes
 $router->get('/search/players', 'SearchController@players');
 

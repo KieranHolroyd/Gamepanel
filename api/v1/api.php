@@ -949,7 +949,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $data['username'] = $li->info->username;
             $data['message'] = htmlspecialchars($content);
             Helpers::PusherSend($data, 'staffchat-messages', 'receive');
-            Helpers::addAuditLog("{$li->user->username} Sent Message {$content} To staffchat-messages");
+            Helpers::addAuditLog("{$li->info->username} Sent Message {$content} To staffchat-messages");
 
             echo json_encode(["code" => 200, "message" => "sent"]);
         } else {
@@ -1417,18 +1417,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Helpers::addAuditLog("UNAUTHORISED::Authentication Failed At (Add Ban)");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
-    } else if ($url == "markEssentialRead") {
-        $user = new User;
-
-        if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
-            $stmt = $pdo->prepare('UPDATE users SET readEssentialNotification = 1 WHERE id = :id');
-            $stmt->bindValue(':id', $user->info->id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            echo Helpers::APIResponse('Marked As Read', null, 200);
-        } else {
-            echo Helpers::APIResponse('Unauthorised', null, 401);
-        }
     } else if ($url == "changeStaffName") {
         $user = new User;
 
@@ -1648,10 +1636,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "suspend") {
         $user = new User;
 
-        $id = (isset($_POST{
-            'id'})) ? $_POST['id'] : false;
-        $remove = (isset($_POST{
-            'remove'})) ? $_POST['remove'] : false;
+        $id = (isset($_POST['id'])) ? $_POST['id'] : false;
+        $remove = (isset($_POST['remove'])) ? $_POST['remove'] : false;
 
         if (Permissions::init()->hasPermission("SEND_USER_ON_SUSPENSION")) {
             if (!$id) {
@@ -1681,9 +1667,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "newRole") {
         $user = new User;
 
-        $name = (isset($_POST{
-            'name'})) ? $_POST['name'] : false;
-
+        $name = (isset($_POST['name'])) ? $_POST['name'] : false;
+        
         if (Permissions::init()->hasPermission("CREATE_ROLE")) {
             if (!$name) {
                 echo Helpers::APIResponse("Name Required", null, 400);
@@ -2463,14 +2448,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user = new User;
         if ($user->verified(false)) {
             echo json_encode(Config::$faction_ranks);
-        }
-    } else if ($url == "notifications") {
-        $user = new User;
-
-        if ($user->verified(false)) {
-            echo Helpers::APIResponse("Loaded Notifications", $user->fetchNotifications(), 200);
-        } else {
-            echo Helpers::APIResponse("Login To View Notifications", null, 401);
         }
     } else if ($url == "roles") {
         $user = new User;

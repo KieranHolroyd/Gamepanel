@@ -15,7 +15,7 @@ $(document).ready(() => {
 });
 
 function loadNotifications() {
-  $.get("/api/v1/notifications", (data) => {
+  $.get("/api/v2/notifications/get", (data) => {
     data = JSON.parse(data);
 
     if (data.code === 200) {
