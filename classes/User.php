@@ -215,14 +215,14 @@ class User
             "displayName" => $this->displayName(),
             "username" => $this->info->username,
             "team" => $this->info->staff_team,
-            "faction_rank" => $this->getFactionRank(),
-            "faction_rank_real" => $this->info->faction_rank
+            "faction_rank" => @$this->getFactionRank(), // NOTE: Error suppression 
+            "faction_rank_real" => @$this->info->faction_rank // NOTE: Error suppression
         ];
     }
 
     private function getFactionRank()
     {
-        if (!$this->infoExists())
+        if (!$this->infoExists() || $this->info->faction_rank == null || $this->info->faction_rank == '')
             return false;
         if ($this->isPD()) {
             return Config::$faction_ranks['police'][$this->info->faction_rank];

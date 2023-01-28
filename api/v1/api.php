@@ -1887,42 +1887,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $arr['threeweeks'] .= $threeweeks;
         $arr['onemonth'] .= $onemonth;
         echo json_encode($arr);
-    } else if ($url == "getUserInfo") { // KEEP ME FOR NOW (PS. SEND HELP)
-        if (!Helpers::getAuth()) {
-            echo Helpers::APIResponse('Invalid API Token', null, 401);
-            exit;
-        }
-
-        $cookietoken = sha1(Helpers::getAuth());
-        //Get User ID From Login Tokens
-        $sql = "SELECT * FROM login_tokens WHERE token = :token";
-        $query = $pdo->prepare($sql);
-        $query->bindValue(':token', $cookietoken, PDO::PARAM_STR);
-        $query->execute();
-        $result = $query->fetch();
-        //Get Logged In User's Information
-        $sql2 = "SELECT * FROM users WHERE id = :id";
-        $query2 = $pdo->prepare($sql2);
-        $query2->bindValue(':id', $result->user_id, PDO::PARAM_STR);
-        $query2->execute();
-        $user = $query2->fetch();
-        if ($user) {
-            //Assign Values To An Array.
-            $arr = [];
-            $arr['info']['id'] = $user->id;
-            $arr['info']['username'] = $user->username;
-            $arr['info']['firstname'] = $user->first_name;
-            $arr['info']['lastname'] = $user->last_name;
-            $arr['info']['email'] = $user->email;
-            $arr['info']['suspended'] = $user->suspended;
-            $arr['info']['slt'] = $user->SLT;
-            $arr['info']['dev'] = $user->Developer;
-            $arr['info']['team'] = $user->staff_team;
-            setcookie('userArrayPHP', serialize($arr), time() + 60 * 60 * 24 * 30, '/');
-        } else {
-            $arr = ['error' => true];
-        }
-        echo json_encode($arr);
     } else if ($url == "getUserInfoNew") {
         $user = new User;
 

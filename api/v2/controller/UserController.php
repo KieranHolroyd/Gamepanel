@@ -2,7 +2,7 @@
 
 namespace App\API\V2\Controller;
 
-use  \Helpers, \PDO;
+use  \Helpers, \PDO, \User;
 
 class UserController
 {
@@ -28,21 +28,42 @@ class UserController
 		$query2->execute();
 		$user = $query2->fetch();
 		if ($user) {
-			//Assign Values To An Array.
-			$arr = [];
-			$arr['info']['id'] = $user->id;
-			$arr['info']['username'] = $user->username;
-			$arr['info']['first_name'] = $user->first_name;
-			$arr['info']['last_name'] = $user->last_name;
-			$arr['info']['email'] = $user->email;
-			$arr['info']['suspended'] = $user->suspended;
-			$arr['info']['slt'] = $user->SLT;
-			$arr['info']['dev'] = $user->Developer;
-			$arr['info']['team'] = $user->staff_team;
-			setcookie('userArrayPHP', serialize($arr), time() + 60 * 60 * 24 * 30, '/');
+			$returned_user = [
+				"id" => $user->id,
+				"username" => $user->username,
+				"first_name" => $user->first_name,
+				"last_name" => $user->last_name,
+				"email" => $user->email,
+				"suspended" => $user->suspended,
+				"slt" => $user->SLT,
+				"dev" => $user->Developer,
+				"team" => $user->staff_team
+			];
+			setcookie('userArrayPHP', serialize($returned_user), time() + 60 * 60 * 24 * 30, '/');
+			echo Helpers::newAPIResponse(["user" => [
+				"id" => $user->id,
+				"username" => $user->username,
+				"first_name" => $user->first_name,
+				"last_name" => $user->last_name,
+				"email" => $user->email,
+				"suspended" => $user->suspended,
+				"slt" => $user->SLT,
+				"dev" => $user->Developer,
+				"team" => $user->staff_team
+			], "success" => true]);
 		} else {
-			$arr = ['error' => true];
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "User not found"]);
 		}
-		echo json_encode($arr);
+	}
+
+	public function GetUserInformationNew()
+	{
+		$user = new User;
+
+		if ($user->verified(false)) {
+			echo Helpers::NewAPIResponse(["success" => true, "user" => $user->getInfoForFrontend()]);
+		} else {
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "User not found"]);
+		}
 	}
 }

@@ -81,24 +81,34 @@ $url = Config::$base_url; ?>
 
 <body>
     <?php if (!isset($nonav))
-        include "newnav.php"; ?>
+        include "includes/navbar.php"; ?>
     <div class="overlayContainer"></div>
     <?php if ($user->verified(false))
-        include 'notifications.php'; ?>
+        include 'includes/notifications.php'; ?>
     <script>
         let loginToken = "<?php echo isset($_COOKIE['LOGINTOKEN']) ? $_COOKIE['LOGINTOKEN'] : false; ?>";
         let userArray;
 
         function userArraySet() {
-            $.get("<?php echo $url; ?>api/v1/getUserInfo", (data) => {
-                let user = JSON.parse(data);
-                userArray = user;
-                if (typeof vm !== 'undefined') {
-                    vm.user = user;
-                }
-                $('#welcome').html('Hello, ' + userArray.info.username);
-                if (typeof userArrayLoaded === 'function') userArrayLoaded();
-            });
+            apiclient.get('/api/v2/user/me')
+                .then(({
+                    data
+                }) => {
+                    if (data.success) {
+                        userArray = data.user;
+                        if (typeof vm !== 'undefined') {
+                            vm.user = data;
+                        }
+                        $('#welcome').html('Hello, ' + userArray.username);
+                        if (typeof userArrayLoaded === 'function') userArrayLoaded();
+                    } else {
+                        new Noty({
+                            text: `Failed to fetch user data`,
+                            type: 'error',
+                        }).show();
+                    }
+                })
+                .catch(noty_catch_error);
         }
 
         $(window).on('load', userArraySet());

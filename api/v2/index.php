@@ -5,6 +5,13 @@ namespace App\API\V2;
 require __DIR__ . '/include.php';
 $router = new \Bramus\Router\Router();
 
+// Add CORS headers to all responses (for development)
+$router->before('GET|POST|PUT|DELETE|OPTIONS', '/.*', function () {
+	header("Access-Control-Allow-Origin: *");
+	header("Access-Control-Allow-Headers: *");
+	header("Access-Control-Allow-Credentials: true");
+});
+
 // Define routes
 $router->setNamespace('\App\API\V2\Controller');
 $router->get('/', 'WelcomeController@Root');
@@ -16,7 +23,8 @@ $router->post('/auth/signup', 'AuthenticationController@Signup');
 $router->post('/auth/check', 'AuthenticationController@Check');
 
 //-- User Routes
-$router->get('/user/get', 'UserController@GetUserInformation');
+$router->get('/user/me', 'UserController@GetUserInformation');
+$router->get('/user/me_new', 'UserController@GetUserInformationNew');
 
 //-- Case Routes
 $router->post('/cases/getfull', 'CasesController@getCases');
@@ -42,13 +50,6 @@ $router->get('/staff/cases/list', 'StaffController@List');
 $router->get('/staff/list', 'StaffController@ListStaffTeam');
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
-
-// Add CORS headers to all responses (for development)
-$router->before('GET|POST|PUT|DELETE|OPTIONS', '/.*', function () {
-	header("Access-Control-Allow-Origin: *");
-	header("Access-Control-Allow-Headers: *");
-	header("Access-Control-Allow-Credentials: true");
-});
 
 // Execute the router
 $router->run();
