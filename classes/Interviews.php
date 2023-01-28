@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Kieran
@@ -9,7 +10,8 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
-class Interviews {
+class Interviews
+{
 
     public static function list()
     {
@@ -18,7 +20,7 @@ class Interviews {
         $stmt->execute();
         $interviews = $stmt->fetchAll();
         if ($interviews) {
-            return $interviews;
+            return ['error' => false, "interviews" => $interviews];
         } else {
             return ['error' => true, 'message' => 'No Interviews Exist'];
         }
@@ -39,5 +41,4 @@ class Interviews {
         }
         return false;
     }
-
 }
