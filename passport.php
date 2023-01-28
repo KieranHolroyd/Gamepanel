@@ -53,58 +53,47 @@ include "head.php";
     $('#continue').click(function() {
         $(this).html('<img src="/img/loadw.svg" width="25px">');
         if (selected === 0) {
-            $.post('api/v2/auth/signup', {
+            // selected = 0 -> signup
+            apiclient.post('api/v2/auth/signup', {
                 first_name: $('#s-firstname').val(),
                 last_name: $('#s-lastname').val(),
                 email: $('#s-email').val(),
                 password: $('#s-password').val(),
                 cpassword: $('#s-password-conf').val()
-            }, function(data) {
+            }).then(({
+                data
+            }) => {
                 new Noty({
-                    type: 'success',
-                    layout: 'topRight',
-                    theme: 'metroui',
+                    type: data.success ? 'success' : 'error',
                     timeout: 3000,
-                    text: data,
+                    text: data.message,
                 }).show();
                 $('#continue').text('Continue');
-            });
+            }).catch(noty_catch_error);
         } else if (selected === 1) {
-            $.post('api/v2/auth/login', {
+            // selected = 1 -> login
+            apiclient.post('api/v2/auth/login', {
                 email: $('#l-email').val(),
                 password: $('#l-password').val(),
-            }, function(data) {
-                data = JSON.parse(data);
-                if (data.Status != "Success") {
-                    notify = "Login Failed. Try Again";
-                    type = 'error';
+            }).then(({
+                data
+            }) => {
+                if (!data.success)
                     $('#continue').text('Continue');
-                } else {
-                    notify = "Login Success. Redirecting";
-                    type = 'success';
-                }
+
                 new Noty({
-                    text: notify,
+                    text: `${data.message}`,
                     progressBar: true,
-                    type: type
+                    type: data.success ? 'success' : 'error',
                 }).show();
-                userArraySet();
-                $.post("api/v2/auth/check", {},
-                    function(data) {
-                        console.log(data)
-                        if (!data) {
-                            console.log('Login Failed');
-                        } else {
-                            location.replace("index.php");
-                        }
-                    });
-            });
+                apiclient.post("api/v2/auth/check").then(({
+                    data
+                }) => {
+                    if (data.success) {
+                        location.replace("/");
+                    }
+                }).catch(noty_catch_error);
+            }).catch(noty_catch_error);
         }
     });
-
-    function userArrayLoaded() {
-        if (userArray.info.username !== "") {
-            window.location.href = "./";
-        }
-    }
 </script>

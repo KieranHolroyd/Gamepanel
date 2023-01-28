@@ -60,6 +60,7 @@ class Helpers
 
     public static function NewAPIResponse($array = null)
     {
+        $_SERVER['Content-Type'] = 'application/json';
         return json_encode([...$array]);
     }
 

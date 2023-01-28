@@ -11,7 +11,8 @@ class AuthenticationController
 		global $pdo;
 
 		if (!isset($_POST['email']) || !isset($_POST['password'])) {
-			return json_encode(['token' => 'Failed']);
+			echo Helpers::NewAPIResponse(["success" => false, "message" => "Email or password not set"]);
+			exit();
 		}
 
 		$email = $_POST['email'];
@@ -132,11 +133,11 @@ class AuthenticationController
 			$query->execute();
 			$result = $query->fetch();
 			if ($result) {
-				echo true;
+				echo Helpers::newAPIResponse(["success" => true, "message" => "Logged In"]);
 			}
 		} else {
 			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CheckLogin`");
-			echo false;
+			echo Helpers::newAPIResponse(["success" => false, "message" => "Not Logged In"]);
 		}
 	}
 }
