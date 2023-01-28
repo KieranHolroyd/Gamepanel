@@ -45,11 +45,28 @@ $url = Config::$base_url; ?>
     <script src="https://unpkg.com/tippy.js@4"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.5/axios.min.js" integrity="sha512-JEXkqJItqNp0+qvX53ETuwTLoz/r1Tn5yTRnZWWz0ghMKM2WFCEYLdQnsdcYnryMNANMAnxNcBa/dN7wQtESdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const apiclient = axios.create({
+            baseURL: '<?= Config::$base_url ?>',
+            timeout: 10000,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+            },
+            withCredentials: true
+        });
+
+        const noty_catch_error = (e) => new Noty({
+            text: `<b>Oops.</b> ${e.message}`,
+            type: 'error',
+        }).show();
+    </script>
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="<?php echo $url; ?>js/app.js"></script>
-    <?php if (!isset($nonav)): ?>
-                    <script src="<?php echo $url; ?>js/dragUI.js"></script>
+    <?php if (!isset($nonav)) : ?>
+        <script src="<?php echo $url; ?>js/dragUI.js"></script>
     <?php endif; ?>
     <script src="<?php echo $url; ?>js/modal.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js"></script>
@@ -87,7 +104,7 @@ $url = Config::$base_url; ?>
         $(window).on('load', userArraySet());
 
         function logout() {
-            $.post("<?php echo $url; ?>api/v2/auth/logout", function (data) {
+            $.post("<?php echo $url; ?>api/v2/auth/logout", function(data) {
                 window.location.replace("/passport");
                 console.log(data)
             });
@@ -115,36 +132,36 @@ $url = Config::$base_url; ?>
             return time;
         }
     </script>
-    <?php if ((!$user->error) && $user->info->essentialNotification != '' && !$user->info->readEssentialNotification): ?>
-                    <div class="modal" id="essentialNotification" style="display: block;">
-                        <button id="close">×</button>
-                        <div class="content open" style="max-width: 500px;border-radius: 5px;">
-                            <h2>Attention!</h2>
-                            <?= $user->info->essentialNotification; ?>
-                            <div class="btnGroup">
-                                <button onclick="markNotificationRead()">Mark As Read</button>
-                            </div>
-                        </div>
-                    </div>
-                    <script>
-                        function markNotificationRead() {
-                            closeAllModal();
-                            $.post('/api/v2/notifications/essential/mark', {}, data => {
-                                data = JSON.parse(data);
-                                if (data.code === 200) {
-                                    new Noty({
-                                        type: 'success',
-                                        text: 'Marked As Read',
-                                        timeout: 4000
-                                    }).show();
-                                } else {
-                                    new Noty({
-                                        type: 'error',
-                                        text: data.message,
-                                        timeout: 4000
-                                    }).show();
-                                }
-                            });
-                        }
-                    </script>
+    <?php if ((!$user->error) && $user->info->essentialNotification != '' && !$user->info->readEssentialNotification) : ?>
+        <div class="modal" id="essentialNotification" style="display: block;">
+            <button id="close">×</button>
+            <div class="content open" style="max-width: 500px;border-radius: 5px;">
+                <h2>Attention!</h2>
+                <?= $user->info->essentialNotification; ?>
+                <div class="btnGroup">
+                    <button onclick="markNotificationRead()">Mark As Read</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            function markNotificationRead() {
+                closeAllModal();
+                $.post('/api/v2/notifications/essential/mark', {}, data => {
+                    data = JSON.parse(data);
+                    if (data.code === 200) {
+                        new Noty({
+                            type: 'success',
+                            text: 'Marked As Read',
+                            timeout: 4000
+                        }).show();
+                    } else {
+                        new Noty({
+                            type: 'error',
+                            text: data.message,
+                            timeout: 4000
+                        }).show();
+                    }
+                });
+            }
+        </script>
     <?php endif; ?>
