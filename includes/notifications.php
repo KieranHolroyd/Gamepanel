@@ -1,4 +1,4 @@
-<script src="/js/notifications.js?<?=rand(0,1000000);?>"></script>
+<script src="/js/notifications.js"></script>
 <div id="notifications" class="directmessages">
     <div class="header">
         <p class="title">Notifications</p>
