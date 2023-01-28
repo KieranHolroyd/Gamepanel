@@ -90,13 +90,13 @@ class AuthenticationController
 				$query->bindValue(':email', $email, \PDO::PARAM_STR);
 				$query->execute();
 				$result = $query->fetch();
-				if ($result) {
+				if (!$result) {
 					$sql2 = "SELECT username FROM users WHERE username = :username";
 					$query2 = $pdo->prepare($sql2);
 					$query2->bindValue(':username', $username, \PDO::PARAM_STR);
 					$query2->execute();
 					$result2 = $query2->fetch();
-					if ($result2) {
+					if (!$result2) {
 						$sql3 = "INSERT INTO users (`username`, `first_name`, `last_name`, `email`, `password`) VALUES (:username , :firstname , :lastname , :email , :password)";
 						$query3 = $pdo->prepare($sql3);
 						$query3->bindValue(':username', $username, \PDO::PARAM_STR);
