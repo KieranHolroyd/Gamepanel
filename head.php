@@ -57,10 +57,13 @@ $url = Config::$base_url; ?>
             withCredentials: true
         });
 
-        const noty_catch_error = (e) => new Noty({
-            text: `<b>Oops.</b> ${e.message}`,
-            type: 'error',
-        }).show();
+        const noty_catch_error = (e) => {
+            console.warn(`Promise rejected:`, e)
+            new Noty({
+                text: `<b>Oops.</b> ${e.message}`,
+                type: 'error',
+            }).show();
+        }
     </script>
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -87,7 +90,7 @@ $url = Config::$base_url; ?>
         include 'includes/notifications.php'; ?>
     <script>
         let loginToken = "<?php echo isset($_COOKIE['LOGINTOKEN']) ? $_COOKIE['LOGINTOKEN'] : false; ?>";
-        let userArray;
+        let userArray = {};
 
         function userArraySet() {
             apiclient.get('/api/v2/user/me')
@@ -95,11 +98,11 @@ $url = Config::$base_url; ?>
                     data
                 }) => {
                     if (data.success) {
-                        userArray = data.user;
+                        userArray.info = data.user;
                         if (typeof vm !== 'undefined') {
-                            vm.user = data;
+                            vm.user = data.user;
                         }
-                        $('#welcome').html('Hello, ' + userArray.username);
+                        $('#welcome').html('Hello, ' + userArray.info.username);
                         if (typeof userArrayLoaded === 'function') userArrayLoaded();
                     } else {
                         new Noty({
