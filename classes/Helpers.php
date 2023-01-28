@@ -422,7 +422,7 @@ class Helpers
         $stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE position = :p');
         $stmt->bindValue(':p', $getHighestRank, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch()->name;
+        return @$stmt->fetch()->name; // Supressing "using stdClass as array" error
     }
 
     public static function getAuth()

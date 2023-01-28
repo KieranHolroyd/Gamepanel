@@ -21,15 +21,14 @@ class Permissions extends User
 
         $arr = [];
 
-        foreach($pdo->query('SELECT * FROM rank_groups') as $g) {
+        foreach ($pdo->query('SELECT * FROM rank_groups') as $g) {
             if (in_array($g->id, $user_ranks)) {
                 $arr[] = (int) $g->position;
             }
         }
-        $minPos = min((array) $arr);
 
-        if ($minPos) {
-            return $minPos;
+        if (count($arr) > 0) {
+            return min((array) $arr);
         } else {
             return false;
         }
@@ -45,13 +44,13 @@ class Permissions extends User
 
         $perms = [];
 
-        foreach(json_decode($this->info->rank_groups) as $g) {
+        foreach (json_decode($this->info->rank_groups) as $g) {
             $stmt = $pdo->prepare("SELECT * FROM rank_groups WHERE id = :id");
             $stmt->execute(['id' => $g]);
 
             $fetch = $stmt->fetch();
 
-            foreach(json_decode($fetch->permissions) as $f) {
+            foreach (json_decode($fetch->permissions) as $f) {
                 $perms[] = $f;
             }
         }
