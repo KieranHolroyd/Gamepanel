@@ -265,9 +265,9 @@ class User
 
         $stmt = $pdo->prepare('INSERT INTO notifications (`title`, `content`, `callback_url`, `for_user_id`) 
                               VALUES (:t, :c, :url, :id)');
-        $stmt->bindValue(':t', $title, PDO::PARAM_INT);
-        $stmt->bindValue(':c', $content, PDO::PARAM_INT);
-        $stmt->bindValue(':url', $link, PDO::PARAM_INT);
+        $stmt->bindValue(':t', $title, PDO::PARAM_STR);
+        $stmt->bindValue(':c', $content, PDO::PARAM_STR);
+        $stmt->bindValue(':url', $link, PDO::PARAM_STR);
         $stmt->bindValue(':id', $this->info->id, PDO::PARAM_INT);
 
         $stmt->execute();

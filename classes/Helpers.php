@@ -98,9 +98,7 @@ class Helpers
         $stmt = $pdo->prepare('INSERT INTO audit_log (log_content, log_context, logged_in_user) VALUES (:content, :ctx, :liu)');
         $stmt->bindValue(':content', $content, PDO::PARAM_STR);
         $stmt->bindValue(':ctx', $ctx, PDO::PARAM_STR);
-        //TODO: Fix this
-        // $stmt->bindValue(':liu', $user->info->id, PDO::PARAM_INT);
-        $stmt->bindValue(':liu', 0, PDO::PARAM_INT);
+        $stmt->bindValue(':liu', @$user->info->id, PDO::PARAM_INT); // Supressing error (using stdClass as array)
         $stmt->execute();
     }
 

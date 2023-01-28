@@ -1,13 +1,14 @@
 <?php
+
 namespace App\API\V2\Controller;
 
-use \User,\Permissions,\Helpers,\PDO;
+use \User, \Permissions, \Helpers, \PDO;
 
 class CasesController
-{ 
-	public function getCases()
-	{
-		global $pdo;
+{
+    public function getCases()
+    {
+        global $pdo;
 
         if (Permissions::init()->hasPermission("VIEW_CASE")) {
             $offset = intval($_POST['offset']);
@@ -38,12 +39,12 @@ class CasesController
         } else {
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetCases`");
         }
-	}
+    }
 
-	public function submitCase()
-	{
-		global $pdo;
-		$user = new User;
+    public function submitCase()
+    {
+        global $pdo;
+        $user = new User;
 
         if (Permissions::init()->hasPermission("SUBMIT_CASE")) {
             $ls = (isset($_POST['lead_staff'])) ? htmlspecialchars($_POST['lead_staff']) : null;
@@ -145,15 +146,16 @@ class CasesController
                 }
             }
 
-            $data = [];
-            $data['id'] .= $row->id;
-            $data['lead_staff'] .= $row->lead_staff;
-            $data['typeofreport'] .= $row->type_of_report;
-            $data['ltpr'] .= $row->link_to_player_report;
-            $data['pa'] .= $pa;
-            $data['ba'] .= $ba;
-            $data['timestamp'] .= $row->timestamp;
-            $data['reporting_player'] = $playersInvolved;
+            $data = [
+                "id" => $row->id,
+                "lead_staff" => $row->lead_staff,
+                "typeofreport" => $row->type_of_report,
+                "ltpr" => @$row->link_to_player_report,
+                "pa" => $pa,
+                "ba" => $ba,
+                "timestamp" => $row->timestamp,
+                "reporting_player" => $playersInvolved
+            ];
             Helpers::addAuditLog("{$user->info->username} Submitted A Case");
             Helpers::PusherSend($data, 'caseInformation', 'receive');
             $user->pushNotification('You Submitted A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
@@ -161,5 +163,5 @@ class CasesController
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SubmitCase`");
             echo "Insufficient Permissions";
         }
-	}
+    }
 }
