@@ -45,6 +45,11 @@ $router->post('/notifications/essential/mark', 'NotificationController@markEssen
 //-- Search Routes
 $router->get('/search/players', 'SearchController@players');
 
+//-- Statistics Routes
+$router->get('/statistics/cases/daily', 'StatisticsController@DailyCases');
+$router->get('/statistics/cases/weekly', 'StatisticsController@WeeklyCases');
+$router->get('/statistics/game/server', 'StatisticsController@ServerStatistics');
+
 //-- Staff Routes
 $router->get('/staff/cases/list', 'StaffController@List');
 $router->get('/staff/list', 'StaffController@ListStaffTeam');

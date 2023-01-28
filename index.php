@@ -39,15 +39,16 @@ if (!$custom) {
             </div>
         </div>
     <?php endif; ?>
-    <div id="staff_info" class="case_stats infoPanel">
+    <div id="staff_info" class="case_stats infoPanel" style="opacity: 0;transition: 200ms;">
         <div class="cool-graph daily-cases"><b>Daily Cases</b></div>
         <div class="cool-graph weekly-cases"><b>Weekly Cases</b></div>
     </div>
 </div>
 <script>
     function getGraphs() {
-        $.get('/api/v1/dailyCases', function(data) {
-            let cases = JSON.parse(data);
+        apiclient.get("api/v2/statistics/cases/daily").then(({
+            data: cases
+        }) => {
             new Chartist.Line('.daily-cases', {
                 labels: ['Four Days Ago', 'Three Days Ago', 'Two Days Ago', 'Yesterday', 'Today'],
                 series: [
@@ -60,9 +61,10 @@ if (!$custom) {
                 },
                 color: 'red'
             });
-        });
-        $.get('/api/v1/weeklyCases', function(data) {
-            let cases = JSON.parse(data);
+        }).catch(noty_catch_error)
+        apiclient.get("api/v2/statistics/cases/weekly").then(({
+            data: cases
+        }) => {
             new Chartist.Line('.weekly-cases', {
                 labels: ['A Month Ago', 'Three Weeks Ago', 'Two Weeks Ago', 'Last Week', 'This Week'],
                 series: [
@@ -75,12 +77,15 @@ if (!$custom) {
                 },
                 color: 'red'
             });
-        });
+            $('#staff_info').css('opacity', 1);
+        }).catch(noty_catch_error)
+
     }
 
     function getStats() {
-        $.get('/api/v1/serverStats', data => {
-            data = JSON.parse(data);
+        apiclient.get('api/v2/statistics/game/server').then(({
+            data
+        }) => {
             if (data.code === 200) {
                 $('#totalplayers').text(data.response.players.total);
                 $('#totalcops').text(data.response.players.total_cops);
