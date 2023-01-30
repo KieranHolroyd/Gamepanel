@@ -1,13 +1,12 @@
 <?php include "../head.php";
-$auth = new Auth;
-$auth->RequireGameAccess();
-$searchQuery = ""; // HotFix for undefined variable and breaking full page
+Guard::init()->RequireGameAccess();
+$initial_query = "";
 if (!empty($_GET['query'])) {
-    $searchQuery = htmlspecialchars($_GET['query']);
+    $initial_query = htmlspecialchars($_GET['query']);
 }
 ?>
 <div class="searchBox-container">
-    <input type="text" class="searchBox" id="searchQuery" placeholder="Search Players" autofocus><button onclick="getPlayers()" class="searchCases" id="searchCases">Search</button>
+    <input type="text" class="searchBox" id="searchQuery" placeholder="Search Players" autofocus><button class="searchCases" id="searchCases">Search</button>
 </div>
 <div class="grid new" style="max-height: calc(100vh - 48px);overflow: hidden;">
     <div class="grid__col grid__col--2-of-6" style="padding-left: 20px !important;">
@@ -61,7 +60,7 @@ if (!empty($_GET['query'])) {
     </div>
 </div>
 <script>
-    let query = '<?= $searchQuery; ?>';
+    let query = '<?= $initial_query; ?>';
     let playerBalance = 0;
     let playerID = 0;
     let levels = {};
@@ -71,8 +70,10 @@ if (!empty($_GET['query'])) {
         "onlyAdmins": false,
     };
 
-    $.get('/api/v1/levelSettings', data => {
-        levels = JSON.parse(data).response;
+    apiclient.get('/api/v2/players/levels').then(({
+        data
+    }) => {
+        levels = data.response;
     });
 
     function openFilters() {
@@ -88,25 +89,26 @@ if (!empty($_GET['query'])) {
         $('#reports').html("<img src='../img/loadw.svg'>");
         list = "";
         let jsonFilters = JSON.stringify(filters);
-        $.get(`/api/v2/search/players?q=${query}&filters=${jsonFilters}`, function (data) {
-            data = JSON.parse(data);
-            let players = data.response;
-            let list = '';
-            for (let i = 0; i < players.length; i++) {
-                const player = players[i];
-                list += `<div class="selectionTab extraPadding" onclick="getPlayerInfo(${player.uid})"><span style="position: absolute;bottom: 5px;font-size: 12px;">${player.pid}</span><span style="font-size: 25px;">${player.name}<br></span></div>`;
+        apiclient.get(`/api/v2/players/search?q=${query}&filters=${jsonFilters}`).then(function({
+            data
+        }) {
+            let list = [];
+            for (let player of data.response) {
+
+                list.push(`<div class="selectionTab extraPadding" onclick="getPlayerInfo('${player.pid}')"><span style="position: absolute;bottom: 5px;font-size: 12px;">${player.pid}</span><span style="font-size: 25px;">${player.name}<br></span></div>`);
             }
             $('#resultsfound').text(data.message);
-            $('#reports').html(list);
+            $('#reports').html(list.join(''));
         });
     }
     getPlayers();
+
     function getPlayerInfo(id) {
         $('#case_info').html("<img src='../img/loadw.svg'>");
         list = "";
-        $.get(`/api/v1/gamePlayer?id=${id}`, function (data) {
-            data = JSON.parse(data);
-
+        apiclient.get(`/api/v2/players/get?id=${id}`).then(({
+            data
+        }) => {
             if (data.code === 200) {
 
                 let player = data.response;
@@ -181,7 +183,7 @@ if (!empty($_GET['query'])) {
             } else {
                 $('#case_info').html(`<h2><b>Error </b>${data.message}</h2>`);
             }
-        });
+        }).catch(noty_catch_error);
     }
 
     function openPlayerAudit() {
@@ -191,10 +193,9 @@ if (!empty($_GET['query'])) {
     function getPlayerVehicles(id) {
         $('#case_info').html("<img src='../img/loadw.svg'>");
         let list = "";
-        $.get(`/api/v1/gamePlayerVehicles?id=${id}`, function (data) {
-            data = JSON.parse(data);
-
-            console.log(data);
+        apiclient.get(`/api/v2/players/vehicles?id=${id}`).then(({
+            data
+        }) => {
             if (data.code === 200) {
                 if (data.response.vehiclesFilled) {
                     for (let key in Object.values(data.response.vehicles)) {
@@ -208,18 +209,18 @@ if (!empty($_GET['query'])) {
             } else {
                 $('#case_info').html(`<h2><b>Error </b>${data.message}</h2>`);
             }
-        });
+        }).catch(noty_catch_error);
     }
 
     function parseClassNameToVehicle(classname) {
-        return levels.vehicle_dictionary[classname] || 'Vehicle Not Found';
+        return levels.vehicle_dictionary[classname] || classname;
     }
 
     function updateAdminLevel(id) {
-        $.post(`/api/v1/playerChangeAdminLevel`, {
+        $.post(`/api/v2/players/update/admin`, {
             id: id,
             al: $('#AdminLevelValue').val()
-        }, function (data) {
+        }, function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -243,7 +244,7 @@ if (!empty($_GET['query'])) {
         $.post(`/api/v1/playerChangeMedicLevel`, {
             id: id,
             ml: $('#MedicLevelValue').val()
-        }, function (data) {
+        }, function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -267,7 +268,7 @@ if (!empty($_GET['query'])) {
         $.post(`/api/v1/playerChangeMedicDepartment`, {
             id: id,
             md: $('#MedicDepartmentValue').val()
-        }, function (data) {
+        }, function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -291,7 +292,7 @@ if (!empty($_GET['query'])) {
         $.post(`/api/v1/playerChangePoliceLevel`, {
             id: id,
             pl: $('#PoliceLevelValue').val()
-        }, function (data) {
+        }, function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -315,7 +316,7 @@ if (!empty($_GET['query'])) {
         $.post(`/api/v1/playerChangePoliceDepartment`, {
             id: id,
             pd: $('#PoliceDepartmentValue').val()
-        }, function (data) {
+        }, function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -340,7 +341,7 @@ if (!empty($_GET['query'])) {
             $.post(`/api/v1/playerChangeBalance`, {
                 id: id,
                 pb: $('#PlayerBankValue').val()
-            }, function (data) {
+            }, function(data) {
                 data = JSON.parse(data);
 
                 if (data.code === 200) {
@@ -372,7 +373,7 @@ if (!empty($_GET['query'])) {
             id: playerID,
             pb: parseInt($('#PlayerBankValue').val()) + parseInt($('#compensationAmount').val()),
             comp: true
-        }, function (data) {
+        }, function(data) {
             data = JSON.parse(data);
 
             if (data.code === 200) {
@@ -404,16 +405,23 @@ if (!empty($_GET['query'])) {
         return (parseInt(bool)) ? 'Yes' : 'No';
     }
 
-    $(document).ready(function () {
-        $('#searchQuery').keyup(function (event) {
+    function executeSearch() {
+        window.history.pushState('search', null, `/game/players${query !== "" ? "?query=" + encodeURIComponent(query) : ""}`);
+        if (query !== "") {
+            getPlayers();
+        }
+    }
+
+    $(document).ready(function() {
+        $('#searchQuery').keyup(function(event) {
+            query = event.target.value;
             if (event.keyCode === 13) {
-                setTimeout(function () {
-                    window.history.pushState('search', 'arma-life.com | Staff', `/game/players?query=${$('#searchQuery').val()}`);
-                    query = $('#searchQuery').val();
-                    getPlayers();
-                }, 10)
+                executeSearch();
             }
         });
+        $('#searchCases').click(() => {
+            executeSearch();
+        })
         $('#searchQuery').val(query);
     });
 </script>

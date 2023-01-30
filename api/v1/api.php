@@ -20,10 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = $_POST['email'];
         $password = $_POST['password'];
         $sql = "SELECT * FROM users WHERE email = :email";
-        $query = $pdo->prepare($sql);
-        $query->bindValue(':email', $email, PDO::PARAM_STR);
-        $query->execute();
-        $selected_user = $query->fetch();
+        $initial_query = $pdo->prepare($sql);
+        $initial_query->bindValue(':email', $email, PDO::PARAM_STR);
+        $initial_query->execute();
+        $selected_user = $initial_query->fetch();
         $arr = ['token' => '', 'uid' => ''];
         if (password_verify($password, $selected_user->password)) {
             $userid = $selected_user->id;
@@ -62,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $last_name = preg_replace('/[^A-Za-z0-9\-]/', '', $last_name);
                 $uniqid = bin2hex(openssl_random_pseudo_bytes(256));
                 $sql = "SELECT * FROM users WHERE email = :email";
-                $query = $pdo->prepare($sql);
-                $query->bindValue(':email', $email, PDO::PARAM_STR);
-                $query->execute();
-                $result = $query->fetch();
+                $initial_query = $pdo->prepare($sql);
+                $initial_query->bindValue(':email', $email, PDO::PARAM_STR);
+                $initial_query->execute();
+                $result = $initial_query->fetch();
                 if ($result->email == "") {
                     $sql2 = "SELECT username FROM users WHERE username = :username";
                     $query2 = $pdo->prepare($sql2);
@@ -100,15 +100,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (Helpers::getAuth()) {
             $token = sha1(Helpers::getAuth());
             $sql = "SELECT token FROM login_tokens WHERE token = :token";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':token', $token, PDO::PARAM_STR);
-            $query->execute();
-            $result = $query->fetch();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':token', $token, PDO::PARAM_STR);
+            $initial_query->execute();
+            $result = $initial_query->fetch();
             if ($result) {
                 $sql2 = 'DELETE FROM login_tokens WHERE token = :token';
-                $query = $pdo->prepare($sql2);
-                $query->bindValue(':token', $token, PDO::PARAM_STR);
-                $query->execute();
+                $initial_query = $pdo->prepare($sql2);
+                $initial_query->bindValue(':token', $token, PDO::PARAM_STR);
+                $initial_query->execute();
                 setcookie("LOGINTOKEN", 0, 1, "/");
                 echo '{ "Status": "Success" }';
                 http_response_code(200);
@@ -124,10 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (Helpers::getAuth()) {
             $token = sha1(Helpers::getAuth());
             $sql = "SELECT * FROM login_tokens WHERE token = :token";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':token', $token, PDO::PARAM_STR);
-            $query->execute();
-            $result = $query->fetch();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':token', $token, PDO::PARAM_STR);
+            $initial_query->execute();
+            $result = $initial_query->fetch();
             if ($result) {
                 echo true;
             }
@@ -143,11 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $body = $_POST['body'];
             $user = $li->info->first_name . " " . $li->info->last_name;
             $sql = "INSERT INTO guides (`title`, `body`, `author`) VALUES (:title, :body, :author)";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':title', $title, PDO::PARAM_STR);
-            $query->bindValue(':body', $body, PDO::PARAM_STR);
-            $query->bindValue(':author', $user, PDO::PARAM_STR);
-            $query->execute();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':title', $title, PDO::PARAM_STR);
+            $initial_query->bindValue(':body', $body, PDO::PARAM_STR);
+            $initial_query->bindValue(':author', $user, PDO::PARAM_STR);
+            $initial_query->execute();
             Helpers::addAuditLog("{$li->info->username} Added Guide {$title}");
             echo "Guide Added Successfully.";
         } else {
@@ -163,11 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $body = $_POST['body'];
             $user = $li->info->first_name . " " . $li->info->last_name;
             $sql = "UPDATE guides SET title = :title, body = :body, timestamp = CURRENT_TIMESTAMP() WHERE id=:id";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':title', $title, PDO::PARAM_STR);
-            $query->bindValue(':body', $body, PDO::PARAM_STR);
-            $query->bindValue(':id', $id, PDO::PARAM_STR);
-            $query->execute();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':title', $title, PDO::PARAM_STR);
+            $initial_query->bindValue(':body', $body, PDO::PARAM_STR);
+            $initial_query->bindValue(':id', $id, PDO::PARAM_STR);
+            $initial_query->execute();
             Helpers::addAuditLog("{$li->info->username} Edited Guide `{$title}`");
             echo "Guide Edited Successfully.";
         } else {
@@ -197,10 +197,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
             $id = $_POST['id'];
             $sql = "SELECT * FROM guides WHERE id = :id";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':id', $id, PDO::PARAM_STR);
-            $query->execute();
-            $r = $query->fetch();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':id', $id, PDO::PARAM_STR);
+            $initial_query->execute();
+            $r = $initial_query->fetch();
             $arr = [];
             $arr['title'] = htmlspecialchars($r->title);
             $arr['body'] = $r->body;
@@ -217,10 +217,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
             $id = $_POST['id'];
             $sql = "SELECT * FROM case_logs WHERE id = :id";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':id', $id, PDO::PARAM_STR);
-            $query->execute();
-            $r = $query->fetch();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':id', $id, PDO::PARAM_STR);
+            $initial_query->execute();
+            $r = $initial_query->fetch();
             $report = [];
             $stmt = $pdo->prepare("SELECT * FROM case_players WHERE case_id = :id");
             $stmt->bindValue(':id', $r->id, PDO::PARAM_INT);
@@ -277,10 +277,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             switch ($searchType) {
                 case 'cases':
                     $sql = "SELECT * FROM `case_logs` WHERE `id` LIKE :query OR `lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query ORDER BY id DESC LIMIT 100";
-                    $query = $pdo->prepare($sql);
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $rf = $query->fetchAll();
+                    $initial_query = $pdo->prepare($sql);
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $rf = $initial_query->fetchAll();
                     $staffinfo = [];
                     $i = 1;
                     foreach ($rf as $r) {
@@ -290,20 +290,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $i += 1;
                     }
                     $searchcount = count($staffinfo['log']);
-                    $query = $pdo->prepare("SELECT count(*) as count FROM `case_logs` WHERE `id` LIKE :query OR `lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query");
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $fetchCount = $query->fetch();
+                    $initial_query = $pdo->prepare("SELECT count(*) as count FROM `case_logs` WHERE `id` LIKE :query OR `lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query");
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $fetchCount = $initial_query->fetch();
                     $totalcount = $fetchCount->count;
                     $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
                     echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $staffinfo, 200);
                     break;
                 case 'punishments':
                     $sql = "SELECT * FROM `punishment_reports` WHERE (player LIKE :query OR comments LIKE :query OR rules LIKE :query) AND case_id <> 0 ORDER BY id DESC LIMIT 100";
-                    $query = $pdo->prepare($sql);
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $rf = $query->fetchAll();
+                    $initial_query = $pdo->prepare($sql);
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $rf = $initial_query->fetchAll();
                     $staffinfo = [];
                     $i = 1;
                     foreach ($rf as $r) {
@@ -318,20 +318,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $i += 1;
                     }
                     $searchcount = count($staffinfo['log']);
-                    $query = $pdo->prepare("SELECT count(*) as count FROM `punishment_reports` WHERE player LIKE :query OR comments LIKE :query OR rules LIKE :query");
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $fetchCount = $query->fetch();
+                    $initial_query = $pdo->prepare("SELECT count(*) as count FROM `punishment_reports` WHERE player LIKE :query OR comments LIKE :query OR rules LIKE :query");
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $fetchCount = $initial_query->fetch();
                     $totalcount = $fetchCount->count;
                     $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
                     echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $staffinfo, 200);
                     break;
                 case 'bans':
                     $sql = "SELECT * FROM `ban_reports` WHERE (player LIKE :query OR message LIKE :query) AND case_id <> 0 ORDER BY id DESC LIMIT 100";
-                    $query = $pdo->prepare($sql);
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $rf = $query->fetchAll();
+                    $initial_query = $pdo->prepare($sql);
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $rf = $initial_query->fetchAll();
                     $staffinfo = [];
                     $i = 1;
                     foreach ($rf as $r) {
@@ -349,20 +349,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $i += 1;
                     }
                     $searchcount = count($staffinfo['log']);
-                    $query = $pdo->prepare("SELECT count(*) as count FROM `ban_reports` WHERE (player LIKE :query OR message LIKE :query) AND case_id <> 0");
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $fetchCount = $query->fetch();
+                    $initial_query = $pdo->prepare("SELECT count(*) as count FROM `ban_reports` WHERE (player LIKE :query OR message LIKE :query) AND case_id <> 0");
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $fetchCount = $initial_query->fetch();
                     $totalcount = $fetchCount->count;
                     $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
                     echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $staffinfo, 200);
                     break;
                 case 'unbans':
                     $sql = "SELECT * FROM `case_logs` WHERE (`lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query) AND `type_of_report` = 'Unban Log' ORDER BY id DESC LIMIT 100";
-                    $query = $pdo->prepare($sql);
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $rf = $query->fetchAll();
+                    $initial_query = $pdo->prepare($sql);
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $rf = $initial_query->fetchAll();
                     $staffinfo = [];
                     $i = 1;
                     foreach ($rf as $r) {
@@ -372,20 +372,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $i += 1;
                     }
                     $searchcount = count($staffinfo['log']);
-                    $query = $pdo->prepare("SELECT count(*) as count FROM `case_logs` WHERE (`lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query) AND `type_of_report` = 'Unban Log'");
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $fetchCount = $query->fetch();
+                    $initial_query = $pdo->prepare("SELECT count(*) as count FROM `case_logs` WHERE (`lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query) AND `type_of_report` = 'Unban Log'");
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $fetchCount = $initial_query->fetch();
                     $totalcount = $fetchCount->count;
                     $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
                     echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $staffinfo, 200);
                     break;
                 case 'players':
                     $sql = "SELECT ANY_VALUE(`id`) as id, ANY_VALUE(`name`) as name, MAX(`guid`) as guid FROM `case_players` WHERE ANY_VALUE(`name`) LIKE :query OR ANY_VALUE(`guid`) LIKE :query OR ANY_VALUE(`case_id`) LIKE :query GROUP BY `name` LIMIT 100";
-                    $query = $pdo->prepare($sql);
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $rf = $query->fetchAll();
+                    $initial_query = $pdo->prepare($sql);
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $rf = $initial_query->fetchAll();
                     $staffinfo = [];
                     $i = 1;
                     foreach ($rf as $r) {
@@ -394,10 +394,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $i += 1;
                     }
                     $searchcount = count($staffinfo['log']);
-                    $query = $pdo->prepare("SELECT count(*) as count FROM `case_players` WHERE `name` LIKE :query OR `guid` LIKE :query OR `case_id` LIKE :query");
-                    $query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
-                    $query->execute();
-                    $fetchCount = $query->fetch();
+                    $initial_query = $pdo->prepare("SELECT count(*) as count FROM `case_players` WHERE `name` LIKE :query OR `guid` LIKE :query OR `case_id` LIKE :query");
+                    $initial_query->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $initial_query->execute();
+                    $fetchCount = $initial_query->fetch();
                     $totalcount = $fetchCount->count;
                     $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
                     echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $staffinfo, 200);
@@ -620,10 +620,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $id = $_POST['id'];
             $staffinfo = [];
             $sql = "SELECT * FROM users WHERE id = :name";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':name', $_POST['id'], PDO::PARAM_STR);
-            $query->execute();
-            $r = $query->fetch();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':name', $_POST['id'], PDO::PARAM_STR);
+            $initial_query->execute();
+            $r = $initial_query->fetch();
             $staffname = $r->username;
             $stmt = $pdo->prepare("SELECT count(*) as Count FROM case_logs WHERE `lead_staff` LIKE :uname OR `other_staff` LIKE :uname");
             $stmt->bindValue(':uname', '%' . $staffname . '%', PDO::PARAM_STR);
@@ -762,10 +762,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $id = $_POST['id'];
             $staffinfo = [];
             $sql = "SELECT * FROM users WHERE id = :name";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':name', $user->info->id, PDO::PARAM_STR);
-            $query->execute();
-            $r = $query->fetch();
+            $initial_query = $pdo->prepare($sql);
+            $initial_query->bindValue(':name', $user->info->id, PDO::PARAM_STR);
+            $initial_query->execute();
+            $r = $initial_query->fetch();
             $staffname = $r->username;
             $stmt = $pdo->prepare("SELECT count(*) as Count FROM case_logs WHERE `lead_staff` LIKE :uname OR `other_staff` LIKE :uname");
             $stmt->bindValue(':uname', '%' . $staffname . '%', PDO::PARAM_STR);
@@ -2037,116 +2037,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         } else {
             echo Helpers::APIResponse("Authentication Failed", null, 401);
-        }
-    } else if ($url == "gamePlayer") {
-        $user = new User;
-
-        if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
-            $uid = (isset($_GET['id'])) ? $_GET['id'] : null;
-
-            $gamepdo = game_pdo();
-
-            if ($uid == null) {
-                echo Helpers::APIResponse("No ID Passed", null, 400);
-                exit;
-            }
-
-            $stmt = $pdo->prepare("SELECT * FROM `audit_log` WHERE LOCATE(:id, log_content)>0 ORDER BY id DESC");
-            $stmt->bindValue(':id', "Game_Player(" . $uid . ")", PDO::PARAM_INT);
-            $stmt->execute();
-            $auditLogs = $stmt->fetchAll();
-
-            foreach ($auditLogs as $log) {
-                $log->staff_member_name = ($log->logged_in_user != null) ? Helpers::IDToUsername($log->logged_in_user) : '';
-            }
-
-            $stmt = $gamepdo->prepare('SELECT * FROM `players` WHERE uid = :uid');
-            $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
-            $stmt->execute();
-            $player = $stmt->fetch(PDO::FETCH_OBJ);
-
-            $player->formatbankacc = "$" . number_format($player->bankacc);
-            $player->cash = number_format($player->cash);
-            $player->exp_total = number_format($player->exp_total);
-            $player->edits = $auditLogs;
-
-            echo Helpers::APIResponse("Success", $player, 200);
-        } else {
-            echo Helpers::APIResponse("Not High Enough Rank", null, 403);
-        }
-    } else if ($url == "gamePlayerVehicles") {
-        $user = new User;
-
-        if (Permissions::init()->hasPermission("VIEW_GAME_VEHICLES")) {
-            $pid = (isset($_GET['id'])) ? $_GET['id'] : null;
-
-            $gamepdo = game_pdo();
-
-            if ($pid == null) {
-                echo Helpers::APIResponse("No ID Passed", null, 400);
-                exit;
-            }
-
-            $stmt = $gamepdo->prepare('SELECT * FROM `vehicles` WHERE pid = :pid');
-            $stmt->bindValue(':pid', $pid, PDO::PARAM_STR);
-            $stmt->execute();
-            $playerVehicles = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-            echo Helpers::APIResponse("Success", ['vehicles' => $playerVehicles, 'vehiclesFilled' => count($playerVehicles)], 200);
-        } else {
-            echo Helpers::APIResponse("Not High Enough Rank", null, 403);
-        }
-    } else if ($url == "levelSettings") {
-        $user = new User;
-
-        if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
-            //            $levelSettings = file_get_contents('https://ws.infishit.de/gameLevels');
-            $levelSettings = [
-                "police" => [
-                    0 => 'Not Whitelisted',
-                    1 => 'Cadet',
-                    2 => 'Officer',
-                    3 => 'Senior Officer',
-                    4 => 'Corporal',
-                    5 => 'Sergeant',
-                    6 => 'Lieutenant/Captain',
-                    7 => 'State Command'
-                ],
-                "police_department" => [
-                    0 => 'No Department',
-                    1 => 'Department Of Corrections',
-                    2 => 'Patrol',
-                    3 => 'Highway Patrol',
-                    4 => 'Internal Affairs',
-                    5 => 'Corrections Response Team',
-                    6 => 'Special Weapons And Tactics (SWAT)',
-                    7 => 'Command'
-                ],
-                "admin" => [
-                    0 => 'No Admin Rank',
-                    1 => 'Senior Administrator+',
-                    2 => 'Senior Leadership Team'
-                ],
-                "medic" => [
-                    0 => 'Not Whitelisted',
-                    1 => 'EMT',
-                    2 => 'Advanced EMT',
-                    3 => 'Volunteer / Paramedic',
-                    4 => 'Advanced Paramedic',
-                    5 => 'Field Commander',
-                    6 => 'Captain',
-                    7 => 'Assistant Chief',
-                    8 => 'Deputy Chief',
-                    9 => 'Chief Of EMS',
-                ],
-                "medic_department" => [
-                    0 => 'None',
-                    1 => 'EMS Department',
-                    2 => 'Fire Department'
-                ],
-                "vehicle_dictionary" => json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/lib/carDictionary.json'))
-            ];
-            echo Helpers::APIResponse("Success", $levelSettings, 200);
         }
     } else if ($url == "reservedSlots") {
         $json = json_decode(file_get_contents('../lib/whitelist.json'));

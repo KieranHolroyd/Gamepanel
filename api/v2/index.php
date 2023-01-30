@@ -42,8 +42,12 @@ $router->get('/notifications/get', 'NotificationController@getNotifications');
 $router->post('/notifications/set', 'NotificationController@setNotifications');
 $router->post('/notifications/essential/mark', 'NotificationController@markEssentialRead');
 
-//-- Search Routes
-$router->get('/search/players', 'SearchController@players');
+//-- Player Routes
+$router->get('/players/search', 'SearchController@players');
+$router->get('/players/get', 'PlayerController@GetPlayerInformation');
+$router->get('/players/vehicles', 'PlayerController@GetPlayerVehicles');
+$router->get('/players/levels', 'PlayerController@GetLevelData');
+$router->post('/players/update/admin', 'PlayerController@UpdatePlayerAdminLevel');
 
 //-- Statistics Routes
 $router->get('/statistics/cases/daily', 'StatisticsController@DailyCases');

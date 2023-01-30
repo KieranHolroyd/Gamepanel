@@ -117,10 +117,13 @@ $url = Config::$base_url; ?>
         $(window).on('load', userArraySet());
 
         function logout() {
-            $.post("<?php echo $url; ?>api/v2/auth/logout", function(data) {
-                window.location.replace("/passport");
-                console.log(data)
-            });
+            apiclient.post("api/v2/auth/logout").then(({data}) => {
+                if(data.success) {
+
+                    window.location.replace("/passport");
+                    console.log(data)
+                }
+            }).catch(noty_catch_error);
             userArray = {};
         }
         window.logout = logout;
