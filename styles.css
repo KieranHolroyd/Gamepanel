@@ -2121,3 +2121,10 @@ p#case {
     color: #ddd;
     user-select: none;
 }
+
+.auditlog_item {
+    margin: .5em 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: .25em;
+    padding: .5em;
+}

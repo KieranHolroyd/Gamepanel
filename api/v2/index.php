@@ -48,6 +48,9 @@ $router->get('/players/get', 'PlayerController@GetPlayerInformation');
 $router->get('/players/vehicles', 'PlayerController@GetPlayerVehicles');
 $router->get('/players/levels', 'PlayerController@GetLevelData');
 $router->post('/players/update/admin', 'PlayerController@UpdatePlayerAdminLevel');
+$router->post('/players/update/medic', 'PlayerController@UpdatePlayerMedicLevel');
+$router->post('/players/update/police', 'PlayerController@UpdatePlayerPoliceLevel');
+$router->post('/players/update/balance', 'PlayerController@UpdatePlayerBalance');
 
 //-- Statistics Routes
 $router->get('/statistics/cases/daily', 'StatisticsController@DailyCases');

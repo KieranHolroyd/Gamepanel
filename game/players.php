@@ -129,7 +129,7 @@ if (!empty($_GET['query'])) {
 
                 let police = `<select class="fieldSelector" onchange="updatePoliceLevel('${player.playerid}')" id="PoliceLevelValue">
                             ${levels.police !== undefined && levels.police.map((_, level) => {
-                                return `<option ${(player.coplevel == level) ? 'selected' : ''} value="${level + 1}">${levels.police[level] || level}</option>`;
+                                return `<option ${(player.natoRank == level) ? 'selected' : ''} value="${level + 1}">${levels.police[level] || level}</option>`;
                             })}
                             </select>`;
 
@@ -159,12 +159,12 @@ if (!empty($_GET['query'])) {
 
                 for (let log of player.edits) {
                     let staff = (log.logged_in_user !== "null") ? `~ <a href="/staff/#User:${log.logged_in_user}">${log.staff_member_name}</a>` : ``;
-                    $('#audit_logs').append(`<div class="staffActivityCard" style="cursor: default;"><span style="text-transform: capitalize;">${log.log_context}</span> Log ~ ${log.timestamp} ${staff}<br>${log.log_content}</div>`);
+                    $('#audit_logs').append(`<div class="auditlog_item" style="cursor: default;"><span style="text-transform: capitalize;">${log.log_context}</span> Log ~ ${log.timestamp} ${staff}<br>${log.log_content}</div>`);
                 }
 
                 if (player.edits.length === 0) $('#audit_logs').append('<h2>No Logs Found</h2>');
 
-                playerID = player.uid;
+                playerID = player.playerid;
                 $('#playerName').text(player.name);
 
                 $('#case_info').html(list);
@@ -186,6 +186,7 @@ if (!empty($_GET['query'])) {
         }) => {
             if (data.code === 200) {
                 if (data.response.vehiclesFilled) {
+                    list += `<h2><span style="cursor: pointer;" onclick="getPlayerInfo('${playerID}')">${data.response.name}</span>'s Vehicles</h2>`;
                     for (let key in Object.values(data.response.vehicles)) {
                         const vehicle = data.response.vehicles[key];
                         list += `<div class="staffActivityCard" style="cursor: default;">${vehicle.side} ${vehicle.type} ${parseClassNameToVehicle(vehicle.classname)}<br>Plate: ${vehicle.plate} | Impounded: ${boolToYesNo(vehicle.impound)} | Insured: ${boolToYesNo(vehicle.insured)}</div>`
@@ -229,7 +230,7 @@ if (!empty($_GET['query'])) {
     }
 
     function updateMedicLevel(id) {
-        $.post(`/api/v1/playerChangeMedicLevel`, {
+        $.post(`/api/v2/players/update/medic`, {
             id: id,
             ml: $('#MedicLevelValue').val()
         }, function(data) {
@@ -252,32 +253,32 @@ if (!empty($_GET['query'])) {
         });
     }
 
-    function updateMedicDepartment(id) {
-        $.post(`/api/v1/playerChangeMedicDepartment`, {
-            id: id,
-            md: $('#MedicDepartmentValue').val()
-        }, function(data) {
-            data = JSON.parse(data);
+    // function updateMedicDepartment(id) {
+    //     $.post(`/api/v1/playerChangeMedicDepartment`, {
+    //         id: id,
+    //         md: $('#MedicDepartmentValue').val()
+    //     }, function(data) {
+    //         data = JSON.parse(data);
 
-            if (data.code === 200) {
-                new Noty({
-                    text: `Successfully Updated Medic Department To (${$('#MedicDepartmentValue').val()})`,
-                    type: 'success',
-                    timeout: 2000
-                }).show();
-            } else {
-                getPlayerInfo(id);
-                new Noty({
-                    'text': data.message,
-                    'type': 'error',
-                    'timeout': 2000
-                }).show();
-            }
-        });
-    }
+    //         if (data.code === 200) {
+    //             new Noty({
+    //                 text: `Successfully Updated Medic Department To (${$('#MedicDepartmentValue').val()})`,
+    //                 type: 'success',
+    //                 timeout: 2000
+    //             }).show();
+    //         } else {
+    //             getPlayerInfo(id);
+    //             new Noty({
+    //                 'text': data.message,
+    //                 'type': 'error',
+    //                 'timeout': 2000
+    //             }).show();
+    //         }
+    //     });
+    // }
 
     function updatePoliceLevel(id) {
-        $.post(`/api/v1/playerChangePoliceLevel`, {
+        $.post(`/api/v2/players/update/police`, {
             id: id,
             pl: $('#PoliceLevelValue').val()
         }, function(data) {
@@ -300,33 +301,33 @@ if (!empty($_GET['query'])) {
         });
     }
 
-    function updatePoliceDepartment(id) {
-        $.post(`/api/v1/playerChangePoliceDepartment`, {
-            id: id,
-            pd: $('#PoliceDepartmentValue').val()
-        }, function(data) {
-            data = JSON.parse(data);
+    // function updatePoliceDepartment(id) {
+    //     $.post(`/api/v1/playerChangePoliceDepartment`, {
+    //         id: id,
+    //         pd: $('#PoliceDepartmentValue').val()
+    //     }, function(data) {
+    //         data = JSON.parse(data);
 
-            if (data.code === 200) {
-                new Noty({
-                    text: `Successfully Updated Police Department To (${$('#PoliceDepartmentValue').val()})`,
-                    type: 'success',
-                    timeout: 2000
-                }).show();
-            } else {
-                getPlayerInfo(id);
-                new Noty({
-                    'text': data.message,
-                    'type': 'error',
-                    'timeout': 2000
-                }).show();
-            }
-        });
-    }
+    //         if (data.code === 200) {
+    //             new Noty({
+    //                 text: `Successfully Updated Police Department To (${$('#PoliceDepartmentValue').val()})`,
+    //                 type: 'success',
+    //                 timeout: 2000
+    //             }).show();
+    //         } else {
+    //             getPlayerInfo(id);
+    //             new Noty({
+    //                 'text': data.message,
+    //                 'type': 'error',
+    //                 'timeout': 2000
+    //             }).show();
+    //         }
+    //     });
+    // }
 
     function updatePlayerBalance(id) {
         if ($('#PlayerBankValue').val() !== playerBalance) {
-            $.post(`/api/v1/playerChangeBalance`, {
+            $.post(`/api/v2/players/update/balance`, {
                 id: id,
                 pb: $('#PlayerBankValue').val()
             }, function(data) {
@@ -357,7 +358,7 @@ if (!empty($_GET['query'])) {
     }
 
     function issueCompensation() {
-        $.post(`/api/v1/playerChangeBalance`, {
+        $.post(`/api/v2/players/update/balance`, {
             id: playerID,
             pb: parseInt($('#PlayerBankValue').val()) + parseInt($('#compensationAmount').val()),
             comp: true

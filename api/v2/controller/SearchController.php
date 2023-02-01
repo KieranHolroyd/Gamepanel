@@ -15,7 +15,7 @@ class SearchController
             $sqlFilters = "AND (";
             $filterCount = 0;
             $filterConnections = [
-                'onlyPolice' => '`coplevel` <> \'0\'',
+                'onlyPolice' => '`natoRank` <> \'0\'',
                 'onlyMedics' => '`mediclevel` <> \'0\'',
                 'onlyAdmins' => '`adminlevel` <> \'0\''
             ];

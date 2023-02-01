@@ -75,7 +75,7 @@ class StatisticsController
 			$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players`');
 			$stmt->execute();
 			$players = $stmt->fetch(PDO::FETCH_OBJ);
-			$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players` WHERE coplevel <> "0"');
+			$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players` WHERE natoRank <> "0"');
 			$stmt->execute();
 			$cops = $stmt->fetch(PDO::FETCH_OBJ);
 			$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players` WHERE mediclevel <> "0"');
@@ -84,7 +84,7 @@ class StatisticsController
 			$stmt = $gamepdo->prepare('SELECT SUM(bankacc) AS total from `players`');
 			$stmt->execute();
 			$serverBalance = $stmt->fetch(PDO::FETCH_OBJ);
-			$stmt = $gamepdo->prepare('SELECT `bankacc`, `aliases`, `name`, `uid`, `pid`, `last_seen` from `players` ORDER BY bankacc DESC LIMIT 10');
+			$stmt = $gamepdo->prepare('SELECT `bankacc`, `name`, `uid`, `playerid`, `last_seen` from `players` ORDER BY bankacc DESC LIMIT 10');
 			$stmt->execute();
 			$richList = $stmt->fetchAll(PDO::FETCH_OBJ);
 			foreach ($richList as $user) {

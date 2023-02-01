@@ -1,6 +1,5 @@
 <?php include "../head.php";
-$auth = new Auth;
-$auth->RequireGameAccess();
+Guard::init()->RequireGameAccess();
 ?>
 <div class="grid new" style="padding-left: 20px;">
     <h1 class="info-title new"><?= Config::$name; ?> Game Manager</h1>
