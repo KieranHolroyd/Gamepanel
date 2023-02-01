@@ -20,19 +20,20 @@ class PlayerController
 				exit;
 			}
 
+
+			$stmt = $gamepdo->prepare('SELECT * FROM `players` WHERE playerid = :uid');
+			$stmt->bindValue(':uid', $uid, PDO::PARAM_STR);
+			$stmt->execute();
+			$player = $stmt->fetch(PDO::FETCH_OBJ);
+
 			$stmt = $pdo->prepare("SELECT * FROM `audit_log` WHERE LOCATE(:id, log_content)>0 ORDER BY id DESC");
-			$stmt->bindValue(':id', "Game_Player(" . $uid . ")", PDO::PARAM_STR);
+			$stmt->bindValue(':id', "Game_Player({$player->playerid})", PDO::PARAM_STR);
 			$stmt->execute();
 			$auditLogs = $stmt->fetchAll();
 
 			foreach ($auditLogs as $log) {
 				$log->staff_member_name = ($log->logged_in_user != null) ? Helpers::IDToUsername($log->logged_in_user) : '';
 			}
-
-			$stmt = $gamepdo->prepare('SELECT * FROM `players` WHERE playerid = :uid');
-			$stmt->bindValue(':uid', $uid, PDO::PARAM_STR);
-			$stmt->execute();
-			$player = $stmt->fetch(PDO::FETCH_OBJ);
 
 			$player->formatbankacc = "$" . number_format($player->bankacc);
 			$player->cash = number_format($player->cash);
@@ -95,8 +96,11 @@ class PlayerController
 				],
 				"admin" => [
 					0 => 'No Admin Rank',
-					1 => 'Senior Administrator+',
-					2 => 'Senior Leadership Team'
+					1 => 'Trial Administrator',
+					2 => 'Moderator',
+					3 => 'Senior Leadership Team',
+					4 => 'Staff Manager',
+					5 => 'Senior Management Team',
 				],
 				"medic" => [
 					0 => 'Not Whitelisted',
@@ -136,8 +140,8 @@ class PlayerController
 				exit;
 			}
 
-			$stmt = $gamepdo->prepare('UPDATE `players` SET adminlevel = :al WHERE uid = :uid');
-			$stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
+			$stmt = $gamepdo->prepare('UPDATE `players` SET adminlevel = :al WHERE playerid = :uid');
+			$stmt->bindValue(':uid', $uid);
 			$stmt->bindValue(':al', $al, PDO::PARAM_INT);
 			if ($stmt->execute()) {
 				Helpers::addAuditLog("GAME::{$user->info->username} Changed Game_Player({$uid}) Set AdminLevel = {$al}");

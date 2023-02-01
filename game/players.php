@@ -115,37 +115,25 @@ if (!empty($_GET['query'])) {
 
                 playerBalance = player.bankacc;
 
-                let admin = `<select class="fieldSelector" onchange="updateAdminLevel(${player.uid})" id="AdminLevelValue">
-                            <option ${(player.adminlevel === "0") ? 'selected' : ''} value="0">${levels.admin[0] || 0}</option>
-                            <option ${(player.adminlevel === "1") ? 'selected' : ''} value="1">${levels.admin[1] || 1}</option>
-                            <option ${(player.adminlevel === "2") ? 'selected' : ''} value="2">${levels.admin[2] || 2}</option>
-                        </select>`;
+                let admin = `<select class="fieldSelector" onchange="updateAdminLevel('${player.playerid}')" id="AdminLevelValue">
+                            ${levels.admin !== undefined && levels.admin.map((_, level) => {
+                                return `<option ${(player.adminlevel == level) ? 'selected' : ''} value="${level + 1}">${levels.admin[level] || level}</option>`;
+                            })}
+                            </select>`;
 
-                let medic = `<select class="fieldSelector" onchange="updateMedicLevel(${player.uid})" id="MedicLevelValue">
-                            <option ${(player.mediclevel === "0") ? 'selected' : ''} value="0">${levels.medic[0] || 0}</option>
-                            <option ${(player.mediclevel === "1") ? 'selected' : ''} value="1">${levels.medic[1] || 1}</option>
-                            <option ${(player.mediclevel === "2") ? 'selected' : ''} value="2">${levels.medic[2] || 2}</option>
-                            <option ${(player.mediclevel === "3") ? 'selected' : ''} value="3">${levels.medic[3] || 3}</option>
-                            <option ${(player.mediclevel === "4") ? 'selected' : ''} value="4">${levels.medic[4] || 4}</option>
-                            <option ${(player.mediclevel === "5") ? 'selected' : ''} value="5">${levels.medic[5] || 5}</option>
-                            <option ${(player.mediclevel === "6") ? 'selected' : ''} value="6">${levels.medic[6] || 6}</option>
-                            <option ${(player.mediclevel === "7") ? 'selected' : ''} value="7">${levels.medic[7] || 7}</option>
-                            <option ${(player.mediclevel === "8") ? 'selected' : ''} value="8">${levels.medic[8] || 8}</option>
-                            <option ${(player.mediclevel === "9") ? 'selected' : ''} value="9">${levels.medic[9] || 9}</option>
-                        </select>`;
+                let medic = `<select class="fieldSelector" onchange="updateMedicLevel('${player.playerid}')" id="MedicLevelValue">
+                            ${levels.medic !== undefined && levels.medic.map((_, level) => {
+                                return `<option ${(player.mediclevel == level) ? 'selected' : ''} value="${level + 1}">${levels.medic[level] || level}</option>`;
+                            })}
+                            </select>`;
 
-                let police = `<select class="fieldSelector" onchange="updatePoliceLevel(${player.uid})" id="PoliceLevelValue">
-                            <option ${(player.coplevel === "0") ? 'selected' : ''} value="0">${levels.police[0] || 0}</option>
-                            <option ${(player.coplevel === "1") ? 'selected' : ''} value="1">${levels.police[1] || 1}</option>
-                            <option ${(player.coplevel === "2") ? 'selected' : ''} value="2">${levels.police[2] || 2}</option>
-                            <option ${(player.coplevel === "3") ? 'selected' : ''} value="3">${levels.police[3] || 3}</option>
-                            <option ${(player.coplevel === "4") ? 'selected' : ''} value="4">${levels.police[4] || 4}</option>
-                            <option ${(player.coplevel === "5") ? 'selected' : ''} value="5">${levels.police[5] || 5}</option>
-                            <option ${(player.coplevel === "6") ? 'selected' : ''} value="6">${levels.police[6] || 6}</option>
-                            <option ${(player.coplevel === "7") ? 'selected' : ''} value="7">${levels.police[7] || 7}</option>
-                        </select>`;
+                let police = `<select class="fieldSelector" onchange="updatePoliceLevel('${player.playerid}')" id="PoliceLevelValue">
+                            ${levels.police !== undefined && levels.police.map((_, level) => {
+                                return `<option ${(player.coplevel == level) ? 'selected' : ''} value="${level + 1}">${levels.police[level] || level}</option>`;
+                            })}
+                            </select>`;
 
-                let bank = `<input class="fieldInput" onblur="updatePlayerBalance(${player.uid})" type="text" id="PlayerBankValue" value="${player.bankacc}" placeholder="Player Bank Balance">`;
+                let bank = `<input class="fieldInput" onblur="updatePlayerBalance('${player.playerid}')" type="text" id="PlayerBankValue" value="${player.bankacc}" placeholder="Player Bank Balance">`;
 
                 let list = `<h2>${player.name}</h2>
                     <p><b>SteamID: </b>${player.playerid}</p>
@@ -170,7 +158,7 @@ if (!empty($_GET['query'])) {
                 $('#audit_logs').html('');
 
                 for (let log of player.edits) {
-                    let staff = (log.logged_in_user !== "null") ? `~ <a href="https://staff.arma-life.com/staff/#staf${log.logged_in_user}">${log.staff_member_name}</a>` : ``;
+                    let staff = (log.logged_in_user !== "null") ? `~ <a href="/staff/#User:${log.logged_in_user}">${log.staff_member_name}</a>` : ``;
                     $('#audit_logs').append(`<div class="staffActivityCard" style="cursor: default;"><span style="text-transform: capitalize;">${log.log_context}</span> Log ~ ${log.timestamp} ${staff}<br>${log.log_content}</div>`);
                 }
 
