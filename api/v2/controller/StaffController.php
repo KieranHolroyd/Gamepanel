@@ -4,6 +4,11 @@ namespace App\API\V2\Controller;
 
 use \User, \Permissions, \PDO, \Helpers, \DateTime;
 
+function invalid_staff_application($application)
+{
+	return ($application == null || empty($application) || empty($application["age"]) || empty($application["email"]) || empty($application["discord"]) || empty($application["timezone"]) || empty($application["about_me"]) || empty($application["why_me"]) || empty($application["experience"]));
+}
+
 class StaffController
 {
 	public function ListUsers()
@@ -249,6 +254,13 @@ class StaffController
 
 		$name = (isset($_POST['name'])) ? $_POST['name'] : null;
 		$application = (isset($_POST['data'])) ? $_POST['data'] : null;
+
+		// Check application has required fields
+		if ($name == null || invalid_staff_application($application)) {
+			echo Helpers::NewAPIResponse(["message" => "Invalid Request", "success" => false]);
+			exit;
+		}
+
 
 		if (!$application) {
 			echo Helpers::NewAPIResponse(["message" => "Invalid Request", "success" => false]);

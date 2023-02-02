@@ -32,7 +32,7 @@
                             <a href='<?php echo $url; ?>staff/roles'><i class="fas fa-tag"></i> <span>Role Permissions</span></a>
                             <a href='<?php echo $url; ?>staff/interviews'><i class="fas fa-microphone"></i> <span>Interviews</span></a>
                             <a href='<?php echo $url; ?>staff/audit'><i class="fas fa-list-alt"></i> <span>Audit Log</span></a>
-                            <a href='<?php echo $url; ?>staff/applications'><i class="fas fa-book"></i> <span>Applications</span></a>
+                            <a href='<?php echo $url; ?>staff/applications'><i class="fas fa-id-card"></i> <span>Applications</span></a>
                         <?php endif; ?>
                     </div>
                 </div>
