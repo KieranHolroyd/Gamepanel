@@ -60,6 +60,9 @@ $router->get('/statistics/game/server', 'StatisticsController@ServerStatistics')
 //-- Staff Routes
 $router->get('/staff/cases/list', 'StaffController@List');
 $router->get('/staff/list', 'StaffController@ListStaffTeam');
+$router->get('/staff/applications/list', 'StaffController@ListApplications');
+$router->get('/staff/applications/get', 'StaffController@GetApplication');
+$router->post('/staff/applications/submit', 'StaffController@SubmitApplication');
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 

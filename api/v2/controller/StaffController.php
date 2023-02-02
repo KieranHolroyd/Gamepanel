@@ -187,7 +187,84 @@ class StaffController
 			$updatedUsername = Helpers::IDToUsername($id);
 			Helpers::addAuditLog("{$user->info->username} Updated {$updatedUsername}'s Team To {$team}");
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SetStaffTeam`");
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `StaffController::UpdateStaffTeam`");
 		}
+	}
+
+	public function ListApplications()
+	{
+		global $pdo;
+
+		if (!Permissions::init()->hasPermission("VIEW_SLT")) {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `StaffController::ListApplicants`");
+			echo Helpers::NewAPIResponse(["message" => "Unauthorised", "success" => false]);
+			exit;
+		}
+
+		$stmt = $pdo->prepare("SELECT name,id FROM staff_applications WHERE status = 'Pending' ORDER BY created_at DESC");
+		$stmt->execute();
+		$applications = $stmt->fetchAll();
+
+		if (!$applications) {
+			echo Helpers::NewAPIResponse(["message" => "No applications found", "success" => false]);
+			exit;
+		}
+
+		echo Helpers::NewAPIResponse(["message" => "success", "success" => true, "applications" => $applications]);
+	}
+
+	public function GetApplication()
+	{
+		global $pdo;
+
+		if (!Permissions::init()->hasPermission("VIEW_SLT")) {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `StaffController::GetApplication`");
+			echo Helpers::NewAPIResponse(["message" => "Unauthorised", "success" => false]);
+			exit;
+		}
+
+		$id = (isset($_GET['id'])) ? $_GET['id'] : null;
+
+		if (!$id) {
+			echo Helpers::NewAPIResponse(["message" => "Invalid Request", "success" => false]);
+			exit;
+		}
+
+		$stmt = $pdo->prepare("SELECT * FROM staff_applications WHERE id = :id");
+		$stmt->bindValue(':id', $id);
+		$stmt->execute();
+		$application = $stmt->fetch();
+
+		if (!$application) {
+			echo Helpers::NewAPIResponse(["message" => "No application found", "success" => false]);
+			exit;
+		}
+
+		echo Helpers::NewAPIResponse(["message" => "success", "success" => true, "application" => $application]);
+	}
+
+	public function SubmitApplication()
+	{
+		global $pdo;
+
+		$name = (isset($_POST['name'])) ? $_POST['name'] : null;
+		$application = (isset($_POST['data'])) ? $_POST['data'] : null;
+
+		if (!$application) {
+			echo Helpers::NewAPIResponse(["message" => "Invalid Request", "success" => false]);
+			exit;
+		}
+
+		$stmt = $pdo->prepare("INSERT INTO staff_applications (name, data) VALUES (:name, :data)");
+		$stmt->bindValue(':name', $name);
+		$stmt->bindValue(':data', json_encode($application));
+		$db_call = $stmt->execute();
+
+		if (!$db_call) {
+			echo Helpers::NewAPIResponse(["message" => "Failed to submit application", "success" => false]);
+			exit;
+		}
+
+		echo Helpers::NewAPIResponse(["message" => "success", "success" => true]);
 	}
 }

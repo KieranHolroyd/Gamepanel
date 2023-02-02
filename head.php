@@ -117,8 +117,10 @@ $url = Config::$base_url; ?>
         $(window).on('load', userArraySet());
 
         function logout() {
-            apiclient.post("api/v2/auth/logout").then(({data}) => {
-                if(data.success) {
+            apiclient.post("api/v2/auth/logout").then(({
+                data
+            }) => {
+                if (data.success) {
 
                     window.location.replace("/passport");
                     console.log(data)

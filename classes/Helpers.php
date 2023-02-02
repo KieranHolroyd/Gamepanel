@@ -110,7 +110,8 @@ class Helpers
             '/passport',
             '/holdingpage',
             '/purchases/activate',
-            '/leaderboard'
+            '/leaderboard',
+            '/staff/apply'
         ];
         foreach ($publicurls as $url) {
             if (strpos($_SERVER['REQUEST_URI'], $url) !== false)
