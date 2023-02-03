@@ -853,42 +853,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetMyInfo`");
             echo Helpers::APIResponse("Unauthorised", null, 401);
         }
-    } else if ($url == "addMeeting") {
-        $user = new User;
-
-        $date = (isset($_POST['date'])) ? $_POST['date'] : false;
-        $type = (isset($_POST['type'])) ? $_POST['type'] : false;
-
-        if (Permissions::init()->hasPermission("ADD_MEETING")) {
-            if ($date && $type) {
-                $types = [
-                    "slt" => 0,
-                    "staff" => 0,
-                    "pd" => 0,
-                    "ems" => 0
-                ];
-
-                $types[$type] = 1;
-
-                $stmt = $pdo->prepare("INSERT INTO meetings (`date`, `slt`, `staff`, `pd`, `ems`) VALUES (:dte, :slt, :staff, :pd, :ems)");
-                $stmt->bindValue(':dte', $date, PDO::PARAM_STR);
-                $stmt->bindValue(':slt', $types['slt'], PDO::PARAM_STR);
-                $stmt->bindValue(':ems', $types['ems'], PDO::PARAM_STR);
-                $stmt->bindValue(':pd', $types['pd'], PDO::PARAM_STR);
-                $stmt->bindValue(':staff', $types['staff'], PDO::PARAM_STR);
-                if ($stmt->execute()) {
-                    Helpers::addAuditLog("MEETINGS::{$user->info->username} Scheduled A Meeting On {$date} [Type: {$type}]");
-                    echo Helpers::APIResponse("Meeting Added Successfully", null, 200);
-                } else {
-                    echo Helpers::APIResponse("Database Error", $stmt->errorinfo(), 500);
-                }
-            } else {
-                echo Helpers::APIResponse("Invalid Request", null, 400);
-            }
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddMeeting`");
-            echo Helpers::APIResponse("Authentication Failed", null, 403);
-        }
     } else if ($url == "addCommentNew") {
         $user = new User;
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: kiera
@@ -18,17 +19,34 @@ class Meetings
 
         $wheres = "";
 
-        if ($user->isStaff()) { $wheres .= "staff = 1 "; }
+        if ($user->isStaff()) {
+            $wheres .= "staff = 1 ";
+        }
         $or = ($wheres != "") ? 'OR' : '';
-        if ($user->isPD()) { $wheres .= "{$or} pd = 1 "; }
+        if ($user->isPD()) {
+            $wheres .= "{$or} pd = 1 ";
+        }
         $or = ($wheres != "") ? 'OR' : '';
-        if ($user->isEMS()) { $wheres .= "{$or} ems = 1 "; }
-        $and = ($wheres != "") ? 'AND' : '';
-        if (!$user->isSLT()) { $wheres .= "{$and} slt <> 1"; }
+        if ($user->isEMS()) {
+            $wheres .= "{$or} ems = 1 ";
+        }
+        $or = ($wheres != "") ? 'OR' : '';
+        if ($user->isSLT()) {
+            $wheres .= "{$or} slt = 1";
+        }
 
         $stmt = $pdo->prepare("SELECT * FROM meetings WHERE {$wheres} ORDER BY date DESC");
-        $stmt->execute();
+
+        if (!$stmt->execute()) {
+            return false;
+        }
+
         $meetings = $stmt->fetchAll();
+
+        if (!$meetings) {
+            return false;
+        }
+
         foreach ($meetings as $meeting) {
             $stmt = $pdo->prepare('SELECT COUNT(*) AS count FROM meeting_points WHERE meetingID = :id');
             $stmt->bindValue(':id', $meeting->id, PDO::PARAM_STR);

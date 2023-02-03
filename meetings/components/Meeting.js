@@ -50,17 +50,14 @@ class Meeting extends React.Component {
   }
 
   loadMeeting() {
-    $.get(
-      `/api/v1/getMeetingNew?meetingID=${this.props.id}`,
-      this.handleMeeting
-    );
+    apiclient
+      .get(`/api/v2/meetings/${this.props.id}/get`)
+      .then(this.handleMeeting);
   }
 
-  handleMeeting(data) {
-    data = JSON.parse(data);
-
-    if (data.code === 200) {
-      let state = data.response;
+  handleMeeting({ data }) {
+    if (data.success) {
+      let state = data.points;
       state = { points: [...state], loaded: { points: true } };
       this.setState(state);
     } else {
@@ -173,10 +170,9 @@ class Meeting extends React.Component {
       this.state.new.point.title !== ""
     ) {
       $.post(
-        "/api/v1/addPointNew",
+        `/api/v2/meetings/${this.props.id}/point/add`,
         {
           ...this.state.new.point,
-          mid: this.props.id,
         },
         this.handleAddedPoint
       );
@@ -257,6 +253,14 @@ class Meeting extends React.Component {
                   ))
                 ) : (
                   <img src="/img/loadw.svg" />
+                )}
+                {this.state.loaded.points && this.state.points.length === 0 && (
+                  <div>
+                    <h3>No Points Added Yet.</h3>
+                    <p>
+                      Add a point by clicking the <b>+</b> button.
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

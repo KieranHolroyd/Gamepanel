@@ -75,7 +75,7 @@ class User
     {
         if (!$this->infoExists())
             return false;
-        if (($this->info->SLT || $this->info->Developer) && !$this->error) {
+        if ($this->info->SLT || $this->info->Developer || $this->info->isServerOwner) {
             return true;
         }
         return false;
