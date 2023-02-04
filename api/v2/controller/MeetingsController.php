@@ -2,7 +2,7 @@
 
 namespace App\API\V2\Controller;
 
-use \Meetings, \User, \Helpers, \Permissions;
+use \Meetings, \User, \Helpers, \Permissions, \PDO;
 
 class MeetingsController
 {
@@ -101,7 +101,7 @@ class MeetingsController
 		$user = new User;
 
 		if (Permissions::init()->hasPermission("ADD_MEETING_POINT")) {
-			$stmt = $pdo->prepare("INSERT INTO meeting_points (`name`, `description`, `author`, `meetingID`) VALUES (:pointname, :pointdescription, :author, :meetingID)");
+			$stmt = $pdo->prepare("INSERT INTO meeting_points (`name`, `description`, `author`, `meetingID`, `comments`) VALUES (:pointname, :pointdescription, :author, :meetingID, '[]')");
 			$stmt->bindValue(":pointname", htmlspecialchars($_POST['title']));
 			$stmt->bindValue(":pointdescription", htmlspecialchars($_POST['description']));
 			$stmt->bindValue(":author", $user->info->username);
@@ -118,7 +118,105 @@ class MeetingsController
 				echo Helpers::APIResponse("Failed To Add Point", $stmt->errorinfo(), 500);
 			}
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddPointNew`");
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `MeetingsController::AddPoint`");
+			echo Helpers::APIResponse("Authentication Failed", null, 401);
+		}
+	}
+
+	public function AddPointComment($meetingid, $pointid)
+	{
+		global $pdo;
+		$user = new User;
+
+		if (Permissions::init()->hasPermission("ADD_MEETING_COMMENT")) {
+			$stmt = $pdo->prepare("INSERT INTO meeting_comments (`content`, `author`, `pointID`) VALUES (:content, :author, :id)");
+			$stmt->bindValue(":id", $pointid);
+			$stmt->bindValue(":content", htmlspecialchars($_POST['content']));
+			$stmt->bindValue(":author", $user->info->username);
+			if ($stmt->execute()) {
+				$data = ['canDelete' => 1, 'content' => htmlspecialchars($_POST['content']), 'author' => $user->getInfoForFrontend(), 'id' => $pdo->lastInsertId(), 'pointID' => htmlspecialchars($pointid)];
+				if (Helpers::PusherSend($data, 'meetings', 'addComment')) {
+					Helpers::addAuditLog("{$user->info->username} Added Comment To Meeting Point {$pointid}");
+					echo Helpers::APIResponse("Success", null, 200);
+				} else {
+					echo Helpers::APIResponse("Failed To Publish To Websocket", null, 500);
+				}
+			} else {
+				echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
+			}
+		} else {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `MeetingController::AddPointComment`");
+			echo Helpers::APIResponse("Authentication Failed", null, 401);
+		}
+	}
+
+	public function DeletePoint($meetingid, $pointid)
+	{
+		global $pdo;
+		$user = new User;
+
+		$stmt = $pdo->prepare("SELECT author FROM meeting_points WHERE id = :id");
+		$stmt->bindValue(":id", $pointid);
+		$stmt->execute();
+		$pointAuthor = $stmt->fetch();
+
+		if (Permissions::init()->hasPermission("REMOVE_MEETING_POINT") || $pointAuthor->author == $user->info->username) {
+			$stmt = $pdo->prepare("DELETE FROM meeting_points WHERE id = :id");
+			$stmt->bindValue(':id', $pointid);
+			if ($stmt->execute()) {
+				$stmt = $pdo->prepare("DELETE FROM meeting_comments WHERE pointID = :id");
+				$stmt->bindValue(':id', $pointid);
+				if ($stmt->execute()) {
+					$data = ['deleteID' => htmlspecialchars($pointid)];
+					if (Helpers::PusherSend($data, 'meetings', 'deletePoint')) {
+						echo Helpers::APIResponse("Success", null, 200);
+					} else {
+						echo Helpers::APIResponse("Failed To Publish To Pusher", null, 500);
+					}
+				} else {
+					echo Helpers::APIResponse("Database Error [Failed To Delete Comments]", $stmt->errorInfo(), 500);
+				}
+			} else {
+				echo Helpers::APIResponse("Database Error [Failed To Delete Point]", $stmt->errorInfo(), 500);
+			}
+		} else {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `MeetingsController::RemovePoint`");
+			echo Helpers::APIResponse("Authentication Failed", null, 401);
+		}
+	}
+
+	public function GetPoint($meetingid, $pointid)
+	{
+		global $pdo;
+
+		if (Permissions::init()->hasPermission("VIEW_MEETING")) {
+			$stmt = $pdo->prepare("SELECT * FROM meeting_points WHERE id=:id");
+			$stmt->bindValue(":id", $pointid);
+			if (!$stmt->execute()) {
+				echo Helpers::APIResponse("Database Error", null, 500);
+				exit;
+			}
+			$point = $stmt->fetch(PDO::FETCH_ASSOC);
+			$pointAuthor = new User(Helpers::UsernameToID($point['author']));
+			$point['author'] = $pointAuthor->getInfoForFrontend()['displayName'];
+			if ($point) {
+				$stmt = $pdo->prepare("SELECT * FROM meeting_comments WHERE pointID = :id ORDER BY id DESC");
+				$stmt->bindValue(":id", $pointid);
+				if (!$stmt->execute()) {
+					echo Helpers::APIResponse("Database Error", null, 500);
+					exit;
+				}
+				$comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				foreach ($comments as $k => $c) {
+					$commentAuthor = new User(Helpers::UsernameToID($c['author']));
+					$comments[$k]['author'] = $commentAuthor->getInfoForFrontend();
+				}
+				$point['comments'] = $comments;
+				echo Helpers::APIResponse("Fetched Point", $point, 200);
+			} else {
+				echo Helpers::APIResponse("No Point Found", null, 400);
+			}
+		} else {
 			echo Helpers::APIResponse("Authentication Failed", null, 401);
 		}
 	}

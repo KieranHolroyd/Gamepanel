@@ -68,8 +68,11 @@ $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 
 //-- Meeting Routes
 $router->get('/meetings/list', 'MeetingsController@ListMeetings');
-$router->get('/meetings/{id}/get', 'MeetingsController@GetMeeting');
-$router->post('/meetings/{id}/point/add', 'MeetingsController@AddPoint');
+$router->get('/meetings/{meetingid}/point/{pointid}/get', 'MeetingsController@GetPoint');
+$router->get('/meetings/{meetingid}/get', 'MeetingsController@GetMeeting');
+$router->post('/meetings/{meetingid}/point/{pointid}/delete', 'MeetingsController@DeletePoint');
+$router->post('/meetings/{meetingid}/point/{pointid}/comment', 'MeetingsController@AddPointComment');
+$router->post('/meetings/{meetingid}/point/add', 'MeetingsController@AddPoint');
 $router->post('/meetings/add', 'MeetingsController@CreateMeeting');
 
 // Execute the router

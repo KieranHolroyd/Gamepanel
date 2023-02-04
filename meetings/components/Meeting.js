@@ -1,3 +1,5 @@
+const PUSHER_KEY = "3f75988716ff0410f3ec";
+
 class Meeting extends React.Component {
   constructor(props) {
     super(props);
@@ -34,7 +36,7 @@ class Meeting extends React.Component {
     this.handleAddedPoint = this.handleAddedPoint.bind(this);
     this.handleAddedComment = this.handleAddedComment.bind(this);
 
-    let pusher = new Pusher("123979dbead391bef050", {
+    let pusher = new Pusher(this.props.pusherID, {
       cluster: "eu",
       forceTLS: true,
     });
@@ -120,11 +122,14 @@ class Meeting extends React.Component {
   };
 
   loadPointDetails(id) {
-    $.get(`/api/v1/getPointNew?pointID=${id}`, this.handleGetPoint);
+    apiclient
+      .get(`/api/v2/meetings/${this.props.id}/point/${id}/get`)
+      .then(({ data }) => {
+        this.handleGetPoint(data);
+      });
   }
 
   handleGetPoint(data) {
-    data = JSON.parse(data);
     if (data.code === 200) {
       this.setState({
         point: data.response,
@@ -183,10 +188,9 @@ class Meeting extends React.Component {
     e.preventDefault();
     if (this.state.new.comment.content !== "") {
       $.post(
-        "/api/v1/addCommentNew",
+        `/api/v2/meetings/${this.props.id}/point/${this.state.point.id}/comment`,
         {
           ...this.state.new.comment,
-          pointID: this.state.point.id,
         },
         this.handleAddedComment
       );
@@ -205,10 +209,7 @@ class Meeting extends React.Component {
 
   deletePoint(id) {
     $.post(
-      "/api/v1/deletePoint",
-      {
-        pointID: id,
-      },
+      `/api/v2/meetings/${this.props.id}/point/${id}/delete`,
       this.handleDeletedPoint
     );
   }

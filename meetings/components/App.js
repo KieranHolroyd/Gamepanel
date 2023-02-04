@@ -1,15 +1,17 @@
 class App extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
+    this.state = {};
+  }
 
-        }
-    }
-
-    render() {
-        return (
-            <Meeting date={this.props.meetingDate} id={this.props.meetingID} />
-        )
-    }
+  render() {
+    return (
+      <Meeting
+        date={this.props.meetingDate}
+        id={this.props.meetingID}
+        pusherID={this.props.pusherID}
+      />
+    );
+  }
 }

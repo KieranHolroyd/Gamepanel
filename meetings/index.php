@@ -113,7 +113,8 @@ if (!isset($_GET['meeting']) || $_GET['meeting'] == "") :
     <?php $meeting = Meetings::fromID($_GET['meeting']); ?>
     <script type="text/babel">
         ReactDOM.render(<App meetingDate={"<?= $meeting->date; ?>"}
-                                 meetingID={<?= $meeting->id; ?>}/>, document.querySelector('#app'));
+                                 meetingID={<?= $meeting->id; ?>}
+                                 pusherID={"<?= Config::$pusher["AUTH_KEY"] ?>"}/>, document.querySelector('#app'));
         </script>
     <div id="app">
         <div style="padding: 20px 70px;"><img style="width: 24px;" src="/img/loadw.svg" alt="loading"> Loading...</div>
