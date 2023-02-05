@@ -150,6 +150,7 @@ export const Meeting = (props) => {
           ...newPoint,
         },
         () => {
+          setOpen({ createNewPoint: false });
           setNewPoint({ title: "", description: "" });
         }
       );
@@ -289,7 +290,7 @@ export const Meeting = (props) => {
             <p className="fieldTitle">Point Title</p>
             <input
               className="fieldInput"
-              value={point.title}
+              value={newPoint.title}
               type="text"
               placeholder="Point Title"
               onChange={handleChangePTitle}
