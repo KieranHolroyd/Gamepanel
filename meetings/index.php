@@ -105,17 +105,11 @@ if (!isset($_GET['meeting']) || $_GET['meeting'] == "") :
         }
     </style>
 <?php else : ?>
-    <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" src="components/App.js?8"></script>
-    <script type="text/babel" src="components/Meeting.js?70"></script>
     <?php $meeting = Meetings::fromID($_GET['meeting']); ?>
-    <script type="text/babel">
-        ReactDOM.render(<App meetingDate={"<?= $meeting->date; ?>"}
-                                 meetingID={<?= $meeting->id; ?>}
-                                 pusherID={"<?= Config::$pusher["AUTH_KEY"] ?>"}/>, document.querySelector('#app'));
-        </script>
+    <meta name="data-meeting-date" content="<?= $meeting->date ?>">
+    <meta name="data-meeting-id" content="<?= $meeting->id ?>">
+    <meta name="data-pusher-id" content="<?= Config::$pusher['AUTH_KEY'] ?>">
+    <script type="module" src="./dist/bundle.js" data-meeting-id="<?= $meeting->id ?>" data-meeting-date="<?= $meeting->date ?>" data-pusher-id="<?= Config::$pusher['AUTH_KEY'] ?>"></script>
     <div id="app">
         <div style="padding: 20px 70px;"><img style="width: 24px;" src="/img/loadw.svg" alt="loading"> Loading...</div>
     </div>

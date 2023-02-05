@@ -107,7 +107,12 @@ class MeetingsController
 			$stmt->bindValue(":author", $user->info->username);
 			$stmt->bindValue(":meetingID", htmlspecialchars($id));
 			if ($stmt->execute()) {
-				$data = ['meetingID' => htmlspecialchars($id), 'id' => $pdo->lastInsertId(), 'name' => $_POST['title'], 'author' => $user->getInfoForFrontend()['displayName']];
+				$lastID = $pdo->lastInsertId();
+				if (!$lastID) {
+					echo Helpers::APIResponse("Failed To Get Last Insert ID", $lastID, 500);
+					exit;
+				}
+				$data = ['meetingID' => htmlspecialchars($id), 'id' => $lastID, 'name' => $_POST['title'], 'author' => $user->getInfoForFrontend()['displayName']];
 				if (Helpers::PusherSend($data, "meetings", "addPoint")) {
 					Helpers::addAuditLog("{$user->info->username} Added A New Point `{$_POST['title']}` To Meeting {$id}");
 					echo Helpers::APIResponse("Added Point.", null, 200);
@@ -134,10 +139,15 @@ class MeetingsController
 			$stmt->bindValue(":content", htmlspecialchars($_POST['content']));
 			$stmt->bindValue(":author", $user->info->username);
 			if ($stmt->execute()) {
-				$data = ['canDelete' => 1, 'content' => htmlspecialchars($_POST['content']), 'author' => $user->getInfoForFrontend(), 'id' => $pdo->lastInsertId(), 'pointID' => htmlspecialchars($pointid)];
+				$lastID = $pdo->lastInsertId();
+				if (!$lastID) {
+					echo Helpers::APIResponse("Failed To Get Last Insert ID", $lastID, 500);
+					exit;
+				}
+				$data = ['canDelete' => 1, 'content' => htmlspecialchars($_POST['content']), 'author' => $user->getInfoForFrontend(), 'id' => $lastID, 'pointID' => htmlspecialchars($pointid)];
 				if (Helpers::PusherSend($data, 'meetings', 'addComment')) {
 					Helpers::addAuditLog("{$user->info->username} Added Comment To Meeting Point {$pointid}");
-					echo Helpers::APIResponse("Success", null, 200);
+					echo Helpers::APIResponse("Success", [$data, $stmt->errorInfo()], 200);
 				} else {
 					echo Helpers::APIResponse("Failed To Publish To Websocket", null, 500);
 				}
