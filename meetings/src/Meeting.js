@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 
 export const Meeting = (props) => {
   const [point, setPoint] = useState({});
-  const point_reference = useRef();
+  const point_reference = useRef(point);
 
   const [points, setPoints] = useState([
-    { id: "0", name: "Loading", author: "Loading" },
+    { id: "0", name: "Loading", author: "Loading", canDelete: false },
   ]);
+  const points_reference = useRef(points);
   const [loaded, setLoaded] = useState({
     points: false,
     point: false,
@@ -60,21 +61,21 @@ export const Meeting = (props) => {
   // This is the problem child
   useEffect(() => {
     point_reference.current = point;
-  }, [point]);
+    points_reference.current = points;
+  }, [point, points]);
 
   function handleAddPoint(data) {
+    const pts = points_reference.current;
     if (parseInt(data.meetingID) === parseInt(props.id)) {
       setPoints([
-        ...points,
         { name: data.name, author: data.author, id: data.id },
+        ...pts,
       ]);
     }
   }
 
   function handleAddComment(data) {
     const p = point_reference.current;
-    console.log(p);
-    // console.log(pointID, content, author, id, point.id);
     if (parseInt(data.pointID) === parseInt(p.id)) {
       setPoint({
         ...p,
@@ -87,15 +88,18 @@ export const Meeting = (props) => {
   }
 
   function handleDeletePoint(data) {
-    console.log(data.deleteID);
-    let del = points.findIndex((x) => x.id === data.deleteID);
-    console.log(del);
+    const pts = points_reference.current;
+    const pt = point_reference.current;
+    let del = pts.findIndex((x) => x.id === parseInt(data.deleteID));
     if (del === -1) return;
-    points.splice(del, 1);
-    setPoints([...points]);
+    pts.splice(del, 1);
+    setPoints([...pts]);
+    if (points.length === 0) {
+      setPoints([]);
+    }
 
-    if (parseInt(point.id) === parseInt(data.deleteID)) {
-      setLoaded({ ...loaded, point: false });
+    if (parseInt(pt.id) === parseInt(data.deleteID)) {
+      setLoaded({ points: true, point: false });
     }
   }
 
@@ -168,10 +172,8 @@ export const Meeting = (props) => {
   }
 
   function deletePoint(id) {
-    $.post(
-      `/api/v2/meetings/${props.id}/point/${id}/delete`,
-      handleDeletePoint
-    );
+    // Handled by Websockets
+    $.post(`/api/v2/meetings/${props.id}/point/${id}/delete`);
   }
 
   return (
@@ -182,35 +184,35 @@ export const Meeting = (props) => {
       >
         +
       </button>
-      <div
-        className={"grid new meeting " + (open.createNewPoint ? "open" : "")}
-      >
+      <div className={"grid new meeting "}>
         <div className="grid__col grid__col--2-of-6">
           <div className="gridLeftPadding">
             <h1 className="info-title new">Meeting On {props.date}</h1>
             <div className="selectionPanel meetingPanelHeight">
               {loaded.points ? (
-                points.map((point) => (
+                points.map((point, k) => (
                   <li
-                    key={point.id}
+                    key={k}
                     className="selectionTab points"
                     onClick={() => loadPointDetails(point.id)}
                   >
                     <h2 dangerouslySetInnerHTML={{ __html: point.name }} />
                     <p>{point.author}</p>
-                    <span
-                      className="delPoint"
-                      title="Double Click To Delete."
-                      onDoubleClick={() => deletePoint(point.id)}
-                    >
-                      Delete Point
-                    </span>
+                    {point.canDelete && (
+                      <span
+                        className="delPoint"
+                        title="Double Click To Delete."
+                        onDoubleClick={() => deletePoint(point.id)}
+                      >
+                        <i className="fas fa-trash" />
+                      </span>
+                    )}
                   </li>
                 ))
               ) : (
                 <img src="/img/loadw.svg" />
               )}
-              {loaded.points && points.length === 0 && (
+              {loaded.points && points.length <= 0 && (
                 <div>
                   <h3>No Points Added Yet.</h3>
                   <p>
