@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "**Gamepanel** Arma Life Server Management Panel",
   "scripts": {
-    "build": "rollup -c rollup.meetings.mjs",
+    "build": "vite build --config vite.meetings.ts",
     "build:meeting": "babel meetings/src -o meetings/dist/meeting.prod.js --presets @babel/preset-env,@babel/preset-react && rollup meetings/dist/meeting.prod.js --file meetings/dist/bundle.js --format iife"
   },
   "keywords": [],
@@ -15,22 +15,21 @@
   "license": "ISC",
   "dependencies": {
     "@pusher/chatkit-client": "^1.2.0",
+    "axios": "^1.3.2",
     "pusher-js": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.20.7",
-    "@babel/core": "^7.20.12",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-react": "^7.18.6",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-commonjs": "^24.0.1",
-    "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
-    "@rollup/plugin-terser": "^0.4.0",
+    "@types/node": "^18.11.19",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
-    "rollup": "^3.13.0"
+    "@vitejs/plugin-react": "^3.1.0",
+    "acorn-jsx": "^5.3.2",
+    "rollup": "^3.13.0",
+    "tslib": "^2.5.0",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.1"
   }
 }

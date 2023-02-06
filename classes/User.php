@@ -91,6 +91,16 @@ class User
         return false;
     }
 
+    public function isDeveloper()
+    {
+        if (!$this->infoExists())
+            return false;
+        if ($this->verified() && $this->info->Developer) {
+            return true;
+        }
+        return false;
+    }
+
     public function isCommand()
     {
         if (!$this->infoExists())
@@ -203,7 +213,7 @@ class User
         return [
             "isSLT" => $this->isSLT(),
             "isStaff" => $this->isStaff(),
-            "isDeveloper" => ($this->info->Developer),
+            "isDeveloper" => $this->isDeveloper(),
             "isSuspended" => $this->isSuspended(),
             "isPD" => $this->isPD(),
             "isEMS" => $this->isEMS(),
@@ -223,7 +233,7 @@ class User
     private function getFactionRank()
     {
         if (!$this->infoExists() || $this->info->faction_rank == null || $this->info->faction_rank == '')
-            return false;
+            return null;
         if ($this->isPD()) {
             return Config::$faction_ranks['police'][$this->info->faction_rank];
         } else {
