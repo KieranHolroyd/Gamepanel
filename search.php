@@ -83,7 +83,6 @@ Guard::init()->SLTRequired();
                 $('#reports').html("<h2 style='padding: 15px;'> No Results Found </h2>");
             } else {
                 for (const log of moreinfo.response) {
-                    console.log(log)
                     let other_staff = "",
                         other_staff_text = "",
                         reporting_player = "",
