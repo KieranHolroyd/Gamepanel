@@ -3,6 +3,7 @@
 namespace App\API\V2\Controller;
 
 use \Permissions, \Helpers, \PDO;
+use User;
 
 class SearchController
 {
@@ -55,6 +56,155 @@ class SearchController
             echo (Helpers::APIResponse("Displaying {$playerCount} Of {$playerTotalCount}{$refine}", $players, 200));
         } else {
             echo Helpers::APIResponse("Not High Enough Rank", null, 403);
+        }
+    }
+
+    public function Cases()
+    {
+        global $pdo;
+
+        $user = new User;
+        if (Permissions::init()->hasPermission("VIEW_SEARCH")) {
+            $searchquery = $_GET['query'];
+            $searchType = $_GET['type'];
+            switch ($searchType) {
+                case 'cases':
+                    $stmt = $pdo->prepare("SELECT * FROM `case_logs` WHERE `id` LIKE :query OR `lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query ORDER BY id DESC LIMIT 100");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $rf = $stmt->fetchAll();
+                    $results = [];
+                    foreach ($rf as $r) {
+                        array_push($results, [
+                            'id' => $r->id,
+                            'doe' => htmlspecialchars($r->description_of_events),
+                            'reporting_player' => Helpers::getPlayersFromCase($r->id)
+                        ]);
+                    }
+                    $searchcount = count($results);
+                    $stmt = $pdo->prepare("SELECT count(*) as count FROM `case_logs` WHERE `id` LIKE :query OR `lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $fetchCount = $stmt->fetch();
+                    $totalcount = $fetchCount->count;
+                    $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
+                    echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $results, 200);
+                    break;
+                case 'punishments':
+                    $stmt = $pdo->prepare("SELECT * FROM `punishment_reports` WHERE (player LIKE :query OR comments LIKE :query OR rules LIKE :query) AND case_id <> 0 ORDER BY id DESC LIMIT 100");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $rf = $stmt->fetchAll();
+                    $results = [];
+                    foreach ($rf as $r) {
+                        if (is_integer($r->points))
+                            $points = $r->points . " Points";
+
+                        array_push($results, [
+                            'id' => $r->id,
+                            'case_id' => $r->case_id,
+                            'doe' => htmlspecialchars($r->comments),
+                            'points' => $points,
+                            'reporting_player' => Helpers::getPlayersFromCase($r->case_id)
+                        ]);
+                    }
+                    $searchcount = count($results);
+                    $stmt = $pdo->prepare("SELECT count(*) as count FROM `punishment_reports` WHERE player LIKE :query OR comments LIKE :query OR rules LIKE :query");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $fetchCount = $stmt->fetch();
+                    $totalcount = $fetchCount->count;
+                    $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
+                    echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $results, 200);
+                    break;
+                case 'bans':
+                    $sql = "SELECT * FROM `ban_reports` WHERE (player LIKE :query OR message LIKE :query) AND case_id <> 0 ORDER BY id DESC LIMIT 100";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $rf = $stmt->fetchAll();
+                    $results = [];
+                    foreach ($rf as $r) {
+                        if ($r->length == 0) {
+                            $ban_length = "Permanent Ban";
+                        } else {
+                            $ban_length = htmlspecialchars($r->length) . " Days";
+                        }
+
+                        array_push($results, [
+                            'id' => $r->id,
+                            'case_id' => $r->case_id,
+                            'player' => $r->player,
+                            'doe' => htmlspecialchars($r->message),
+                            'ban_length' => $ban_length,
+                            'reporting_player' => Helpers::getPlayersFromCase($r->case_id)
+                        ]);
+                    }
+                    $searchcount = count($results);
+                    $stmt = $pdo->prepare("SELECT count(*) as count FROM `ban_reports` WHERE (player LIKE :query OR message LIKE :query) AND case_id <> 0");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $fetchCount = $stmt->fetch();
+                    $totalcount = $fetchCount->count;
+                    $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
+                    echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $results, 200);
+                    break;
+                case 'unbans':
+                    $sql = "SELECT * FROM `case_logs` WHERE (`lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query) AND `type_of_report` = 'Unban Log' ORDER BY id DESC LIMIT 100";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $rf = $stmt->fetchAll();
+                    $results = [];
+                    foreach ($rf as $r) {
+                        array_push($results, [
+                            'id' => $r->id,
+                            'doe' => htmlspecialchars($r->description_of_events),
+                            'reporting_player' => Helpers::getPlayersFromCase($r->id)
+                        ]);
+                    }
+                    $searchcount = count($results);
+                    $stmt = $pdo->prepare("SELECT count(*) as count FROM `case_logs` WHERE (`lead_staff` LIKE :query OR `other_staff` LIKE :query OR `description_of_events` LIKE :query) AND `type_of_report` = 'Unban Log'");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $fetchCount = $stmt->fetch();
+                    $totalcount = $fetchCount->count;
+                    $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
+                    echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $results, 200);
+                    break;
+                case 'players':
+                    $sql = "SELECT ANY_VALUE(`id`) as id, ANY_VALUE(`name`) as name, MAX(`guid`) as guid FROM `case_players` WHERE ANY_VALUE(`name`) LIKE :query OR ANY_VALUE(`guid`) LIKE :query OR ANY_VALUE(`case_id`) LIKE :query GROUP BY `name` LIMIT 100";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $rf = $stmt->fetchAll();
+                    $results = [];
+                    foreach ($rf as $r) {
+                        array_push($results, [
+                            'id' => $r->id,
+                            'name' => htmlspecialchars($r->name),
+                            'guid' => htmlspecialchars($r->guid),
+                            'reporting_player' => Helpers::getPlayersFromCase($r->id),
+                            'searchType' => 'Player'
+                        ]);
+                    }
+                    $searchcount = count($results);
+                    $stmt = $pdo->prepare("SELECT count(*) as count FROM `case_players` WHERE `name` LIKE :query OR `guid` LIKE :query OR `case_id` LIKE :query");
+                    $stmt->bindValue(':query', '%' . $searchquery . '%', PDO::PARAM_STR);
+                    $stmt->execute();
+                    $fetchCount = $stmt->fetch();
+                    $totalcount = $fetchCount->count;
+                    $refine = ($totalcount > 100) ? ' Refine Your Search Terms.' : '';
+                    echo Helpers::APIResponse("Displaying {$searchcount} Of {$totalcount}{$refine}", $results, 200);
+                    break;
+                default:
+                    Helpers::addAuditLog("No Search Type Given By {$user->info->username} Type: {$searchType} ~ Query {$searchquery}");
+                    echo Helpers::APIResponse("No Search Type Given", null, 400);
+                    break;
+            }
+        } else {
+            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetSearchResults`");
+            echo Helpers::APIResponse("Search Failed: Unauthorised", null, 401);
         }
     }
 }

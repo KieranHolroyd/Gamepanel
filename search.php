@@ -72,7 +72,7 @@ Guard::init()->SLTRequired();
 
     function searchCases() {
         $('#reports').html('<img src="/img/loadw.svg">');
-        $.post('api/v1/getSearchResults', {
+        $.get('api/v2/cases/search', {
             'query': query,
             'type': searchType
         }, function(data) {
@@ -81,61 +81,62 @@ Guard::init()->SLTRequired();
             $('#resultsfound').html(moreinfo.message);
             if (moreinfo.response.length === 0) {
                 $('#reports').html("<h2 style='padding: 15px;'> No Results Found </h2>");
-            }
-            for (let i = 1; i < Object.keys(moreinfo.response.log).length + 1; i++) {
-                const log = moreinfo.response.log[i];
-                let other_staff = "",
-                    other_staff_text = "",
-                    reporting_player = "",
-                    reporting_player_name = "";
-                if (log.searchType !== 'Player') {
-                    if (log.reporting_player !== "[]" && log.reporting_player !== "" && log.reporting_player !== null && log.reporting_player !== "null") {
-                        reporting_player = log.reporting_player;
-                        reporting_player_name = reporting_player[0].name;
+            } else {
+                for (const log of moreinfo.response) {
+                    console.log(log)
+                    let other_staff = "",
+                        other_staff_text = "",
+                        reporting_player = "",
+                        reporting_player_name = "";
+                    if (log.searchType === undefined || log.searchType !== 'Player') {
+                        if (log.reporting_player !== "[]" && log.reporting_player !== "" && log.reporting_player !== null && log.reporting_player !== "null") {
+                            reporting_player = log.reporting_player;
+                            reporting_player_name = reporting_player[0].name;
+                        } else {
+                            reporting_player_name = "undefined";
+                        }
+                        if (log.other_staff === true) {
+                            other_staff = "other_staff";
+                            other_staff_text = " (Support)";
+                        }
+                    }
+                    let caseID = '';
+                    let case_id = '';
+                    switch (searchType) {
+                        case 'cases':
+                            caseID = `#${log.id} - ${reporting_player_name}`;
+                            case_id = log.id;
+                            break;
+                        case 'punishments':
+                            caseID = `${log.points} Points issued In Case #${log.case_id}`;
+                            case_id = log.case_id;
+                            break;
+                        case 'bans':
+                            caseID = `${log.ban_length} Ban Report Was Submitted In Case #${log.case_id} - ${log.player}`;
+                            case_id = log.case_id;
+                            break;
+                        case 'unbans':
+                            caseID = `Unban Report From #${log.id} For ${reporting_player_name}`;
+                            case_id = log.id;
+                            break;
+                        case 'players':
+                            caseID = `Player ${log.name}`;
+                            case_id = log.id;
+                            break;
+                    }
+                    if (log.searchType === 'Player') {
+                        activity += `<div class="selectionTab" onclick="getPlayer('${log.name}')">${caseID}<br><span style='color: #999;'>GUID: ${log.guid}</span></div>`
                     } else {
-                        reporting_player_name = "undefined";
-                    }
-                    if (log.other_staff === true) {
-                        other_staff = "other_staff";
-                        other_staff_text = " (Support)";
+                        activity += `<div class="selectionTab ${other_staff}" onclick="getCase(${case_id})">${caseID}${other_staff_text}<br><span style='color: #999;'>${log.doe}</span></div>`
                     }
                 }
-                let caseID = '';
-                let case_id = '';
-                switch (searchType) {
-                    case 'cases':
-                        caseID = `#${log.id} - ${reporting_player_name}`;
-                        case_id = log.id;
-                        break;
-                    case 'punishments':
-                        caseID = `${log.points} Points issued In Case #${log.case_id}`;
-                        case_id = log.case_id;
-                        break;
-                    case 'bans':
-                        caseID = `${log.ban_length} Ban Report Was Submitted In Case #${log.case_id} - ${log.player}`;
-                        case_id = log.case_id;
-                        break;
-                    case 'unbans':
-                        caseID = `Unban Report From #${log.id} For ${reporting_player_name}`;
-                        case_id = log.id;
-                        break;
-                    case 'players':
-                        caseID = `Player ${log.name}`;
-                        case_id = log.id;
-                        break;
-                }
-                if (log.searchType === 'Player') {
-                    activity += `<div class="selectionTab" onclick="getPlayer('${log.name}')">${caseID}<br><span style='color: #999;'>GUID: ${log.guid}</span></div>`
-                } else {
-                    activity += `<div class="selectionTab ${other_staff}" onclick="getCase(${case_id})">${caseID}${other_staff_text}<br><span style='color: #999;'>${log.doe}</span></div>`
-                }
+                $('#reports').html(activity);
             }
-            $('#reports').html(activity);
         });
     }
 
     function getPlayer(name) {
-        $('#case_info').html('<img src="../../Before/Purple-Iron-Bulldog/img/loadw.svg">');
+        $('#case_info').html('<img src="/img/loadw.svg">');
         players_involved = "";
         playersArray = "";
         player_title = "";
@@ -166,7 +167,7 @@ Guard::init()->SLTRequired();
     }
 
     function getCase(id) {
-        $('#case_info').html('<img src="../../Before/Purple-Iron-Bulldog/img/loadw.svg">');
+        $('#case_info').html('<img src="/img/loadw.svg">');
         players_involved = "";
         playersArray = "";
         player_title = "";
@@ -219,7 +220,7 @@ Guard::init()->SLTRequired();
     }
     $('#searchCases').click(function() {
         if ($('#searchQuery').val() !== "") {
-            window.history.pushState('search', 'Psisyn.com | Staff', `search?type=${searchType}&query=${$('#searchQuery').val()}`);
+            window.history.pushState('search', undefined, `search?type=${searchType}&query=${$('#searchQuery').val()}`);
             query = $('#searchQuery').val();
             searchCases();
         }
@@ -227,7 +228,7 @@ Guard::init()->SLTRequired();
     $(document).ready(function() {
         $('#searchQuery').keyup(function(event) {
             setTimeout(function() {
-                window.history.pushState('search', 'Psisyn.com | Staff', `search?type=${searchType}&query=${$('#searchQuery').val()}`);
+                window.history.pushState('search', undefined, `search?type=${searchType}&query=${$('#searchQuery').val()}`);
                 query = $('#searchQuery').val();
                 searchCases();
             }, 10)

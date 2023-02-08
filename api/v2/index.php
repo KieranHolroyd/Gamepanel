@@ -29,6 +29,7 @@ $router->get('/user/me_new', 'UserController@GetUserInformationNew');
 //-- Case Routes
 $router->post('/cases/getfull', 'CasesController@getCases');
 $router->post('/cases/submit', 'CasesController@submitCase');
+$router->get('/cases/search', 'SearchController@Cases');
 
 //-- Guide Routes
 $router->post('/guide/add', 'GuideController@addGuide');
@@ -41,6 +42,7 @@ $router->get('/guide/get', 'GuideController@getGuides');
 $router->get('/notifications/get', 'NotificationController@getNotifications');
 $router->post('/notifications/set', 'NotificationController@setNotifications');
 $router->post('/notifications/essential/mark', 'NotificationController@markEssentialRead');
+
 
 //-- Player Routes
 $router->get('/players/search', 'SearchController@players');
