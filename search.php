@@ -1,5 +1,6 @@
 <?php
 include "head.php";
+$initial_query = "";
 if (!empty($_GET['type'])) {
     $searchType = htmlspecialchars($_GET['type']);
 }
