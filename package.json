@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "**Gamepanel** Arma Life Server Management Panel",
   "scripts": {
-    "build": "vite build --config vite.meetings.ts",
-    "build:meeting": "babel meetings/src -o meetings/dist/meeting.prod.js --presets @babel/preset-env,@babel/preset-react && rollup meetings/dist/meeting.prod.js --file meetings/dist/bundle.js --format iife"
+    "build": "npm run build:meeting && npm run build:search",
+    "build:meeting": "vite build --config vite.meetings.ts",
+    "build:search": "vite build --config vite.search.ts"
   },
   "keywords": [],
   "authors": [

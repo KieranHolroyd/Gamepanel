@@ -53,9 +53,10 @@ $(document).click(function (e) {
   if (
     e.target.id === "moreMenu" ||
     e.target.id === "openMore" ||
-    e.target.parentElement.id === "moreMenu" ||
     e.target.id === "nav" ||
-    e.target.parentElement.id === "nav"
+    (e.target.parentElement !== null &&
+      (e.target.parentElement.id === "moreMenu" ||
+        e.target.parentElement.id === "nav"))
   ) {
   } else {
     $("#moreMenu").removeClass("open");

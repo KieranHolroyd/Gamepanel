@@ -77,8 +77,12 @@ class SearchController
                     foreach ($rf as $r) {
                         array_push($results, [
                             'id' => $r->id,
-                            'doe' => htmlspecialchars($r->description_of_events),
-                            'reporting_player' => Helpers::getPlayersFromCase($r->id)
+                            'case_id' => $r->id,
+                            'type' => 'case',
+                            'description' => htmlspecialchars($r->description_of_events),
+                            'players' => [
+                                'reporting' => Helpers::getPlayersFromCase($r->id),
+                            ]
                         ]);
                     }
                     $searchcount = count($results);
@@ -102,10 +106,16 @@ class SearchController
 
                         array_push($results, [
                             'id' => $r->id,
+                            'type' => 'punishment',
                             'case_id' => $r->case_id,
-                            'doe' => htmlspecialchars($r->comments),
-                            'points' => $points,
-                            'reporting_player' => Helpers::getPlayersFromCase($r->case_id)
+                            'description' => htmlspecialchars($r->comments),
+                            'metadata' => [
+                                'points' => $points,
+                            ],
+                            'players' => [
+                                'punished' => [$r->player],
+                                'reporting' => Helpers::getPlayersFromCase($r->case_id),
+                            ]
                         ]);
                     }
                     $searchcount = count($results);
@@ -133,11 +143,14 @@ class SearchController
 
                         array_push($results, [
                             'id' => $r->id,
+                            'type' => "ban",
                             'case_id' => $r->case_id,
-                            'player' => $r->player,
-                            'doe' => htmlspecialchars($r->message),
-                            'ban_length' => $ban_length,
-                            'reporting_player' => Helpers::getPlayersFromCase($r->case_id)
+                            'players' => [
+                                'punished' => [$r->player],
+                                'reporting' => Helpers::getPlayersFromCase($r->case_id)
+                            ],
+                            'description' => htmlspecialchars($r->message),
+                            'metadata' => ["ban_length" => $ban_length],
                         ]);
                     }
                     $searchcount = count($results);
@@ -159,8 +172,12 @@ class SearchController
                     foreach ($rf as $r) {
                         array_push($results, [
                             'id' => $r->id,
-                            'doe' => htmlspecialchars($r->description_of_events),
-                            'reporting_player' => Helpers::getPlayersFromCase($r->id)
+                            'type' => 'unban',
+                            'description' => htmlspecialchars($r->description_of_events),
+                            'players' => [
+                                'punished' => [$r->player],
+                                'reporting' => Helpers::getPlayersFromCase($r->id)
+                            ],
                         ]);
                     }
                     $searchcount = count($results);
@@ -182,10 +199,14 @@ class SearchController
                     foreach ($rf as $r) {
                         array_push($results, [
                             'id' => $r->id,
-                            'name' => htmlspecialchars($r->name),
-                            'guid' => htmlspecialchars($r->guid),
-                            'reporting_player' => Helpers::getPlayersFromCase($r->id),
-                            'searchType' => 'Player'
+                            'type' => 'player',
+                            'metadata' => [
+                                'name' => htmlspecialchars($r->name),
+                                'guid' => htmlspecialchars($r->guid),
+                            ],
+                            'players' => [
+                                'reporting' => Helpers::getPlayersFromCase($r->id)
+                            ]
                         ]);
                     }
                     $searchcount = count($results);
