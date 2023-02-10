@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import type { AxiosInstance } from "axios";
+import "./style.css";
+
 type SearchInterfaceProps = {
   initial: {
     query: string;
@@ -33,10 +35,10 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
     type: props.initial.type,
     query: props.initial.query,
   });
+  const [should_query_run, exec_query] = useReducer((s) => s + 1, 0);
   const [results, setResults] = useState<SearchResult[]>([]);
 
-  const run_search_query = (e?: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
+  useEffect(() => {
     const { query, type } = search;
     props.api
       .get(`/v2/cases/search?query=${query}&type=${type}`)
@@ -46,12 +48,16 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
       .catch((error) => {
         console.log(error);
       });
-  };
+  }, [search.type, should_query_run]);
 
   return (
     <div>
       <div className="searchBox-container">
-        <form onSubmit={run_search_query}>
+        <form
+          onSubmit={() => {
+            exec_query();
+          }}
+        >
           <input
             type="text"
             className="searchBox"
@@ -83,7 +89,6 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
                   ...search,
                   type: (e.target as HTMLSelectElement).value,
                 });
-                run_search_query();
               }}
               id="searchTypeChooser"
               className="chooseSearch"
@@ -109,14 +114,20 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
             style={{ height: "calc(100vh - 122px) !important;" }}
             className="selectionPanel"
           >
-            {results && results.length > 0 ? (
-              results.map((result) => (
-                <div className="selectionTab" onClick={() => {}}>
-                  <ResultTitle type={search.type} result={result} />
-                  <br />
-                  <span>{result.description}</span>
-                </div>
-              ))
+            {results ? (
+              results.length > 0 ? (
+                results.map((result) => (
+                  <div className="selectionTab" onClick={() => {}}>
+                    <ResultTitle type={search.type} result={result} />
+                    <br />
+                    <span>{result.description}</span>
+                  </div>
+                ))
+              ) : (
+                <h2 style={{ marginLeft: "1em" }}>
+                  <span>No Results Found</span>
+                </h2>
+              )
             ) : (
               <img src="/img/loadw.svg" />
             )}

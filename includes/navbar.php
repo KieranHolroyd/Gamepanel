@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/nav.css?<?php echo rand(0, 1000000); ?>">
+<link rel="stylesheet" href="/nav.css">
 <section class="navSlider">
     <a href="/"><img src="/favicon.ico" alt="AL Logo"></a>
     <div class="spacer"></div>
@@ -21,7 +21,7 @@
                 <div class="dropdown-anchor"><i class="fas fa-briefcase"></i> <span>Cases <i class="fas fa-caret-right"></i></span>
                     <div class="dropdown">
                         <a href='<?php echo $url; ?>viewer'><i class="fas fa-eye"></i> <span>View</span></a>
-                        <a href='<?php echo $url; ?>search?type=cases'><i class="fas fa-search"></i> <span>Search</span></a>
+                        <a href='<?php echo $url; ?>searchv1?type=cases'><i class="fas fa-search"></i> <span>Search</span></a>
                     </div>
                 </div>
                 <div class="dropdown-anchor"><i class="fas fa-users"></i> <span>Staff <i class="fas fa-caret-right"></i></span>

@@ -1,13 +1,6 @@
 <?php include "head.php";
 Guard::init()->StaffRequired();
 ?>
-<?php
-$custom = (isset($_COOKIE['cbg']) && !empty($_COOKIE['cbg'])) ? $_COOKIE['cbg'] : false;
-if (!$custom) {
-    echo "<body style=\"background-size: stretch;background: url('https://cdn.discordapp.com/attachments/528343271840153620/528474876739190793/wallpaper_1.jpg') no-repeat fixed center center;\">";
-} else {
-    echo "<body style=\"background-size: stretch;background: url('" . htmlspecialchars(strip_tags($_COOKIE['cbg'])) . "'\">";
-} ?>
 <div class="dashboardOverlay" id="app" v-cloak>
     <div id="titleText" style="z-index:2;padding: 10px;">
         <h1 style="display:inline-block;"><?= $user->displayName(); ?> <small style="font-weight: 300;font-size: 15px;"><?= $user->info->rank; ?></small></h1>
@@ -146,7 +139,6 @@ if (!$custom) {
         return false;
     }
 </script>
-</body>
 <?php if ($user->needMoreInfo()) : ?>
     <div class="modal" id="moreinfoneeded" style="display: block;">
         <button id="close">×</button>
@@ -235,6 +227,5 @@ if (!$custom) {
         </button>
     </div>
 </div>
-<!--Created By Kieran Holroyd-->
 
 </html>
