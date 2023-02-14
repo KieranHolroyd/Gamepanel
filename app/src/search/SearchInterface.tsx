@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import type { AxiosInstance } from "axios";
-import "./style.css";
+import "../style.css";
 
 type SearchInterfaceProps = {
   initial: {
@@ -41,7 +41,11 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
   useEffect(() => {
     const { query, type } = search;
     props.api
-      .get(`/v2/cases/search?query=${query}&type=${type}`)
+      .get(
+        `/v2/cases/search?query=${query}&type=${
+          type && type !== "" ? type : "cases"
+        }`
+      )
       .then(({ data }) => {
         setResults(data.response);
       })
@@ -54,7 +58,8 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
     <div>
       <div className="searchBox-container">
         <form
-          onSubmit={() => {
+          onSubmit={(e) => {
+            e.preventDefault();
             exec_query();
           }}
         >
@@ -109,16 +114,12 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
             </div>
           </h1>
           <br />
-          <div
-            id="reports"
-            style={{ height: "calc(100vh - 122px) !important;" }}
-            className="selectionPanel"
-          >
+          <div id="reports" className="h-full selectionPanel">
             {results ? (
               results.length > 0 ? (
                 results.map((result) => (
                   <div className="selectionTab" onClick={() => {}}>
-                    <ResultTitle type={search.type} result={result} />
+                    <ResultTitle type={result.type} result={result} />
                     <br />
                     <span>{result.description}</span>
                   </div>
@@ -134,10 +135,7 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
           </div>
         </div>
         <div className="grid__col grid__col--4-of-6">
-          <div
-            className="infoPanelContainer"
-            style={{ height: "calc(100vh - 49px);" }}
-          >
+          <div className="h-full infoPanelContainer">
             <div id="case_info" className="infoPanel">
               <div className="pre_title">Select Result For Details</div>
             </div>
@@ -169,15 +167,15 @@ const ResultTitle = (props: {
   const [title, _] = useState(() => {
     console.log(props.type);
     switch (props.type) {
-      case "cases":
+      case "case":
         return `#${props.result.id} - ${props.result.players.reporting[0].name}`;
-      case "punishments":
+      case "punishment":
         return `${props.result.metadata.points} Points issued In Case #${props.result.case_id}`;
-      case "bans":
+      case "ban":
         return `${props.result.metadata?.ban_length} Ban Report Was Submitted In Case #${props.result.case_id} - ${props.result.players?.punished?.[0]?.name}`;
-      case "unbans":
+      case "unban":
         return `Unban Report From #${props.result.id} For ${props.result.players.reporting[0].name}`;
-      case "players":
+      case "player":
         return `Player ${props.result.metadata.name}`;
     }
   });

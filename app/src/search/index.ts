@@ -1,3 +1,3 @@
-import "./style.css";
+import "../style.css";
 export * from "./App";
 export * from "./SearchInterface";

@@ -109,7 +109,8 @@ if (!isset($_GET['meeting']) || $_GET['meeting'] == "") :
     <meta name="data-meeting-date" content="<?= $meeting->date ?>">
     <meta name="data-meeting-id" content="<?= $meeting->id ?>">
     <meta name="data-pusher-id" content="<?= Config::$pusher['AUTH_KEY'] ?>">
-    <script type="module" src="./dist/bundle.js" data-meeting-id="<?= $meeting->id ?>" data-meeting-date="<?= $meeting->date ?>" data-pusher-id="<?= Config::$pusher['AUTH_KEY'] ?>"></script>
+    <link rel="stylesheet" href="/app/dist/meetings/index.css">
+    <script type="module" src="/app/dist/meetings/index.js"></script>
     <div id="app">
         <div style="padding: 20px 70px;"><img style="width: 24px;" src="/img/loadw.svg" alt="loading"> Loading...</div>
     </div>
