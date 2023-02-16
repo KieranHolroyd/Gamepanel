@@ -10,7 +10,7 @@ $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
 
-class GAMEDB extends PDO
+class GamePDO extends PDO
 {
 
     protected $_config = [
@@ -19,68 +19,28 @@ class GAMEDB extends PDO
         'pass' => ""
     ];
 
-    protected $_connected = false;
-
-    public function __construct($dsn = "", $user = "", $pass = "")
+    public function __construct()
     {
         try {
-            //Save connection details for later
-        
-            $this->_config['dsn'] = 'mysql:host=' . Config::$gameSql['host'] . ';port=' . Config::$sql['port'] . ';dbname=' . Config::$gameSql['name'];
-            $this->_config['user'] = Config::$gameSql['user'];
-            $this->_config['pass'] = Config::$gameSql['pass'];
-        
-
-            parent::__construct($this->_config['dsn'], $this->_config['user'], $this->_config['pass']);
+            parent::__construct('mysql:host=' . Config::$gameSql['host'] . ';port=' . Config::$sql['port'] . ';dbname=' . Config::$gameSql['name'], Config::$gameSql['user'], Config::$gameSql['pass']);
             $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-           
-        }
-        catch(PDOException $e) {
+        } catch (PDOException $e) {
             echo 'Connection failed: ' . $e->getMessage();;
-        }  
-    }
-
-    public function checkConnection()
-    {
-        if (!$this->_connected) {
-            parent::__construct($this->_config['dsn'], $this->_config['user'], $this->_config['pass']);
-            $this->_connected = true;
         }
-    }
-
-    public function query(string $query, ?int $mode = PDO::ATTR_DEFAULT_FETCH_MODE, mixed...$fetchModeArgs): PDOStatement|false
-    {
-        $this->checkConnection();
-        return parent::query($query, $mode, ...$fetchModeArgs);
-    }
-
-    public function prepare(string $query, array $options = []): PDOStatement|false
-    {
-        $this->checkConnection();
-        return parent::prepare($query, $options);
-    }
-
-    public function exec(string $query): int|false
-    {
-        $this->checkConnection();
-        return parent::exec($query);
     }
 }
-//TODO FIX THIS SHIT
+
+$gamedb_conn = null;
+
 function game_pdo()
 {
-    $gamehost = Config::$gameSql['host'];
-    $gameuser = Config::$gameSql['user'];
-    $gamepassword = Config::$gameSql['pass'];
-    $gamedbname = Config::$gameSql['name'];
-    $gamedsn = 'mysql:host=' . $gamehost . ';port=' . Config::$gameSql['port'] . ';dbname=' . $gamedbname . ";charset=utf8";
-    static $_PDO = null;
+    global $gamedb_conn;
+    if (Config::$enableGamePanel == true) {
+        if ($gamedb_conn == null) {
+            $gamedb_conn = new GamePDO();
+        }
 
-    if ($_PDO === null) {
-        $_PDO = new GAMEDB($gamedsn, $gameuser, $gamepassword);
+        return $gamedb_conn;
     }
-
-    return $_PDO;
+    return null;
 }
-
-game_pdo();
