@@ -18,6 +18,9 @@ Guard::init()->SLTRequired();
             </div>
         </div>
     </div>
+    <a class="newPointBtn" href="/staff/apply" target="_blank">
+        <i class="fas fa-link fa-xs" style="margin:10px"></i>
+    </a>
 </div>
 <script>
     function GetApplicants() {
