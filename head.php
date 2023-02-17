@@ -40,10 +40,10 @@ $url = Config::$base_url; ?>
     <!-- <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet"> -->
     <script src="https://kit.fontawesome.com/fbaf7e1c95.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
-    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tippy.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tippy.js@4.3.5/umd/index.all.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.5/axios.min.js" integrity="sha512-JEXkqJItqNp0+qvX53ETuwTLoz/r1Tn5yTRnZWWz0ghMKM2WFCEYLdQnsdcYnryMNANMAnxNcBa/dN7wQtESdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
