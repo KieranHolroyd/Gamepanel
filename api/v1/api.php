@@ -947,7 +947,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "saveStaffNotes") {
         $li = new User();
 
-        if (Permissions::init()->hasPermission("EDIT_USER_NOTES")) {
+        if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
             $stmt = $pdo->prepare('UPDATE users SET notes = :notes WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
             $stmt->bindValue(':notes', htmlspecialchars($_POST['notes']), PDO::PARAM_STR);
@@ -964,7 +964,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "saveStaffUID") {
         $li = new User();
 
-        if (Permissions::init()->hasPermission("EDIT_USER_UUID")) {
+        if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
             $stmt = $pdo->prepare('UPDATE users SET steamid = :uid WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
             $stmt->bindValue(':uid', htmlspecialchars($_POST['uid']), PDO::PARAM_STR);
@@ -1000,7 +1000,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else if ($url == "saveStaffRegion") {
         $li = new User();
 
-        if (Permissions::init()->hasPermission("EDIT_USER_REGION") || $li->info->id == $_POST['id']) {
+        if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
             $stmt = $pdo->prepare('UPDATE users SET region = :reg WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
             $stmt->bindValue(':reg', htmlspecialchars($_POST['region']), PDO::PARAM_STR);
@@ -1391,7 +1391,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $newName = (isset($_POST['newName'])) ? $_POST['newName'] : false;
         $id = (isset($_POST['id'])) ? $_POST['id'] : false;
 
-        if ($id && $newName && Permissions::init()->hasPermission("EDIT_USER_NAME")) {
+        if ($id && $newName && Permissions::init()->hasPermission("EDIT_USER_INFO")) {
             $stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -1440,7 +1440,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $id = (isset($_POST['id'])) ? $_POST['id'] : false;
         $content = (isset($_POST['content'])) ? $_POST['content'] : false;
 
-        if (Permissions::init()->hasPermission("EDIT_NOTEBOOK_PAGE") && $content && $id) {
+        if (Permissions::init()->hasPermission("USE_NOTEBOOK_PAGE") && $content && $id) {
             $stmt = $pdo->prepare('UPDATE pages SET content = :c WHERE id = :id');
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->bindValue(':c', $content, PDO::PARAM_STR);
@@ -1457,7 +1457,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $title = (isset($_POST['title'])) ? $_POST['title'] : false;
 
-        if (Permissions::init()->hasPermission("ADD_NOTEBOOK_PAGE") && $title) {
+        if (Permissions::init()->hasPermission("USE_NOTEBOOK_PAGE") && $title) {
             $stmt = $pdo->prepare('INSERT INTO `pages` (`content`, `title`, `creator_id`) VALUES (:c, :t, :cid)');
             $stmt->bindValue(':c', '# This is your new page, enjoy', PDO::PARAM_STR);
             $stmt->bindValue(':t', $title, PDO::PARAM_STR);
@@ -2019,7 +2019,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $id = (isset($_GET['id'])) ? $_GET['id'] : null;
 
-        if ($id !== null && (Permissions::init()->hasPermission("VIEW_USER_AUDIT") || $user->info->id == $id)) {
+        if ($id !== null && (Permissions::init()->hasPermission("VIEW_USER_ACTIVITY") || $user->info->id == $id)) {
             $stmt = $pdo->prepare('SELECT * FROM audit_log WHERE logged_in_user = :id ORDER BY id DESC');
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();

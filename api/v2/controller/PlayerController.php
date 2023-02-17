@@ -49,7 +49,7 @@ class PlayerController
 	public function GetPlayerVehicles()
 	{
 
-		if (Permissions::init()->hasPermission("VIEW_GAME_VEHICLES")) {
+		if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
 			$pid = (isset($_GET['id'])) ? $_GET['id'] : null;
 
 			$gamepdo = game_pdo();

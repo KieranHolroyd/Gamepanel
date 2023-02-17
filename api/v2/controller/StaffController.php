@@ -111,7 +111,7 @@ class StaffController
 		$rank = ($_POST['rank']) ? $_POST['rank'] : null;
 		$selected = ($_POST['selected']) ? $_POST['selected'] : null;
 
-		if (Permissions::init()->hasPermission("EDIT_USER_RANK")) {
+		if (Permissions::init()->hasPermission("EDIT_USER_PROMOTION")) {
 			if ($id === null || $rank === null || $selected === null) {
 				echo Helpers::APIResponse("Invalid Request", [$id, $rank, $selected], 400);
 				exit;
@@ -186,7 +186,7 @@ class StaffController
 		$id = (isset($_POST['id'])) ? $_POST['id'] : null;
 		$team = (isset($_POST['team'])) ? $_POST['team'] : null;
 
-		if (Permissions::init()->hasPermission("EDIT_USER_TEAM")) {
+		if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
 			$exec = $pdo->prepare("UPDATE users SET staff_team = :team WHERE id = :id");
 			$exec->execute(['team' => $team, 'id' => $id]);
 			$updatedUsername = Helpers::IDToUsername($id);

@@ -62,7 +62,7 @@ class RoleController
 
 		$name = (isset($_POST['name'])) ? $_POST['name'] : false;
 
-		if (Permissions::init()->hasPermission("CREATE_ROLE")) {
+		if (Permissions::init()->hasPermission("ADD_ROLE")) {
 			if (!$name) {
 				echo Helpers::APIResponse("Name Required", null, 400);
 				exit;

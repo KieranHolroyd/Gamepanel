@@ -64,7 +64,7 @@ class SearchController
         global $pdo;
 
         $user = new User;
-        if (Permissions::init()->hasPermission("VIEW_SEARCH")) {
+        if (Permissions::init()->hasPermission("VIEW_CASE")) {
             $searchquery = $_GET['query'];
             $searchType = $_GET['type'];
             switch ($searchType) {
