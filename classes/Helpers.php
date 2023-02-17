@@ -90,16 +90,16 @@ class Helpers
     public static function addAuditLog($content)
     {
         global $pdo;
-
         $user = new User;
 
         $ctx = ($user->isCommand() && !$user->isStaff()) ? 'PD_EMS_COMMAND' : 'admin';
 
         $stmt = $pdo->prepare('INSERT INTO audit_log (log_content, log_context, logged_in_user) VALUES (:content, :ctx, :liu)');
-        $stmt->bindValue(':content', $content, PDO::PARAM_STR);
-        $stmt->bindValue(':ctx', $ctx, PDO::PARAM_STR);
-        $stmt->bindValue(':liu', @$user->info->id, PDO::PARAM_INT); // Supressing error (using stdClass as array)
+        $stmt->bindValue(':content', $content);
+        $stmt->bindValue(':ctx', $ctx);
+        $stmt->bindValue(':liu', @$user->info->id); // Supressing error (using stdClass as array)
         $stmt->execute();
+        $stmt->closeCursor();
     }
 
     public static function viewingPublicPage()

@@ -33,11 +33,11 @@ Guard::init()->SLTRequired();
     let permissions_dictionary = <?= json_encode(Config::$permissions_dictionary) ?>;
 
     function getRoles(id = false) {
-        $.get('/api/v1/roles', data => {
-            data = JSON.parse(data);
-
-            if (data.code === 200) {
-                $('#staff').html(parseRoles(data.response));
+        apiclient.get('/api/v2/roles/list').then(({
+            data
+        }) => {
+            if (data.success) {
+                $('#staff').html(parseRoles(data.roles));
                 if (id) {
                     openRole(id);
                 }
@@ -108,10 +108,11 @@ Guard::init()->SLTRequired();
     }
 
     function createRole() {
-        $.post('/api/v1/newRole', {
+        apiclient.post('/api/v2/roles/add', {
             name: $('#roleName').val()
-        }, data => {
-            data = JSON.parse(data);
+        }).then(({
+            data
+        }) => {
 
             console.log(data);
             if (data.code === 200) {
@@ -150,14 +151,23 @@ Guard::init()->SLTRequired();
             }
         });
 
-        $.post('/api/v1/updateRolePermissions', {
-            perms: perms,
-            roleID: current_role_id
-        }, data => {
-            data = JSON.parse(data);
+        let current_role = roles.find(element => {
+            return parseInt(element.id) === parseInt(current_role_id);
+        });
 
-            if (data.code === 200) {
-                getRoles(current_role_id);
+        apiclient.post(`/api/v2/roles/${current_role.id}/update`, {
+            perms: perms,
+            name: current_role.name
+        }).then(({
+            data
+        }) => {
+            if (data.success) {
+                getRoles(current_role.id);
+                new Noty({
+                    type: 'success',
+                    text: data.message,
+                    timeout: 1000
+                }).show();
             } else {
                 new Noty({
                     type: 'error',
@@ -168,60 +178,62 @@ Guard::init()->SLTRequired();
         })
     }
 
-    function shuffle(direction, elID) {
-        switch (direction) {
-            case 'UP':
-                $.post('/api/v1/shuffleUpRole', {
-                    id: elID
-                }, data => {
-                    data = JSON.parse(data);
-
-                    if (data.code === 200) {
-                        getRoles();
-                    } else {
-                        new Noty({
-                            type: 'error',
-                            text: data.message,
-                            timeout: 4000
-                        }).show();
-                    }
-                });
-                break;
-            case 'DOWN':
-                $.post('/api/v1/shuffleDownRole', {
-                    id: elID
-                }, data => {
-                    data = JSON.parse(data);
-
-                    if (data.code === 200) {
-                        getRoles();
-                    } else {
-                        new Noty({
-                            type: 'error',
-                            text: data.message,
-                            timeout: 4000
-                        }).show();
-                    }
-                });
-                break;
-        }
-    }
-
-    function deleteRole() {
-        $.post('/api/v1/deleteRole', {
-            id: current_role_id
-        }, data => {
-            data = JSON.parse(data);
+    function shuffle(direction, role_id) {
+        apiclient.post(`/api/v2/roles/${role_id}/shuffle`, {
+            id: role_id,
+            direction
+        }).then(({
+            data
+        }) => {
 
             if (data.code === 200) {
                 getRoles();
-                $('#staff_info').html('<h1>Select Role To Modify It</h1>');
             } else {
                 new Noty({
                     type: 'error',
                     text: data.message,
                     timeout: 4000
                 }).show();
+            }
+        });
+    }
+
+    function deleteRole(forcefully = false) {
+        apiclient.post(`/api/v2/roles/${current_role_id}/delete`, {
+            forcefully
+        }).then(({
+            data
+        }) => {
+            if (data.success) {
+                new Noty({
+                    type: 'success',
+                    text: data.message,
+                    timeout: 1000
+                }).show();
+                getRoles();
+                $('#staff_info').html('<h1>Select Role To Modify It</h1>');
+            } else {
+                if (data.action) {
+                    const noty_retry = new Noty({
+                        type: 'warning',
+                        text: `${data.message}, ${data.action}`,
+                        buttons: [
+                            Noty.button('Yes', 'yes', () => {
+                                deleteRole(true);
+                                noty_retry.close();
+                            }),
+                            Noty.button('No', 'no', () => {
+                                noty_retry.close();
+                            })
+                        ]
+                    }).show();
+                } else {
+                    new Noty({
+                        type: 'error',
+                        text: data.message,
+                        timeout: 10000
+                    }).show();
+                }
             }
         })
     }
@@ -233,3 +245,21 @@ Guard::init()->SLTRequired();
         placement: 'right'
     });
 </script>
+<style>
+    .yes,
+    .no {
+        width: calc(50% - 12px);
+        margin: 0 6px !important;
+        border-radius: 8px;
+    }
+
+    .yes {
+        background-color: rgb(255, 60, 60);
+        color: black;
+    }
+
+    .no {
+        background-color: rgb(60, 120, 200);
+        color: black;
+    }
+</style>

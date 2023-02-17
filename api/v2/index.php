@@ -68,6 +68,14 @@ $router->post('/staff/applications/submit', 'StaffController@SubmitApplication')
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 
+//-- Role Management Routes
+$router->get('/roles/list', 'RoleController@List');
+$router->get('/roles/{roleid}/get', 'RoleController@Get');
+$router->post('/roles/add', 'RoleController@Add');
+$router->post('/roles/{roleid}/update', 'RoleController@Update');
+$router->post('/roles/{roleid}/shuffle', 'RoleController@Shuffle');
+$router->post('/roles/{roleid}/delete', 'RoleController@Delete');
+
 //-- Meeting Routes
 $router->get('/meetings/list', 'MeetingsController@ListMeetings');
 $router->get('/meetings/{meetingid}/point/{pointid}/get', 'MeetingsController@GetPoint');

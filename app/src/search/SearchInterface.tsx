@@ -144,17 +144,17 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
       </div>
       <style>
         {`.chooseSearch {
-        font-size: 32px;
-        font-weight: bold;
-        border: 2px solid transparent;
-        border-radius: 4px;
-        transition: 200ms;
-        background-color: #1c1b30;
-    }
+          font-size: 32px;
+          font-weight: bold;
+          border: 2px solid transparent;
+          border-radius: 4px;
+          transition: 200ms;
+          background-color: #1c1b30;
+        }
 
-    .chooseSearch:hover {
-        border: 2px solid #999;
-    }`}
+        .chooseSearch:hover {
+          border: 2px solid #999;
+        }`}
       </style>
     </div>
   );

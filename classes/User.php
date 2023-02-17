@@ -12,9 +12,8 @@ class User
     {
         global $pdo;
         if ($id) {
-            $sql2 = "SELECT * FROM users WHERE id = :id";
-            $query2 = $pdo->prepare($sql2);
-            $query2->bindValue(':id', $id, PDO::PARAM_STR);
+            $query2 = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+            $query2->bindValue(':id', $id);
             if ($query2->execute()) {
                 $usr = $query2->fetch();
                 if ($usr) {
@@ -26,23 +25,23 @@ class User
                 $this->error = true;
             }
         } else {
-            $logintoken = 'a';
-            if (isset($_COOKIE['LOGINTOKEN'])) {
-                $logintoken = $_COOKIE['LOGINTOKEN'];
-            }
-            $sql = "SELECT * FROM login_tokens WHERE token = :token";
-            $query = $pdo->prepare($sql);
-            $query->bindValue(':token', sha1($logintoken), PDO::PARAM_STR);
-            if ($query->execute()) {
-                $result = $query->fetch();
-                if ($result) {
-                    $sql2 = "SELECT * FROM users WHERE id = :id";
-                    $query2 = $pdo->prepare($sql2);
-                    $query2->bindValue(':id', $result->user_id, PDO::PARAM_STR);
-                    if ($query2->execute()) {
-                        $usr = $query2->fetch();
-                        if ($usr) {
-                            $this->info = $usr;
+            if (Helpers::getAuth()) {
+                $token = sha1(Helpers::getAuth());
+                $stmt = $pdo->prepare("SELECT * FROM login_tokens WHERE token = :token");
+                $stmt->bindValue(':token', $token);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetch();
+                    $stmt->closeCursor();
+                    if ($result) {
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+                        $stmt->bindValue(':id', $result->user_id);
+                        if ($stmt->execute()) {
+                            $usr = $stmt->fetch();
+                            if ($usr) {
+                                $this->info = $usr;
+                            } else {
+                                $this->error = true;
+                            }
                         } else {
                             $this->error = true;
                         }
@@ -51,6 +50,7 @@ class User
                     }
                 } else {
                     $this->error = true;
+                    die("Error: " . $stmt->errorInfo());
                 }
             } else {
                 $this->error = true;
