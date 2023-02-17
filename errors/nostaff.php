@@ -15,7 +15,7 @@
     <p>You're not staff, So you can only access a few pages.</p>
     <button style="position: absolute; top: 0; right: 0;border-radius: .25em;" onclick="window.logout()">Logout</button>
     <a href="<?= Config::$forums_url; ?>">
-        <button class="loginbtn"><?= Config::$name ?>Homepage</button>
+        <button class="loginbtn"><?= Config::$name ?> Homepage</button>
 
     </a>
 </div>
