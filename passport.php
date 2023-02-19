@@ -28,6 +28,7 @@ include "head.php";
     </div>
 </div>
 <script>
+    window.supress_errors = true;
     let selected;
     $(document).ready(function() {
         $('#chooseLogin').css('background-color', '#2e2c46');

@@ -60,10 +60,11 @@ $url = Config::$base_url; ?>
 
         const noty_catch_error = (e) => {
             console.warn(`Promise rejected:`, e)
-            new Noty({
-                text: `<b>Oops.</b> ${e.message}`,
-                type: 'error',
-            }).show();
+            if (!window.supress_errors)
+                new Noty({
+                    text: `<b>Oops.</b> ${e.message}`,
+                    type: 'error',
+                }).show();
         }
     </script>
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
@@ -106,10 +107,11 @@ $url = Config::$base_url; ?>
                         $('#welcome').html('Hello, ' + userArray.info.username);
                         if (typeof userArrayLoaded === 'function') userArrayLoaded();
                     } else {
-                        new Noty({
-                            text: `Failed to fetch user data`,
-                            type: 'error',
-                        }).show();
+                        if (!window.supress_errors)
+                            new Noty({
+                                text: `Failed to fetch user data`,
+                                type: 'error',
+                            }).show();
                     }
                 })
                 .catch(noty_catch_error);

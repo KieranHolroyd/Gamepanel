@@ -6,15 +6,15 @@ use \User, \Permissions, \Helpers, \PDO;
 
 class CasesController
 {
-    public function getCases()
+    public function GetCases()
     {
         global $pdo;
 
+        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+        if ($offset <= 0)
+            $offset = 0;
+
         if (Permissions::init()->hasPermission("VIEW_CASE")) {
-            $offset = intval($_POST['offset']);
-            if ($offset <= 0) {
-                $offset = 0;
-            }
             $sql = "SELECT * FROM case_logs ORDER BY id DESC LIMIT 100 OFFSET :offset";
             $query = $pdo->prepare($sql);
             $query->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -37,11 +37,11 @@ class CasesController
             }
             echo json_encode($reports);
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetCases`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CasesController::GetCases`");
         }
     }
 
-    public function submitCase()
+    public function SubmitCase()
     {
         global $pdo;
         $user = new User;
@@ -160,8 +160,57 @@ class CasesController
             Helpers::PusherSend($data, 'caseInformation', 'receive');
             $user->pushNotification('You Submitted A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SubmitCase`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CasesController::SubmitCase`");
             echo "Insufficient Permissions";
+        }
+    }
+
+    public function CaseInfo($id)
+    {
+        global $pdo;
+
+        if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
+            $initial_query = $pdo->prepare("SELECT * FROM case_logs WHERE id = :id");
+            $initial_query->bindValue(':id', $id, PDO::PARAM_STR);
+            $initial_query->execute();
+            $r = $initial_query->fetch();
+            $report = [];
+            $stmt = $pdo->prepare("SELECT * FROM case_players WHERE case_id = :id");
+            $stmt->bindValue(':id', $r->id, PDO::PARAM_INT);
+            $stmt->execute();
+            $players = $stmt->fetchAll();
+            $players = Helpers::parsePlayers($players);
+            $stmt = $pdo->prepare("SELECT * FROM punishment_reports WHERE case_id = :id");
+            $stmt->bindValue(':id', $r->id, PDO::PARAM_INT);
+            $stmt->execute();
+            $punishments = $stmt->fetchAll();
+            $stmt = $pdo->prepare("SELECT * FROM ban_reports WHERE case_id = :id");
+            $stmt->bindValue(':id', $r->id, PDO::PARAM_INT);
+            $stmt->execute();
+            $bans = $stmt->fetchAll();
+
+            foreach ($punishments as $p) {
+                $p->html = Helpers::parsePunishment($p);
+            }
+
+            foreach ($bans as $b) {
+                $b->html = Helpers::parseBan($b);
+            }
+
+            $report['report']['id'] = $r->id;
+            $report['report']['lead_staff'] = Helpers::ParseOtherStaff($r->lead_staff);
+            $report['report']['lead_staff_id'] = Helpers::UsernameToID($r->lead_staff);
+            $report['report']['other_staff'] = Helpers::ParseOtherStaff($r->other_staff);
+            $report['report']['typeofreport'] = htmlspecialchars($r->type_of_report);
+            $report['report']['players'] = $players;
+            $report['report']['punishments'] = $punishments;
+            $report['report']['bans'] = $bans;
+            $report['report']['doe'] = htmlspecialchars($r->description_of_events);
+            $report['report']['timestamp'] = htmlspecialchars($r->timestamp);
+            echo Helpers::APIResponse("Fetched More Info", $report, 200);
+        } else {
+            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CasesController::CaseInfo`");
+            echo Helpers::APIResponse("Failed: Unauthorised", null, 401);
         }
     }
 }

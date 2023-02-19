@@ -2,6 +2,8 @@
 
 namespace App\API\V2;
 
+use Helpers;
+
 require __DIR__ . '/include.php';
 $router = new \Bramus\Router\Router();
 
@@ -14,6 +16,11 @@ $router->before('GET|POST|PUT|DELETE|OPTIONS', '/.*', function () {
 
 // Define routes
 $router->setNamespace('\App\API\V2\Controller');
+$router->set404(
+	function () {
+		echo Helpers::NewAPIResponse(["success" => false, "message" => "Route Not Found"]);
+	}
+);
 $router->get('/', 'WelcomeController@Root');
 
 //-- Authentication Routes
@@ -27,9 +34,10 @@ $router->get('/user/me', 'UserController@GetUserInformation');
 $router->get('/user/me_new', 'UserController@GetUserInformationNew');
 
 //-- Case Routes
-$router->post('/cases/getfull', 'CasesController@getCases');
-$router->post('/cases/submit', 'CasesController@submitCase');
+$router->get('/cases/list', 'CasesController@GetCases');
 $router->get('/cases/search', 'SearchController@Cases');
+$router->get('/cases/{id}/info', 'CasesController@CaseInfo');
+$router->post('/cases/submit', 'CasesController@SubmitCase');
 
 //-- Guide Routes
 $router->post('/guide/add', 'GuideController@addGuide');
@@ -60,7 +68,6 @@ $router->get('/statistics/cases/weekly', 'StatisticsController@WeeklyCases');
 $router->get('/statistics/game/server', 'StatisticsController@ServerStatistics');
 
 //-- Staff Routes
-$router->get('/staff/cases/list', 'StaffController@List');
 $router->get('/staff/list', 'StaffController@ListStaffTeam');
 $router->get('/staff/applications/list', 'StaffController@ListApplications');
 $router->get('/staff/applications/get', 'StaffController@GetApplication');

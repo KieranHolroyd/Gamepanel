@@ -17,7 +17,7 @@
 		}
 	},
 	"scripts": {
-		"watch": "parcel watch",
+		"dev": "parcel watch",
 		"build": "parcel build"
 	},
 	"dependencies": {

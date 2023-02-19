@@ -6,8 +6,7 @@ Guard::init()->SLTRequired();
 </div>
 <div class="grid new" id="root" v-cloak>
     <div class="grid__col grid__col--2-of-6" style="padding-left: 20px !important;">
-        <h1 class="info-title new">Case List <i @click="loadCases" class="fas fa-redo-alt"
-                                                style="float: right;cursor: pointer;"></i></h1>
+        <h1 class="info-title new">Case List <i @click="loadCases" class="fas fa-redo-alt" style="float: right;cursor: pointer;"></i></h1>
         <div style='height: calc(100vh - 118px) !important;overflow: auto;' class="selectionPanel">
             <div class="selectionTab" v-for="r in reports" @click="loadFullCase(r.id)">
                 <span style="float: right;font-size: 12px;">Lead: {{r.lead_staff}}</span>
@@ -55,7 +54,7 @@ Guard::init()->SLTRequired();
         },
         methods: {
             loadFullCase(id) {
-                $.post('api/v1/getMoreInfo', {'id': id}, data => {
+                $.get(`api/v2/cases/${id}/info`, data => {
                     data = JSON.parse(data);
 
                     if (data.code === 200) {
@@ -65,7 +64,9 @@ Guard::init()->SLTRequired();
                 });
             },
             loadCases() {
-                $.post('api/v2/cases/getfull', {'offset': this.offset}, data => {
+                $.get('api/v2/cases/list', {
+                    'offset': this.offset
+                }, data => {
                     data = JSON.parse(data);
                     this.reports = [];
                     for (let i = 0; i < Object.keys(data.caseno).length; i++) {

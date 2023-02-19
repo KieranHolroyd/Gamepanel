@@ -1,4 +1,10 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import type { AxiosInstance } from "axios";
 import "../style.css";
 
@@ -9,7 +15,32 @@ type SearchInterfaceProps = {
   };
   api: AxiosInstance;
 };
-type Player = any;
+type Report = {
+  id: string;
+  lead_staff: string;
+  lead_staff_id: string;
+  other_staff: string;
+  typeofreport: string;
+  players: Player[];
+  punishments: Player[];
+  bans: Player[];
+  doe: string;
+  timestamp: Date;
+};
+
+type Player = {
+  id: string;
+  type: string;
+  name: string;
+  guid: string;
+  case_id?: string;
+};
+
+type SearchResponse = {
+  message: string;
+  code: number;
+  response: SearchResult[];
+};
 type SearchResult = {
   id: string;
   case_id: string;
@@ -21,13 +52,12 @@ type SearchResult = {
     reporting: Player[];
   };
   metadata: Partial<{
-    name: string;
-    guid: string;
-    ban_length: string;
-    points: string;
+    [K in typeof meta_keys_const[number]]: string;
   }>;
 };
 const result_types = ["cases", "punishments", "bans", "unbans", "players"];
+const meta_keys_const = ["name", "guid", "ban_length", "points"] as const;
+const meta_keys = ["name", "guid", "ban_length", "points"];
 
 export const SearchInterface = (props: SearchInterfaceProps) => {
   const [search, setSearch] = useState({
@@ -36,7 +66,12 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
     query: props.initial.query,
   });
   const [should_query_run, exec_query] = useReducer((s) => s + 1, 0);
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<SearchResponse>({
+    message: "",
+    code: 0,
+    response: [],
+  });
+  const [details, setDetailedView] = useState<Report | null>(null);
 
   useEffect(() => {
     const { query, type } = search;
@@ -47,12 +82,18 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
         }`
       )
       .then(({ data }) => {
-        setResults(data.response);
+        setResults(data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [search.type, should_query_run]);
+
+  function loadCaseFor(case_id: string, type: string) {
+    props.api.get(`/v2/cases/${case_id}/info`).then(({ data }) => {
+      setDetailedView(data.response.report);
+    });
+  }
 
   return (
     <div>
@@ -81,51 +122,41 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
           </button>
         </form>
       </div>
-      <div className="grid new">
-        <div
-          className="grid__col grid__col--2-of-6"
-          style={{ paddingLeft: "20px !important" }}
-        >
-          <h1 className="info-title new">
-            Search{" "}
-            <select
+      <div className="grid grid-cols-5">
+        <div className="col-span-2 pl-5">
+          <h1 className="relative px-5 pt-4 pb-6 text-2xl font-bold">
+            Search
+            <SearchTypeSelector
+              type={search.type}
+              types={search.types}
               onChange={(e) => {
                 setSearch({
                   ...search,
                   type: (e.target as HTMLSelectElement).value,
                 });
               }}
-              id="searchTypeChooser"
-              className="chooseSearch"
-            >
-              {search.types.map((type) => {
-                return (
-                  <option value={type} selected={type === search.type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </option>
-                );
-              })}
-            </select>
-            <div
-              style={{ float: "right", fontSize: "14px", color: "#999" }}
-              id="resultsfound"
-            >
-              Loading Search Results Found
-            </div>
+            />
+            <SearchSubtext results={results} />
           </h1>
           <br />
-          <div id="reports" className="h-full selectionPanel">
+          <div className="h-full px-2 py-3">
             {results ? (
-              results.length > 0 ? (
-                results.map((result) => (
-                  <div className="selectionTab" onClick={() => {}}>
+              results.response.length > 0 ? (
+                results.response.map((result) => (
+                  <div
+                    key={result.id}
+                    className="inline-block my-1 p-2 rounded-lg duration-200 w-full cursor-pointer hover:bg-black bg-opacity-40"
+                    onClick={() => {
+                      loadCaseFor(result.case_id, result.type);
+                    }}
+                  >
                     <ResultTitle type={result.type} result={result} />
                     <br />
                     <span>{result.description}</span>
                   </div>
                 ))
               ) : (
-                <h2 style={{ marginLeft: "1em" }}>
+                <h2 className="ml-4">
                   <span>No Results Found</span>
                 </h2>
               )
@@ -134,10 +165,101 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
             )}
           </div>
         </div>
-        <div className="grid__col grid__col--4-of-6">
+        <div className="col-span-3">
           <div className="h-full infoPanelContainer">
             <div id="case_info" className="infoPanel">
-              <div className="pre_title">Select Result For Details</div>
+              {details ? (
+                <div>
+                  <h1 className="relative text-2xl font-bold">
+                    Case
+                    <span className="ml-1 text-sm font-normal">
+                      #{details.id}
+                    </span>
+                  </h1>
+                  <div className="grid p-[1rem!important] grid-cols-3">
+                    <div className="col-span-2">
+                      <h2 className="text-lg font-bold">Description</h2>
+                      <p>{details.doe}</p>
+                    </div>
+                    <div className="col-span-1">
+                      {/* <h2 className="text-lg font-bold">Metadata</h2>
+                      <ul className="ml-4">
+                        {details.metadata ? (
+                          meta_keys.map((key) => (
+                            <li key={key}>
+                              <span className="font-bold">{key}</span>:{" "}
+                              {
+                                details.metadata[
+                                  key as typeof meta_keys_const[number]
+                                ]
+                              }
+                            </li>
+                          ))
+                        ) : (
+                          <li>None</li>
+                        )}
+                      </ul> */}
+                      <h2 className="text-lg font-bold">Players</h2>
+                      <ul className="ml-4">
+                        {details.players && details.players.length > 0 ? (
+                          details.players.map((player) => (
+                            <li key={player.guid}>
+                              <span
+                                className="font-bold"
+                                dangerouslySetInnerHTML={{
+                                  __html: player.name,
+                                }}
+                              ></span>{" "}
+                              ({player.guid})
+                            </li>
+                          ))
+                        ) : (
+                          <li>None</li>
+                        )}
+                      </ul>
+                      <h2 className="text-lg font-bold">Punishments</h2>
+                      <ul className="ml-4">
+                        {details.punishments &&
+                        details.punishments.length > 0 ? (
+                          details.punishments.map((player) => (
+                            <li key={player.guid}>
+                              <span
+                                className="font-bold"
+                                dangerouslySetInnerHTML={{
+                                  __html: player.name,
+                                }}
+                              ></span>{" "}
+                              ({player.guid})
+                            </li>
+                          ))
+                        ) : (
+                          <li>None</li>
+                        )}
+                      </ul>
+                      <h2 className="text-lg font-bold">Bans</h2>
+                      <ul className="ml-4">
+                        {details.bans && details.bans.length > 0 ? (
+                          details.bans.map((player) => (
+                            <li key={player.guid}>
+                              <span
+                                className="font-bold"
+                                dangerouslySetInnerHTML={{
+                                  __html: player.name,
+                                }}
+                              ></span>{" "}
+                              ({player.guid})
+                            </li>
+                          ))
+                        ) : (
+                          <li>None</li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="pre_title">Select Result For Details</div>
+              )}
             </div>
           </div>
         </div>
@@ -157,6 +279,34 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
         }`}
       </style>
     </div>
+  );
+};
+type SearchTypeSelectorProps = {
+  type: string;
+  types: Array<string>;
+
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+};
+const SearchTypeSelector = (props: SearchTypeSelectorProps) => {
+  return (
+    <select
+      onChange={props.onChange}
+      className="bg-transparent relative text-2xl font-bold ml-1 pl-1 pr-2 rounded duration-200 border-transparent border-2 hover:border-gray-400"
+    >
+      {props.types.map((type) => {
+        return (
+          <option
+            key={type}
+            value={type}
+            selected={type === props.type}
+            disabled={type === props.type}
+            className="bg-[#1c1b30]"
+          >
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </option>
+        );
+      })}
+    </select>
   );
 };
 
@@ -181,4 +331,14 @@ const ResultTitle = (props: {
   });
 
   return <>{title}</>;
+};
+
+const SearchSubtext = ({ results }: { results: SearchResponse }) => {
+  return (
+    <div className="text-xs font-normal absolute bottom-0 right-0">
+      {results && results.message !== ""
+        ? results.message
+        : `Loading Search Results Found`}
+    </div>
+  );
 };
