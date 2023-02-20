@@ -295,6 +295,13 @@ class User
         Helpers::PusherSend($data, 'notifications', 'receive');
     }
 
+    public function highestRank()
+    {
+        if (!$this->infoExists())
+            return false;
+        return Permissions::getHighestRank(json_decode($this->info->rank_groups, true));
+    }
+
     private function infoExists()
     {
         if (gettype($this->info) !== gettype(json_decode("{\"example\": 0}")))

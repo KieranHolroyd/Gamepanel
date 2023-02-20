@@ -61,6 +61,34 @@ class Permissions extends User
         return false;
     }
 
+    public function hasSudo()
+    {
+        global $pdo;
+
+        if (!$this->verified(false)) return false;
+
+        if ($this->isOverlord()) return true;
+
+        $perms = [];
+
+        foreach (json_decode($this->info->rank_groups) as $g) {
+            $stmt = $pdo->prepare("SELECT * FROM rank_groups WHERE id = :id");
+            $stmt->execute(['id' => $g]);
+
+            $fetch = $stmt->fetch();
+
+            foreach (json_decode($fetch->permissions) as $f) {
+                $perms[] = $f;
+            }
+        }
+
+        // Check if user has sudo/any permission
+        if (in_array('*', $perms)) {
+            return true;
+        }
+        return false;
+    }
+
     public function isOverlord()
     {
         if ($this->info->isServerOwner)

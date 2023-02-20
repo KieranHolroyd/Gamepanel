@@ -2,7 +2,7 @@
 
 namespace App\API\V2\Controller;
 
-use  \Helpers, \Permissions;
+use  \Helpers, \Permissions, \User;
 
 class RoleController
 {
@@ -29,6 +29,9 @@ class RoleController
 	{
 		global $pdo;
 
+		$user = new User;
+		$sudo = Permissions::init()->hasSudo();
+
 		$perms = (isset($_POST['perms'])) ? $_POST['perms'] : false;
 		$name = (isset($_POST['name'])) ? $_POST['name'] : false;
 
@@ -38,8 +41,28 @@ class RoleController
 				exit;
 			}
 
-			if (in_array('*', $perms))
+			if (in_array('*', $perms)) {
+				// User must have sudo to edit a role with sudo
+				if (!$sudo) {
+					echo Helpers::NewAPIResponse(["success" => false, "message" => "Sudo Required to edit role with sudo"]);
+					exit;
+				}
 				$perms = ['*'];
+			}
+
+			// Get rank group
+			$stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE id = :id');
+			$stmt->execute(['id' => $roleID]);
+			$role = $stmt->fetch();
+			if (!$sudo) {
+				// Check if users rank is higher than the role they are trying to edit
+				$highest = $user->highestRank();
+				if ($highest->position >= $role->position) {
+					echo Helpers::NewAPIResponse(["success" => false, "message" => "Cannot edit role with higher or equal rank"]);
+					exit;
+				}
+			}
+
 
 			$stmt = $pdo->prepare('UPDATE rank_groups SET permissions = :perms, name = :name WHERE id = :i');
 			$stmt->bindValue(':i', $roleID);
@@ -142,6 +165,10 @@ class RoleController
 		if (Permissions::init()->hasPermission("REMOVE_ROLE")) {
 			if (!$roleID) {
 				echo Helpers::NewAPIResponse(["success" => false, "message" => "RoleID Required"]);
+				exit;
+			}
+			if ($forcefully && !Permissions::init()->hasSudo()) {
+				echo Helpers::NewAPIResponse(["success" => false, "message" => "Sudo Required"]);
 				exit;
 			}
 
