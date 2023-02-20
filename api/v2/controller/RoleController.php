@@ -50,7 +50,7 @@ class RoleController
 				$perms = ['*'];
 			}
 
-			// Get rank group
+			// Security check
 			$stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE id = :id');
 			$stmt->execute(['id' => $roleID]);
 			$role = $stmt->fetch();
@@ -62,7 +62,6 @@ class RoleController
 					exit;
 				}
 			}
-
 
 			$stmt = $pdo->prepare('UPDATE rank_groups SET permissions = :perms, name = :name WHERE id = :i');
 			$stmt->bindValue(':i', $roleID);
@@ -119,6 +118,9 @@ class RoleController
 	{
 		global $pdo;
 
+		$user = new User;
+		$sudo = Permissions::init()->hasSudo();
+
 		$direction = (isset($_POST['direction'])) ? $_POST['direction'] : false;
 
 		if (Permissions::init()->hasPermission("EDIT_ROLE")) {
@@ -128,6 +130,19 @@ class RoleController
 			}
 
 			$operator = ($direction == "UP") ? "-" : "+";
+
+			// Security check
+			$stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE id = :id');
+			$stmt->execute(['id' => $roleID]);
+			$role = $stmt->fetch();
+			if (!$sudo) {
+				// Check if users rank is higher than the role they are trying to edit
+				$highest = $user->highestRank();
+				if ($highest->position > ($role->position - 15)) {
+					echo Helpers::NewAPIResponse(["success" => false, "message" => "Cannot shuffle role to higher or equal rank"]);
+					exit;
+				}
+			}
 
 			// Move the role
 			$stmt = $pdo->prepare("UPDATE rank_groups SET position = (position) {$operator} 15 WHERE id = :id");
