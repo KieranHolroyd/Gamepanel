@@ -8,6 +8,8 @@
  */
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Webhook.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
 class Helpers
@@ -87,7 +89,7 @@ class Helpers
         return true;
     }
 
-    public static function addAuditLog($content)
+    public static function addAuditLog($content, $discord = true)
     {
         global $pdo;
         $user = new User;
@@ -100,6 +102,26 @@ class Helpers
         $stmt->bindValue(':liu', @$user->info->id); // Supressing error (using stdClass as array)
         $stmt->execute();
         $stmt->closeCursor();
+
+        if ($discord) {
+            //Dispatch to Discord
+            try {
+                $hook = new WebhookManager;
+                $content = self::parseAuditLogForWebhook($content);
+                $response = @$hook->discord()->embed("Audit Log", $content, @$user->info->username)->send();
+                if ($response["error"]) {
+                    self::addAuditLog("DISCORD_WEBHOOK_ERROR::" . $response["error"], false);
+                }
+            } catch (Exception $e) {
+                self::addAuditLog("DISCORD_WEBHOOK_ERROR::" . $e->getMessage(), false);
+            }
+        }
+    }
+
+    public static function parseAuditLogForWebhook($content)
+    {
+        // TODO: make audit log parser
+        return $content;
     }
 
     public static function viewingPublicPage()

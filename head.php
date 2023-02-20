@@ -28,6 +28,10 @@ $url = Config::$base_url; ?>
     <title>
         <?php Config::$name; ?> | Gamepanel
     </title>
+    <!-- favicon -->
+    <link rel="apple-touch-icon" href="/img/logo.png">
+    <link rel="icon" type="image/png" href="/img/favicon.ico">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>

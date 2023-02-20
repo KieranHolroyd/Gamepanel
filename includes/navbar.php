@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/nav.css">
 <section class="navSlider">
-    <a href="/"><img src="/favicon.ico" alt="AL Logo"></a>
+    <a href="/"><img src="/img/logo-transparent.png" alt="Panel Home"></a>
     <div class="spacer"></div>
     <div class="main">
         <?php if (Permissions::init()->hasPermission("VIEW_GENERAL")) : ?>

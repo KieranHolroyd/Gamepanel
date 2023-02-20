@@ -5,6 +5,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-pdo": "*",
-    "bramus/router": "^1.6"
+    "bramus/router": "^1.6",
+    "ablaze/php-discord-webhook": "^1.0"
   }
 }
