@@ -95,6 +95,28 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
     });
   }
 
+  /** updateURLProperties(params)
+   *
+   * This function updates URL parameters based on the given object
+   * for example `updateURLProperties({ query: "test" })`.
+   * This will update the URL to have ?query=test
+   *
+   * If the URL already has a query parameter, it will be appended to
+   * foe example `updateURLProperties({ query: "test" })`
+   *
+   * If the URL is `/?type=old` the URL will be updated
+   * to `/?type=old&query=test`
+   */
+  function updateURLProperties(params: { [key: string]: string }) {
+    if (!window?.history?.pushState) return;
+
+    const url = new URL(window.location.href);
+    for (const key in params) {
+      url.searchParams.set(key, params[key]);
+    }
+    window.history.pushState({}, "", url.toString());
+  }
+
   return (
     <div>
       <div className="searchBox-container">
@@ -109,12 +131,19 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
             className="searchBox"
             id="searchQuery"
             placeholder="Search All Cases"
-            onInput={(e) =>
-              setSearch({
-                ...search,
-                query: (e.target as HTMLInputElement).value,
-              })
-            }
+            onInput={({
+              target: { value: query },
+            }: ChangeEvent<HTMLInputElement>) => {
+              if (query) {
+                setSearch({
+                  ...search,
+                  query,
+                });
+                updateURLProperties({
+                  query,
+                });
+              }
+            }}
             autoFocus
           />
           <button className="searchCases" type="submit">
@@ -129,11 +158,16 @@ export const SearchInterface = (props: SearchInterfaceProps) => {
             <SearchTypeSelector
               type={search.type}
               types={search.types}
-              onChange={(e) => {
-                setSearch({
-                  ...search,
-                  type: (e.target as HTMLSelectElement).value,
-                });
+              onChange={({ target: { value: type } }) => {
+                if (type) {
+                  setSearch({
+                    ...search,
+                    type,
+                  });
+                  updateURLProperties({
+                    type,
+                  });
+                }
               }}
             />
             <SearchSubtext results={results} />
