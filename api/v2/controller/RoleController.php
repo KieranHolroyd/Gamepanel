@@ -174,6 +174,8 @@ class RoleController
 	{
 		global $pdo;
 
+		$sudo = Permissions::init()->hasSudo();
+
 		$forcefully = (isset($_POST['forcefully'])) ? json_decode($_POST['forcefully']) : false;
 		$dependant = false;
 
@@ -182,7 +184,7 @@ class RoleController
 				echo Helpers::NewAPIResponse(["success" => false, "message" => "RoleID Required"]);
 				exit;
 			}
-			if ($forcefully && !Permissions::init()->hasSudo()) {
+			if ($forcefully && !$sudo) {
 				echo Helpers::NewAPIResponse(["success" => false, "message" => "Sudo Required"]);
 				exit;
 			}
@@ -218,7 +220,11 @@ class RoleController
 
 			if ($dependant && !$forcefully) {
 				Helpers::addAuditLog("Failed to delete role {$roleID} due to dependant users");
-				echo Helpers::NewAPIResponse(["success" => false, "message" => "There are users dependant on this role", "action" => "Retry with force?"]);
+				if ($sudo) {
+					echo Helpers::NewAPIResponse(["success" => false, "message" => "There are users dependant on this role", "action" => "Retry with force?"]);
+				} else {
+					echo Helpers::NewAPIResponse(["success" => false, "message" => "There are users dependant on this role"]);
+				}
 				exit;
 			}
 			if ($dependant && $forcefully) {
