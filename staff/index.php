@@ -62,7 +62,6 @@ Guard::init()->SLTRequired();
     }
 
     function getStaffTeam() {
-        console.log(`IM BEING CALLED`)
         $('#staff').html("<img src='../img/loadw.svg'>");
         list = "";
         $.get('/api/v2/staff/list', function(data) {
@@ -205,6 +204,8 @@ Guard::init()->SLTRequired();
                             setMoreInfo += `<div style='color: ${staffbgc};' class='staffActivityCard' onclick='bringOffSuspension(${moreinfo.id});'>Remove Suspension</div>`;
                         }
                         setMoreInfo += `<div class='field'><div class='fieldTitle'>Notes</div><textarea class='fieldTextarea' id='staffNotesTextarea'>${moreinfo.notes}</textarea></div>`;
+                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Region</div><input class='fieldInput' id='staffRegionInput' value="${moreinfo.region}"></div>`;
+                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Discord Tag</div><input class='fieldInput' id='staffDiscordInput' value="${moreinfo.discord_tag}"></div>`;
                         setMoreInfo += `<div class='field'><div class='fieldTitle'>UID</div><input class='fieldInput' id='staffUIDInput' value="${moreinfo.uid}"></div>`;
 
                         setMoreInfo += `<div class="spacer"></div><div class="btnGroup">`;
@@ -610,11 +611,31 @@ Guard::init()->SLTRequired();
     function saveAll(id) {
         setStaffNotes(id);
         setStaffUID(id);
+        setStaffRegion(id);
+        setStaffDiscordTag(id);
     }
 
     function setStaffNotes(id) {
         $.post('/api/v1/saveStaffNotes', {
             notes: $('#staffNotesTextarea').val(),
+            id: id
+        }, data => {
+            console.log(data);
+        });
+    }
+
+    function setStaffRegion(id) {
+        $.post('/api/v1/saveStaffRegion', {
+            region: $('#staffRegionInput').val(),
+            id: id
+        }, data => {
+            console.log(data);
+        });
+    }
+
+    function setStaffDiscordTag(id) {
+        $.post('/api/v1/saveStaffDiscordTag', {
+            tag: $('#staffDiscordInput').val(),
             id: id
         }, data => {
             console.log(data);

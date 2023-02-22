@@ -694,6 +694,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $r->notes = '';
             if ($r->steamid == null)
                 $r->steamid = '';
+            if ($r->region == null)
+                $r->region = '';
+            if ($r->discord_tag == null)
+                $r->region = '';
             if ($r->rank_lvl == null)
                 $r->rank_lvl = 100;
             if ($r->lastPromotion == null)
@@ -734,7 +738,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $staffinfo['display_name'] = $r->first_name . ' ' . $r->last_name;
             $staffinfo['primary_rank'] = $rank;
             $staffinfo['all_ranks'] = $ranks;
-            if ($user->info->rank_lvl <= 6) {
+            if (Permissions::init()->hasPermission('VIEW_SLT')) {
                 $staffinfo['notes'] = $r->notes;
             } else {
                 $staffinfo['notes'] = "SA+ to view staff notes";
@@ -745,6 +749,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $staffinfo['team'] = $r->staff_team;
             $staffinfo['isSuspended'] = ($r->suspended) ? true : false;
             $staffinfo['region'] = $r->region;
+            $staffinfo['discord_tag'] = $r->discord_tag;
             $staffinfo['activityGraph'] = (array) $activityGraph;
             $staffinfo['casecount'] = $allTimeCount;
             $staffinfo['casecount_week'] = $recentCount;
@@ -961,9 +966,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffNotes`");
         }
+    } else if ($url == "saveStaffDiscordTag") {
+        $li = new User();
+        //TODO: fix this
+        if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
+            $stmt = $pdo->prepare('UPDATE users SET discord_tag = :tag WHERE id = :id');
+            $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
+            $stmt->bindValue(':tag', htmlspecialchars($_POST['tag']), PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                $updatedUsername = Helpers::IDToUsername($_POST['id']);
+                Helpers::addAuditLog("{$li->info->username} Set Discord Tag For {$updatedUsername} To {$_POST['tag']}");
+                echo "Success";
+            } else {
+                print_r($stmt->errorinfo());
+            }
+        } else {
+            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
+        }
     } else if ($url == "saveStaffUID") {
         $li = new User();
-
+        //TODO: fix this
         if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
             $stmt = $pdo->prepare('UPDATE users SET steamid = :uid WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
@@ -999,7 +1021,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     } else if ($url == "saveStaffRegion") {
         $li = new User();
-
+        //TODO: fix this
         if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
             $stmt = $pdo->prepare('UPDATE users SET region = :reg WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);

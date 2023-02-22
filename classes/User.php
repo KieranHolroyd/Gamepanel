@@ -181,6 +181,8 @@ class User
             $this->neededFields[] = 'region';
         if ($this->info->steamid == null || $this->info->steamid == '')
             $this->neededFields[] = 'steamid';
+        if ($this->info->discord_tag == null || $this->info->discord_tag == '')
+            $this->neededFields[] = 'discord_tag';
 
 
         if ($this->neededFields)

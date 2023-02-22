@@ -164,6 +164,12 @@ Guard::init()->StaffRequired();
                             <input type='text' id='userSteamID' class='fieldInput' placeholder='Steam 64 ID'>
                         </div>";
             }
+            if (in_array('discord_tag', $user->neededFields)) {
+                echo "<div class='field'>
+                            <div class='fieldTitle'>Your Discord Tag</div>
+                            <input type='text' id='userDiscordTag' class='fieldInput' placeholder='Example: Kieran#1234'>
+                    </div>";
+            }
             ?>
             <button onclick="saveNeededInfo()" class="createPointBtn">Save information</button>
         </div>
@@ -173,6 +179,18 @@ Guard::init()->StaffRequired();
 
         function saveNeededInfo() {
             let needParse = JSON.parse(needed);
+            if (needParse.indexOf('discord_tag') > -1) {
+                console.log(userArray.info.id);
+                $.post('/api/v1/saveStaffDiscordTag', {
+                    tag: $('#userDiscordTag').val(),
+                    id: userArray.info.id
+                }, data => {
+                    new Noty({
+                        text: 'Saved Discord Tag, Once All Tasks Complete, Reload The Page.',
+                        type: 'success'
+                    }).show();
+                });
+            }
             if (needParse.indexOf('region') > -1) {
                 console.log(userArray.info.id);
                 $.post('/api/v1/saveStaffRegion', {
