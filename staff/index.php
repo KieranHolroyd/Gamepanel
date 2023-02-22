@@ -204,7 +204,7 @@ Guard::init()->SLTRequired();
                             setMoreInfo += `<div style='color: ${staffbgc};' class='staffActivityCard' onclick='bringOffSuspension(${moreinfo.id});'>Remove Suspension</div>`;
                         }
                         setMoreInfo += `<div class='field'><div class='fieldTitle'>Notes</div><textarea class='fieldTextarea' id='staffNotesTextarea'>${moreinfo.notes}</textarea></div>`;
-                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Region</div><input class='fieldInput' id='staffRegionInput' value="${moreinfo.region}"></div>`;
+                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Region</div>${regionInputSelector(moreInfo.region)}</div>`;
                         setMoreInfo += `<div class='field'><div class='fieldTitle'>Discord Tag</div><input class='fieldInput' id='staffDiscordInput' value="${moreinfo.discord_tag}"></div>`;
                         setMoreInfo += `<div class='field'><div class='fieldTitle'>UID</div><input class='fieldInput' id='staffUIDInput' value="${moreinfo.uid}"></div>`;
 
@@ -314,6 +314,18 @@ Guard::init()->SLTRequired();
                 $('#staff_info').html(`<p><b>Error </b>${res.message}</p>`);
             }
         });
+    }
+
+    function regionInputSelector(val) {
+        return `<select class='fieldSelector' id='staffRegionInput'>
+            <option ${val == "" ? 'selected' : ''} disabled>Choose A Global Region</option>
+            <option ${val == "EU" ? 'selected' : ''} value='EU'>European Union</option>
+            <option ${val == "NA" ? 'selected' : ''} value='NA'>North America</option>
+            <option ${val == "SA" ? 'selected' : ''} value='SA'>South America</option>
+            <option ${val == "AF" ? 'selected' : ''} value='AF'>Africa</option>
+            <option ${val == "AS" ? 'selected' : ''} value='AS'>Asia</option>
+            <option ${val == "AU" ? 'selected' : ''} value='AU'>Oceania</option>
+        </select>`
     }
 
     function closeAllMenus() {

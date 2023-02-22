@@ -155,6 +155,7 @@ Guard::init()->StaffRequired();
                             <option value='NA'>North America</option>
                             <option value='SA'>South America</option>
                             <option value='AF'>Africa</option>
+                            <option value='AS'>Asia</option>
                             <option value='AU'>Oceania</option>
                         </select></div>";
             }
