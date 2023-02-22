@@ -697,7 +697,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($r->region == null)
                 $r->region = '';
             if ($r->discord_tag == null)
-                $r->region = '';
+                $r->discord_tag = '';
             if ($r->rank_lvl == null)
                 $r->rank_lvl = 100;
             if ($r->lastPromotion == null)
