@@ -144,28 +144,49 @@ export function Viewer(props: ViewerProps) {
             <div className="infoPanel">
               {current ? (
                 <>
-                  <h2 className="text-2xl">
+                  <h2 className="text-2xl font-semibold mx-2 mt-2 mb-4">
                     Case ID: {current.id}-{current.players[0].name}
                   </h2>
-                  <p id="case">
-                    <span>Lead Staff:</span>{" "}
-                    <a href={`/staff/#User:${current.lead_staff[0].id}`}>
-                      {current.lead_staff[0].username}
-                    </a>
-                  </p>
-                  {current.other_staff.length > 0 && (
-                    <p id="case">
-                      <span>Assistant Staff:</span>{" "}
-                      {current.other_staff.map((s) => (
-                        <a key={s.username} href={`/staff/#User:${s.id}`}>
-                          {s.username}
-                        </a>
-                      ))}
-                    </p>
-                  )}
-                  <p id="case">
-                    <span>Type Of Report:</span> {current.typeofreport}
-                  </p>
+                  <div className="mb-4">
+                    <div className="mx-2">
+                      <span className="text-gray-300 font-semibold">
+                        Lead Staff:
+                      </span>{" "}
+                      <a href={`/staff/#User:${current.lead_staff[0].id}`}>
+                        {current.lead_staff[0].username}
+                      </a>
+                    </div>
+                    {current.other_staff.length > 0 && (
+                      <div className="mx-2">
+                        <span className="text-gray-300 font-semibold">
+                          Assistant Staff:
+                        </span>{" "}
+                        {current.other_staff.map((s) => (
+                          <a key={s.username} href={`/staff/#User:${s.id}`}>
+                            {s.username}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mx-2">
+                    <span className="text-gray-300 font-semibold">
+                      Description Of Events:
+                    </span>
+                    <div className="max-w-md ml-4">{current.doe}</div>
+                  </div>
+                  <div className="mx-2">
+                    <span className="text-gray-300 font-semibold">
+                      Type Of Report:
+                    </span>{" "}
+                    {current.typeofreport}
+                  </div>
+                  <div className="mx-2">
+                    <span className="text-gray-300 font-semibold">
+                      Report Timestamp:
+                    </span>{" "}
+                    {current.timestamp}
+                  </div>
                   {current.punishments &&
                     current.punishments.map((p) => <div v-html="p.html"></div>)}
                   {current.bans &&
