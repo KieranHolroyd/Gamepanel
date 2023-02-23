@@ -310,7 +310,7 @@ class User
             return false;
         if ($this->info->discord_tag == null || $this->info->discord_tag == '')
             return false;
-        return $this->info->discord_tag;
+        return "@" . $this->info->discord_tag;
     }
 
     private function infoExists()
