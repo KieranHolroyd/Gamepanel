@@ -20,6 +20,12 @@
 			"includeNodeModules": true,
 			"context": "browser",
 			"outputFormat": "global"
+		},
+		"profile": {
+			"source": "src/profile/index.ts",
+			"includeNodeModules": true,
+			"context": "browser",
+			"outputFormat": "global"
 		}
 	},
 	"scripts": {
