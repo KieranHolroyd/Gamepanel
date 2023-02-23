@@ -18,9 +18,14 @@ class Helpers
     public static function ParseOtherStaff($staff)
     {
         $staff = explode(' ', $staff);
-        $list = '';
+        $list = [];
         foreach ($staff as $user) {
-            $list .= '<a href="/staff/#staf' . self::UsernameToID($user) . '">' . htmlspecialchars($user) . '</a> ';
+            if ($user != "") {
+                array_push($list,  [
+                    "id" => self::UsernameToID($user),
+                    "username" => $user
+                ]);
+            }
         }
         return $list;
     }

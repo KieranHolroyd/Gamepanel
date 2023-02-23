@@ -1,6 +1,5 @@
 <?php
 include "../head.php";
-include "../classes/Meetings.php";
 Guard::init()->LoginRequired();
 $search_query = isset($_GET["query"]) ? $_GET["query"] : "";
 $search_type = isset($_GET["type"]) ? $_GET["type"] : "";

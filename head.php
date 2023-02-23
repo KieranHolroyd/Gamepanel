@@ -81,8 +81,9 @@ $url = Config::$base_url; ?>
     <script src="https://cdn.jsdelivr.net/npm/vue-tippy/dist/vue-tippy.min.js"></script>
     <script>
         let pusher_key = "<?= Config::$pusher['AUTH_KEY']; ?>";
+        let pusher_cluster = "<?= Config::$pusher['DEFAULT_CONFIG']['cluster']; ?>";
         let pusher = new Pusher(pusher_key, {
-            cluster: "eu",
+            cluster: pusher_cluster,
             forceTLS: true
         });
     </script>

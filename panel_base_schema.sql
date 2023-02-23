@@ -326,6 +326,9 @@ DELETE FROM `users`;
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `username`, `email`, `password`, `rank_groups`, `rank_lvl`, `rank`, `staff_team`, `isServerOwner`, `isStaff`, `isCommand`, `isPD`, `isEMS`, `SLT`, `Developer`, `timezone`, `steamid`, `active`, `strikes`, `notes`, `essentialNotification`, `readEssentialNotification`, `region`, `loa`, `suspended`, `lastPromotion`, `createdAt`) VALUES
 	(1, 'gamepanel', 'master', 'gamepanelmaster', 'gamepanel@arma-life.com', '$2y$10$YMbh4o4nF.g5OdMnlBA/fObzHEJUF1FVQID0Hj35d7dcqRgwWz6wK', '[500]', 100, 'GOD', 1, 1, 1, 1, 1, 1, 1, 1, NULL, '76561199242507277', 1, 0, NULL, NULL, 0, 'EU', NULL, 0, NULL, '2023-01-23 07:10:40');
 
+-- Add discord tag after
+/* ALTER TABLE `users` ADD `discord_tag` text DEFAULT NULL AFTER `steamid`; */
+
 --
 -- Indexes for dumped tables
 --

@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import { createRoot } from "react-dom/client";
 import { SearchInterface } from "./SearchInterface";
-import "../style.css";
+import "./style.css";
 
 document.addEventListener("DOMContentLoaded", () => {
   const query = (

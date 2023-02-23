@@ -109,6 +109,7 @@ if (!isset($_GET['meeting']) || $_GET['meeting'] == "") :
     <meta name="data-meeting-date" content="<?= $meeting->date ?>">
     <meta name="data-meeting-id" content="<?= $meeting->id ?>">
     <meta name="data-pusher-id" content="<?= Config::$pusher['AUTH_KEY'] ?>">
+    <meta name="data-pusher-cluster" content="<?= Config::$pusher['DEFAULT_CONFIG']['cluster']; ?>">
     <link rel="stylesheet" href="/app/dist/meetings/index.css">
     <script type="module" src="/app/dist/meetings/index.js"></script>
     <div id="app">

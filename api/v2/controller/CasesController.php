@@ -47,13 +47,13 @@ class CasesController
         $user = new User;
 
         if (Permissions::init()->hasPermission("SUBMIT_CASE")) {
-            $ls = (isset($_POST['lead_staff'])) ? htmlspecialchars($_POST['lead_staff']) : null;
-            $os = (isset($_POST['other_staff'])) ? htmlspecialchars($_POST['other_staff']) : null;
-            $doe = (isset($_POST['description_of_events'])) ? htmlspecialchars($_POST['description_of_events']) : null;
+            $lead_staff = (isset($_POST['lead_staff'])) ? htmlspecialchars($_POST['lead_staff']) : null;
+            $other_staff = (isset($_POST['other_staff'])) ? htmlspecialchars($_POST['other_staff']) : null;
+            $description_of_events = (isset($_POST['description_of_events'])) ? htmlspecialchars($_POST['description_of_events']) : null;
             $players = (isset($_POST['players'])) ? $_POST['players'] : null;
             $punishment_reports = (isset($_POST['punishment_reports'])) ? $_POST['punishment_reports'] : null;
             $ban_reports = (isset($_POST['ban_reports'])) ? $_POST['ban_reports'] : null;
-            $torep = (isset($_POST['type_of_report'])) ? htmlspecialchars($_POST['type_of_report']) : null;
+            $type_of_report = (isset($_POST['type_of_report'])) ? htmlspecialchars($_POST['type_of_report']) : null;
             $playersArray = [];
             $i = 0;
             if ($players) {
@@ -81,10 +81,10 @@ class CasesController
             }
             $sql = "INSERT INTO case_logs (`lead_staff`, `other_staff`, `description_of_events`, `type_of_report`) VALUES (:ls, :os, :doe, :torep)";
             $query = $pdo->prepare($sql);
-            $query->bindValue(':ls', $ls, PDO::PARAM_STR);
-            $query->bindValue(':os', $os, PDO::PARAM_STR);
-            $query->bindValue(':doe', $doe, PDO::PARAM_STR);
-            $query->bindValue(':torep', $torep, PDO::PARAM_STR);
+            $query->bindValue(':ls', $lead_staff, PDO::PARAM_STR);
+            $query->bindValue(':os', $other_staff, PDO::PARAM_STR);
+            $query->bindValue(':doe', $description_of_events, PDO::PARAM_STR);
+            $query->bindValue(':torep', $type_of_report, PDO::PARAM_STR);
             $query->execute();
             print_r($query->errorinfo());
 
@@ -102,29 +102,29 @@ class CasesController
                 }
             }
 
-            $pa = false;
-            $ba = false;
+            $punishment_issued = false;
+            $ban_issued = false;
 
-            foreach ($punishment_reports as $p) {
+            foreach ($punishment_reports as $punishment) {
                 $stmt = $pdo->prepare('UPDATE punishment_reports SET case_id = :cid WHERE id = :id');
                 $stmt->bindValue(':cid', $caseid, PDO::PARAM_INT);
-                $stmt->bindValue(':id', $p, PDO::PARAM_INT);
+                $stmt->bindValue(':id', $punishment, PDO::PARAM_INT);
                 if (!$stmt->execute()) {
-                    $pa = true;
-                    Helpers::addAuditLog("CRITICAL_ERROR::Failed To Update Punishment Report (ID {$p}) " . json_encode($stmt->errorinfo()));
+                    $punishment_issued = true;
+                    Helpers::addAuditLog("CRITICAL_ERROR::Failed To Update Punishment Report (ID {$punishment}) " . json_encode($stmt->errorinfo()));
                 }
-                Helpers::addAuditLog("LOG::PUNISHMENT_REPORT::{$caseid}--{$p}");
+                Helpers::addAuditLog("LOG::PUNISHMENT_REPORT::{$caseid}--{$punishment}");
             }
 
-            foreach ($ban_reports as $p) {
+            foreach ($ban_reports as $ban) {
                 $stmt = $pdo->prepare('UPDATE ban_reports SET case_id = :cid WHERE id = :id');
                 $stmt->bindValue(':cid', $caseid, PDO::PARAM_INT);
-                $stmt->bindValue(':id', $p, PDO::PARAM_INT);
+                $stmt->bindValue(':id', $ban, PDO::PARAM_INT);
                 if (!$stmt->execute()) {
-                    $ba = true;
-                    Helpers::addAuditLog("CRITICAL_ERROR::Failed To Update Ban Report (ID {$p}) " . json_encode($stmt->errorinfo()));
+                    $ban_issued = true;
+                    Helpers::addAuditLog("CRITICAL_ERROR::Failed To Update Ban Report (ID {$ban}) " . json_encode($stmt->errorinfo()));
                 }
-                Helpers::addAuditLog("LOG::BAN_REPORT::{$caseid}--{$p}");
+                Helpers::addAuditLog("LOG::BAN_REPORT::{$caseid}--{$ban}");
             }
 
 
@@ -139,10 +139,10 @@ class CasesController
 
             $playersInvolved = Helpers::getPlayersFromCase($caseid);
 
-            if (trim($os) != '') {
-                foreach (explode(' ', $os) as $s) {
-                    $sendNotificationToUser = new User(Helpers::UsernameToID($s));
-                    $sendNotificationToUser->pushNotification('You Supported A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
+            if (trim($other_staff) != '') {
+                foreach (explode(' ', $other_staff) as $staff_name) {
+                    $staff_member = new User(Helpers::UsernameToID($staff_name));
+                    $staff_member->pushNotification('You Supported A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
                 }
             }
 
@@ -151,8 +151,8 @@ class CasesController
                 "lead_staff" => $row->lead_staff,
                 "typeofreport" => $row->type_of_report,
                 "ltpr" => @$row->link_to_player_report,
-                "pa" => $pa,
-                "ba" => $ba,
+                "pa" => $punishment_issued,
+                "ba" => $ban_issued,
                 "timestamp" => $row->timestamp,
                 "reporting_player" => $playersInvolved
             ];
@@ -160,7 +160,7 @@ class CasesController
             Helpers::PusherSend($data, 'caseInformation', 'receive');
             $user->pushNotification('You Submitted A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CasesController::SubmitCase`");
+            Helpers::addAuditLog("{$user->info->name} Tried to use `CasesController::SubmitCase` without permission.");
             echo "Insufficient Permissions";
         }
     }
@@ -179,7 +179,6 @@ class CasesController
             $stmt->bindValue(':id', $r->id, PDO::PARAM_INT);
             $stmt->execute();
             $players = $stmt->fetchAll();
-            $players = Helpers::parsePlayers($players);
             $stmt = $pdo->prepare("SELECT * FROM punishment_reports WHERE case_id = :id");
             $stmt->bindValue(':id', $r->id, PDO::PARAM_INT);
             $stmt->execute();
@@ -199,7 +198,6 @@ class CasesController
 
             $report['report']['id'] = $r->id;
             $report['report']['lead_staff'] = Helpers::ParseOtherStaff($r->lead_staff);
-            $report['report']['lead_staff_id'] = Helpers::UsernameToID($r->lead_staff);
             $report['report']['other_staff'] = Helpers::ParseOtherStaff($r->other_staff);
             $report['report']['typeofreport'] = htmlspecialchars($r->type_of_report);
             $report['report']['players'] = $players;

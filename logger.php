@@ -4,17 +4,13 @@ Guard::init()->StaffRequired();
 ?>
 <div class="grid new" id="root" v-cloak style="padding-left:15px;z-index: 25;">
     <div class="grid__col grid__col--1-of-6" style="box-shadow: 0 0 5px 0 rgba(0,0,0,0.2);">
-        <div class="selectionPanel new"
-             style="margin-left: 5px;max-width: 100%;background-color: #1c1b30;height: 100vh;overflow: auto;">
+        <div class="selectionPanel new" style="margin-left: 5px;max-width: 100%;background-color: #1c1b30;height: 100vh;overflow: auto;">
             <p class="label" style="text-align: center;"><?= Config::$name; ?> Staff</p>
             <p class="label">Case Tools</p>
             <button class="pickbtn" id="addOtherStaff" @click="addAssistantStaffMember()" disabled>Add Staff</button>
             <button class="pickbtn" id="addPlayerReporter" @click="addPlayer()">Add Player</button>
-            <button class="pickbtn" id="TypeOfReportButton" style="position: relative;text-align: left;"
-                    :class="{ open: menus.reportType.isOpen }" @click="toggleList('reportType', 'TypeOfReportList')">
-                Report Type: {{ menus.reportType.current }} <i id="torangle" style="position: absolute;right: 10px;"
-                                                               :class="{ open: menus.reportType.isOpen }"
-                                                               class="ts2 fas fa-angle-down"></i></button>
+            <button class="pickbtn" id="TypeOfReportButton" style="position: relative;text-align: left;" :class="{ open: menus.reportType.isOpen }" @click="toggleList('reportType', 'TypeOfReportList')">
+                Report Type: {{ menus.reportType.current }} <i id="torangle" style="position: absolute;right: 10px;" :class="{ open: menus.reportType.isOpen }" class="ts2 fas fa-angle-down"></i></button>
             <div class="reportTypes" id="TypeOfReportList">
                 <button class="pickbtn submenuBtn" @click="selectReportType('Other')">Other</button>
                 <button class="pickbtn submenuBtn" @click="selectReportType('Report')">Report</button>
@@ -34,19 +30,15 @@ Guard::init()->StaffRequired();
         <div class="infoPanelContainer">
             <div class="infoPanel">
                 <div class="field">
-                    <div class="fieldTitle" id="doeTitle">Description Of Events <span id="doeTitleWords"
-                                                                                      style="color: #555;">({{CountDOE}} Words)</span>
+                    <div class="fieldTitle" id="doeTitle">Description Of Events <span id="doeTitleWords" style="color: #555;">({{CountDOE}} Words)</span>
                     </div>
-                    <textarea class="fieldTextarea" id="doi" placeholder="Description Of The Events*"
-                              v-model="info.description"></textarea>
+                    <textarea class="fieldTextarea" id="doi" placeholder="Description Of The Events*" v-model="info.description"></textarea>
                 </div>
                 <input id="lsm" type="hidden" value="<?= $user->info->username; ?>">
                 <input id="typeOfReportField" type="hidden" value="Other">
                 <div id="otherStaffList">
                     <div v-for="(val, key) in assistantStaff" class="field">
-                        <div class="fieldTitle">Assistant Staff #{{key+1}} <i @click="removeAssistantStaff(key)"
-                                                                                     style="color: #aaaaaa;float: right;cursor: pointer;"
-                                                                                     class="fas fa-trash"></i></div>
+                        <div class="fieldTitle">Assistant Staff #{{key+1}} <i @click="removeAssistantStaff(key)" style="color: #aaaaaa;float: right;cursor: pointer;" class="fas fa-trash"></i></div>
                         <select class="fieldSelector" id="os1" v-model="assistantStaff[key].selected">
                             <option value="0" @input="updateAssistant(key, 0)">Select A Staff Member</option>
                             <option v-for="(staff_val, staff_key) in staff_list" :value="staff_val.name">
@@ -57,22 +49,19 @@ Guard::init()->StaffRequired();
                 </div>
                 <div id="playerList">
                     <div v-for="(val, key) in playersInvolved" class='field'>
-                        <div class='fieldTitle'>Player Involved #{{key+1}} <select style="margin-bottom: 0;" type="text"
-                                                                                   v-model="val.type">
+                        <div class='fieldTitle'>Player Involved #{{key+1}} <select style="margin-bottom: 0;" type="text" v-model="val.type">
                                 <option value="0">Reporter</option>
                                 <option value="1">Reported</option>
                             </select>
-                            <i v-if="key > 0" @click="removePlayer(key)"
-                               style="color: #aaaaaa;float: right;cursor: pointer;"
-                               class="fas fa-trash"></i></div>
+                            <i v-if="key > 0" @click="removePlayer(key)" style="color: #aaaaaa;float: right;cursor: pointer;" class="fas fa-trash"></i>
+                        </div>
                         <input v-model='val.name' class='fieldInput' :placeholder='playerTypes[val.type] + "&apos;s Name"'>
                         <input v-model='val.uuid' class='fieldInput' placeholder='Player UUID (Steam or BattleEye)'>
                     </div>
                 </div>
                 <div class="punishmentsAndBans">
                     <div v-for="p in reports.added.punishments">
-                        <div class='punishment_report logger'><span
-                                    class='player'>{{p.player}}'s Punishment Report</span>
+                        <div class='punishment_report logger'><span class='player'>{{p.player}}'s Punishment Report</span>
                             <span class='points'>{{p.points}} Points</span>
                             <p class='rules'>Rules Broken: {{p.rules}}</p>
                             <p class='comments'>Staff Comment: {{p.comments}}</p>
@@ -90,10 +79,7 @@ Guard::init()->StaffRequired();
                         </div>
                     </div>
                 </div>
-                <button title="Double Click To Submit" v-tippy="{ animateFill: false, theme : 'gradient' }"
-                        @dblclick="submit" class="newsubmitBtn" :disabled="submitting == 1">Submit <img
-                            src="/img/loadwfat.svg" alt="Loading..." style="width: 10px;"
-                            :style="{display: submitting ? 'inline-block' : 'none'}"></button>
+                <button title="Double Click To Submit" v-tippy="{ animateFill: false, theme : 'gradient' }" @dblclick="submit" class="newsubmitBtn" :disabled="submitting == 1">Submit <img src="/img/loadwfat.svg" alt="Loading..." style="width: 10px;" :style="{display: submitting ? 'inline-block' : 'none'}"></button>
             </div>
         </div>
     </div>
@@ -118,21 +104,17 @@ Guard::init()->StaffRequired();
             </div>
             <div class="field">
                 <div class="fieldTitle">Amount Of Points Issued</div>
-                <input v-model="reports.punishment.points" type="number" id="amountOfPoints" class="fieldInput"
-                       placeholder="10">
+                <input v-model="reports.punishment.points" type="number" id="amountOfPoints" class="fieldInput" placeholder="10">
             </div>
             <div class="field">
                 <div class="fieldTitle">Rules Broken</div>
-                <input v-model="reports.punishment.rules" type="text" id="rulesBroken" class="fieldInput"
-                       placeholder="rdm, failrp, etc">
+                <input v-model="reports.punishment.rules" type="text" id="rulesBroken" class="fieldInput" placeholder="rdm, failrp, etc">
             </div>
             <div class="field">
                 <div class="fieldTitle">Comments/Evidence</div>
-                <textarea v-model="reports.punishment.comments" class="fieldTextarea" id="punishmentComments"
-                          placeholder="Link to player report, video of offence"></textarea>
+                <textarea v-model="reports.punishment.comments" class="fieldTextarea" id="punishmentComments" placeholder="Link to player report, video of offence"></textarea>
             </div>
-            <button style='width:100%;margin: 0;transition: 0;border-bottom-right-radius: 3px;border-bottom-left-radius: 3px;'
-                    id="submitRealButton" @click="addPunishment">Add Punishment Report
+            <button style='width:100%;margin: 0;transition: 0;border-bottom-right-radius: 3px;border-bottom-left-radius: 3px;' id="submitRealButton" @click="addPunishment">Add Punishment Report
             </button>
         </div>
     </div>
@@ -149,8 +131,8 @@ Guard::init()->StaffRequired();
             </div>
             <div class="field">
                 <div class="fieldTitle">Ban Length</div>
-                <input v-model="reports.ban.length" class="fieldInput" id="bl" type="text"
-                       placeholder="Ban Length (Days) (0 for perm)*"></div>
+                <input v-model="reports.ban.length" class="fieldInput" id="bl" type="text" placeholder="Ban Length (Days) (0 for perm)*">
+            </div>
             <div class="field">
                 <div class="fieldTitle">Ban Message</div>
                 <input v-model="reports.ban.message" class="fieldInput" id="bm" type="text" placeholder="Ban Message*">
@@ -160,33 +142,37 @@ Guard::init()->StaffRequired();
                 <select v-model="reports.ban.teamspeak" class="fieldSelector" id="ts">
                     <option value="0">No</option>
                     <option value="1">Yes</option>
-                </select></div>
+                </select>
+            </div>
             <div class="field">
                 <div class="fieldTitle">Ingame Ban?</div>
                 <select v-model="reports.ban.ingame" class="fieldSelector" id="ig">
                     <option value="0">No</option>
                     <option value="1">Yes</option>
-                </select></div>
+                </select>
+            </div>
             <div class="field">
                 <div class="fieldTitle">Website Ban?</div>
                 <select v-model="reports.ban.website" class="fieldSelector" id="wb">
                     <option value="0">No</option>
                     <option value="1">Yes</option>
-                </select></div>
+                </select>
+            </div>
             <div class="field">
                 <div class="fieldTitle">Permanent Ban?</div>
                 <select v-model="reports.ban.permanent" class="fieldSelector" id="pb">
                     <option value="0">No</option>
                     <option value="1">Yes</option>
-                </select></div>
+                </select>
+            </div>
             <div class="field" v-if="reports.ban.player.uuid != ''">
                 <div class="fieldTitle">Automatically Add To Battlemetrics? [BETA]</div>
                 <select v-model="reports.ban.battlemetrics" class="fieldSelector" id="pb">
                     <option value="0">No</option>
                     <option value="1">Yes</option>
-                </select></div>
-            <button style='width:100%;margin: 0;transition: 0;border-bottom-right-radius: 3px;border-bottom-left-radius: 3px;'
-                    id="submitRealButton" @click="addBan">Add Ban Report
+                </select>
+            </div>
+            <button style='width:100%;margin: 0;transition: 0;border-bottom-right-radius: 3px;border-bottom-left-radius: 3px;' id="submitRealButton" @click="addBan">Add Ban Report
             </button>
         </div>
     </div>
@@ -203,9 +189,11 @@ Guard::init()->StaffRequired();
                 }
             },
             assistantStaff: [],
-            playersInvolved: [
-                {'name': '', 'uuid': '', 'type': 0}
-            ],
+            playersInvolved: [{
+                'name': '',
+                'uuid': '',
+                'type': 0
+            }],
             playerTypes: {
                 0: 'Reporter',
                 1: 'Reported'
@@ -222,7 +210,9 @@ Guard::init()->StaffRequired();
                     comments: ""
                 },
                 ban: {
-                    player: {uuid: ''},
+                    player: {
+                        uuid: ''
+                    },
                     length: null,
                     message: "",
                     teamspeak: 0,
@@ -237,7 +227,9 @@ Guard::init()->StaffRequired();
                 }
             },
             meta: {
-                choosePlayer: {uuid: ''}
+                choosePlayer: {
+                    uuid: ''
+                }
             }
         },
         methods: {
@@ -250,13 +242,19 @@ Guard::init()->StaffRequired();
                 this.menus.reportType.current = type;
             },
             addAssistantStaffMember() {
-                this.assistantStaff = [...this.assistantStaff, {selected: 0}];
+                this.assistantStaff = [...this.assistantStaff, {
+                    selected: 0
+                }];
             },
             removeAssistantStaff(key) {
                 this.assistantStaff.splice(key, 1);
             },
             addPlayer() {
-                this.playersInvolved = [...this.playersInvolved, {'name': '', 'uuid': '', 'type': 0}];
+                this.playersInvolved = [...this.playersInvolved, {
+                    'name': '',
+                    'uuid': '',
+                    'type': 0
+                }];
             },
             removePlayer(key) {
                 console.log(this.playersInvolved.length);
@@ -316,9 +314,11 @@ Guard::init()->StaffRequired();
                                 bans: []
                             }
                         };
-                        this.playersInvolved = [
-                            {'name': '', 'uuid': '', 'type': 0}
-                        ];
+                        this.playersInvolved = [{
+                            'name': '',
+                            'uuid': '',
+                            'type': 0
+                        }];
                         this.assistantStaff = [];
                         this.menus.reportType.current = 'Other';
                         this.info.description = '';
@@ -427,7 +427,7 @@ Guard::init()->StaffRequired();
             }
         },
         mounted() {
-            $.get('api/v1/getStaffList', this.updateStaffList);
+            $.get('api/v2/staff/logger/list', this.updateStaffList);
         },
         computed: {
             /**
@@ -446,4 +446,5 @@ Guard::init()->StaffRequired();
 </style>
 </body>
 <!--Created By Kieran Holroyd-->
+
 </html>

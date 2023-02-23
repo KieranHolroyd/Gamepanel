@@ -6,7 +6,8 @@ import React, {
   useState,
 } from "react";
 import type { AxiosInstance } from "axios";
-import "../style.css";
+import "./style.css";
+import { Player } from "../shared/lib";
 
 type SearchInterfaceProps = {
   initial: {
@@ -26,14 +27,6 @@ type Report = {
   bans: Player[];
   doe: string;
   timestamp: Date;
-};
-
-type Player = {
-  id: string;
-  type: string;
-  name: string;
-  guid: string;
-  case_id?: string;
 };
 
 type SearchResponse = {

@@ -19,7 +19,7 @@ class StaffController
 
 		if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
 			$staff = [];
-			foreach ($pdo->query('SELECT `id`, `first_name`, `last_name`, `username` FROM `users` BETWEEN 0 AND 200 ORDER BY `username`') as $r) {
+			foreach ($pdo->query('SELECT `id`, `first_name`, `last_name`, `username` FROM `users` WHERE `staff_team` BETWEEN 0 AND 200 ORDER BY `username`') as $r) {
 				if ($r->id !== $user->info->id) {
 					array_push($staff, [
 						'name' => $r->username,
