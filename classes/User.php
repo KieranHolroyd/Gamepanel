@@ -304,6 +304,15 @@ class User
         return Permissions::getHighestRank(json_decode($this->info->rank_groups, true));
     }
 
+    public function discord_tag()
+    {
+        if (!$this->infoExists())
+            return false;
+        if ($this->info->discord_tag == null || $this->info->discord_tag == '')
+            return false;
+        return $this->info->discord_tag;
+    }
+
     private function infoExists()
     {
         if (gettype($this->info) !== gettype(json_decode("{\"example\": 0}")))

@@ -156,7 +156,11 @@ class CasesController
                 "timestamp" => $row->timestamp,
                 "reporting_player" => $playersInvolved
             ];
-            Helpers::addAuditLog("{$user->info->username} Submitted A Case");
+            if ($user->discord_tag()) {
+                Helpers::addAuditLog("{$user->discord_tag()} Submitted A Case");
+            } else {
+                Helpers::addAuditLog("{$user->info->username} Submitted A Case");
+            }
             Helpers::PusherSend($data, 'caseInformation', 'receive');
             $user->pushNotification('You Submitted A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
         } else {
