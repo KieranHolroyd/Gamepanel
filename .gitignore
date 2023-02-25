@@ -7,3 +7,4 @@ composer.lock
 extremolife-1.sql
 **/dist/
 **/.parcel-cache/
+.DS_Store
