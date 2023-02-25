@@ -188,9 +188,13 @@ export function Viewer(props: ViewerProps) {
                     {current.timestamp}
                   </div>
                   {current.punishments &&
-                    current.punishments.map((p) => <div v-html="p.html"></div>)}
+                    current.punishments.map((p) => (
+                      <div dangerouslySetInnerHTML={{ __html: p.html }}></div>
+                    ))}
                   {current.bans &&
-                    current.bans.map((b) => <div v-html="b.html"></div>)}
+                    current.bans.map((b) => (
+                      <div dangerouslySetInnerHTML={{ __html: b.html }}></div>
+                    ))}
                 </>
               ) : (
                 <h1 className="pre_title">No Case Selected</h1>
