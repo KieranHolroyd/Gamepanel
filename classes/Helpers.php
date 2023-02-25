@@ -451,6 +451,35 @@ class Helpers
         return @$stmt->fetch()->name; // Supressing "using stdClass as array" error
     }
 
+    public static function sendNotificationTo(int $user_id, $title = "No Title", $content = "No Content", $link = "/")
+    {
+        global $pdo;
+
+        $stmt = $pdo->prepare('INSERT INTO notifications (`title`, `content`, `callback_url`, `for_user_id`) 
+                              VALUES (:t, :c, :url, :id)');
+        $stmt->bindValue(':t', $title);
+        $stmt->bindValue(':c', $content);
+        $stmt->bindValue(':url', $link);
+        $stmt->bindValue(':id', $user_id);
+
+        $db_call = $stmt->execute();
+        if (!$db_call) {
+            self::addAuditLog("Failed to send notification to user $user_id. (DB Error: " . $stmt->errorInfo() . ")");
+        }
+
+        $data = [
+            "callback_url" => $link,
+            "content" => $content,
+            "title" => $title,
+            "viewed" => 0,
+            "id" => $pdo->lastInsertId(),
+            "timestamp" => date("F j, Y \a\\t g:ia", time()),
+            "for_user_id" => $user_id
+        ];
+
+        Helpers::PusherSend($data, 'notifications', 'receive');
+    }
+
     public static function getAuth()
     {
         if (isset($_COOKIE['LOGINTOKEN'])) {

@@ -277,6 +277,28 @@ class StaffController
 			exit;
 		}
 
+		// Send notification to SLT
+		// TODO: Make this more tidier, probably a function in Helpers
+		$stmt = $pdo->prepare("SELECT id, rank_groups FROM users");
+		$stmt->execute();
+		$users = $stmt->fetchAll();
+		$stmt = $pdo->prepare("SELECT id, permissions FROM rank_groups");
+		$stmt->execute();
+		$ranks = $stmt->fetchAll();
+
+		$sent = false;
+		foreach ($users as $user) {
+			$rank_groups = json_decode($user->rank_groups);
+			foreach ($rank_groups as $rank) {
+				foreach ($ranks as $r) {
+					if (!$sent && $r->id == $rank && in_array("VIEW_SLT", json_decode($r->permissions))) {
+						$sent = true;
+						Helpers::sendNotificationTo($user->id, "New Staff Application", "A new staff application has been submitted by {$name}", "/staff/applications");
+					}
+				}
+			}
+		}
+
 		echo Helpers::NewAPIResponse(["message" => "success", "success" => true]);
 	}
 }
