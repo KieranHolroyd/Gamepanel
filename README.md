@@ -10,7 +10,7 @@ npm run build
 docker compose up -d
 ```
 
-### Temp Admin Login
+### Development Admin Login
 
 ```
 User: gamepanel@arma-life.com
