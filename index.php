@@ -255,7 +255,7 @@ if (!isset($_GET['beta'])) :
     <meta name="data-user-fieldsRequired" content='<?= json_encode($user->neededFields) ?>'>
 
     <meta name="data-enabled-panel" content='<?= Config::$enableGamePanel ? "true" : "false" ?>'>
-    <meta name="data-org-name" content='<?= Config::$name ?>'>
+    <meta name="data-org-name" content='<?= Config::$name ? "true" : "false" ?>'>
 
     <link rel="stylesheet" href="/app/dist/dashboard/index.css">
     <script type="module" src="/app/dist/dashboard/index.js"></script>

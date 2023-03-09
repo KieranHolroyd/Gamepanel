@@ -222,6 +222,7 @@ class User {
             "isOnLOA" => $this->isOnLOA(),
             "id" => $this->info->id,
             "rank" => Helpers::getRankNameFromPosition(Permissions::getHighestRank(json_decode($this->info->rank_groups, true))),
+            "rank_real" => $this->info->rank,
             "firstName" => $this->info->first_name,
             "lastName" => $this->info->last_name,
             "displayName" => $this->displayName(),
