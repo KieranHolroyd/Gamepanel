@@ -13,7 +13,6 @@ type UserFrontEndInfo = {
 	isOnLOA: string;
 	id: string;
 	rank: string;
-	rank_real: string;
 	firstName: string;
 	lastName: string;
 	displayName: string;
@@ -89,7 +88,7 @@ export function Dashboard(props: DashboardProps) {
 			<div className="dashboardOverlay">
 				<div className="p-2 z-10">
 					<h1 className="inline-block text-3xl">
-						{props.user.username} <small className="font-light">{props.user.rank_real}</small>
+						{props.user.username} <small className="font-light">{props.user.rank}</small>
 					</h1>
 					<h1 className="float-right inline-block">
 						<Clock />

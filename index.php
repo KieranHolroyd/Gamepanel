@@ -5,7 +5,7 @@ if (!isset($_GET['beta'])) :
 ?>
     <div class="dashboardOverlay" id="app" v-cloak>
         <div id="titleText" style="z-index:2;padding: 10px;">
-            <h1 style="display:inline-block;"><?= $user->displayName(); ?> <small style="font-weight: 300;font-size: 15px;"><?= $user->info->rank; ?></small></h1>
+            <h1 style="display:inline-block;"><?= $user->displayName(); ?> <small style="font-weight: 300;font-size: 15px;"><?= $user->highestRank() ?></small></h1>
             <h1 style="float:right;display:inline-block;" id="dtime">00:00:00 AM</h1>
         </div>
         <h4 style="position: fixed;bottom: 10px;right: 10px;"><?= Config::$name; ?> Dashboard</h4>
