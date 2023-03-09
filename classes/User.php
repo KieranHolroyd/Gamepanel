@@ -221,7 +221,7 @@ class User {
             "isEMS" => $this->isEMS(),
             "isOnLOA" => $this->isOnLOA(),
             "id" => $this->info->id,
-            "rank" => $this->highestRank(),
+            "rank" => $this->highestRankString(),
             "firstName" => $this->info->first_name,
             "lastName" => $this->info->last_name,
             "displayName" => $this->displayName(),
@@ -307,6 +307,12 @@ class User {
         if (!$this->infoExists())
             return false;
         return Permissions::getHighestRank(json_decode($this->info->rank_groups, true));
+    }
+
+    public function highestRankString() {
+        if (!$this->infoExists())
+            return false;
+        return Helpers::getRankNameFromPosition(Permissions::getHighestRank(json_decode($this->info->rank_groups, true)));
     }
 
     public function discord_tag() {
