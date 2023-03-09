@@ -26,6 +26,12 @@
 			"includeNodeModules": true,
 			"context": "browser",
 			"outputFormat": "global"
+		},
+		"dashboard": {
+			"source": "src/dashboard/index.ts",
+			"includeNodeModules": true,
+			"context": "browser",
+			"outputFormat": "global"
 		}
 	},
 	"scripts": {

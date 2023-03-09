@@ -41,3 +41,11 @@ services:
     environment:
       ADMINER_DESIGN: 'hydra'
       ADMINER_DEFAULT_SERVER: 'panel_database'
+
+  cache:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./_cfg/redis-data:/data
+    command: redis-server --appendonly yes

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: kiera
@@ -10,93 +11,100 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
 class Config
 {
-    // Personalisation/Root Options
-    public static $name = 'Arma-Life';
-    public static $base_url = "http://localhost:4400/";
-    public static $forums_url = "http://localhost:4400/forums/";
-		public static $discord_webhook = "";
-    public static $enableGamePanel = true;
+	// Personalisation/Root Options
+	public static $name = 'Arma-Life';
+	public static $base_url = "http://localhost:4400/";
+	public static $forums_url = "http://localhost:4400/forums/";
+	public static $discord_webhook = "";
+	public static $enableGamePanel = true;
 
-    // SQL Settings
-    // Panel SQL Storage
-    public static $sql = [
-        'host' => 'panel_database',
-        'port' => '3306',
-        'user' => 'gamepanel',
-        'pass' => 'gamepanel',
-        'name' => 'gamepanel'
-    ];
+	// SQL Settings
+	// Panel SQL Storage
+	public static $sql = [
+		'host' => 'panel_database',
+		'port' => '3306',
+		'user' => 'gamepanel',
+		'pass' => 'gamepanel',
+		'name' => 'gamepanel'
+	];
 
 
-    // Game SQL Settings
-    public static $gameSql = [
-        'host' => 'game_database',
-        'port' => '3307',
-        'user' => 'gamedb',
-        'pass' => 'gamedb',
-        'name' => 'gamedb'
-    ];
+	// Game SQL Settings
+	public static $gameSql = [
+		'host' => 'game_database',
+		'port' => '3307',
+		'user' => 'gamedb',
+		'pass' => 'gamedb',
+		'name' => 'gamedb'
+	];
 
-    // Staff Teams Settings
-    public static $teams = [
-        1 => '1',
-        2 => '2',
-        3 => '3',
-        4 => '4',
-        5 => '5',
-        null => 'Unassigned Members',
-        6 => 'Support Team',
-        100 => 'SMT',
-        500 => 'Development Team',
-    ];
+	// Cache Settings
+	public static $cache = [
+		'enabled' => true,
+		'host' => 'cache',
+		'port' => '6379'
+	];
 
-    // Pusher Config
-    public static $pusher = [
-        'AUTH_KEY' => '',
-        'SECRET' => '',
-        'APP_ID' => '',
-        'DEFAULT_CONFIG' => [
-            'cluster' => 'eu',
-            'useTLS' => true
-        ]
-    ];
+	// Staff Teams Settings
+	public static $teams = [
+		1 => '1',
+		2 => '2',
+		3 => '3',
+		4 => '4',
+		5 => '5',
+		null => 'Unassigned Members',
+		6 => 'Support Team',
+		100 => 'SMT',
+		500 => 'Development Team',
+	];
 
-    public static $battleMetrics = [
-        'apiKey' => ''
-    ];
+	// Pusher Config
+	public static $pusher = [
+		'AUTH_KEY' => '',
+		'SECRET' => '',
+		'APP_ID' => '',
+		'DEFAULT_CONFIG' => [
+			'cluster' => 'eu',
+			'useTLS' => true
+		]
+	];
 
-    public static $faction_ranks = [
-        'police' => [
-            0 => 'Unranked',
-            1 => 'Officer',
-            2 => 'Senior Officer',
-            3 => 'Corporal',
-            4 => 'Sergeant',
-            5 => 'Lieutenant',
-            6 => 'Captain',
-            7 => 'Major',
-            8 => 'Assistant Chief',
-            9 => 'Chief Of Police'
-        ],
-        'medic' => [
-            0 => 'Unranked',
-            1 => 'Probationary Paramedic',
-            2 => 'Advanced EMT',
-            3 => 'Paramedic',
-            4 => 'EMT',
-            5 => 'Advanced Paramedic',
-            6 => 'Lieutenant',
-            7 => 'Captain',
-            8 => 'Medical Advisor',
-            9 => 'Deputy Chief Of EMS',
-            10 => 'Chief Of EMS'
-        ]
-    ];
+	public static $battleMetrics = [
+		'apiKey' => ''
+	];
 
-    // Required! (DO NOT EDIT BELOW THIS LINE)
+	public static $faction_ranks = [
+		'police' => [
+			0 => 'Unranked',
+			1 => 'Officer',
+			2 => 'Senior Officer',
+			3 => 'Corporal',
+			4 => 'Sergeant',
+			5 => 'Lieutenant',
+			6 => 'Captain',
+			7 => 'Major',
+			8 => 'Assistant Chief',
+			9 => 'Chief Of Police'
+		],
+		'medic' => [
+			0 => 'Unranked',
+			1 => 'Probationary Paramedic',
+			2 => 'Advanced EMT',
+			3 => 'Paramedic',
+			4 => 'EMT',
+			5 => 'Advanced Paramedic',
+			6 => 'Lieutenant',
+			7 => 'Captain',
+			8 => 'Medical Advisor',
+			9 => 'Deputy Chief Of EMS',
+			10 => 'Chief Of EMS'
+		]
+	];
 
-    // Permissions System
-    public static $permissions = [
+	// Required! (DO NOT EDIT BELOW THIS LINE)
+
+	// Permissions System
+	public static $permissions = [
 		//-- Special
 		"*",
 		"SPECIAL_DEVELOPER",
@@ -153,6 +161,20 @@ class Config
 		"ADD_ROLE",
 		"EDIT_ROLE",
 		"REMOVE_ROLE",
+
+		//-- Ingame Actions
+		"IG_KICK_PLAYER",
+		"IG_FREEZE_PLAYER_TOGGLE",
+		"IG_HEAL_PLAYER",
+		"IG_REVIVE_PLAYER",
+		"IG_JAIL_PLAYER",
+		"IG_UNJAIL_PLAYER",
+		"IG_FIX_PLAYER",
+		"IG_SPECTATE",
+		"IG_ARSENAL",
+		"IG_MAP_TELEPORT",
+		"IG_MAP_MARKERS",
+		"IG_ADMIN_SHOPS"
 	];
 
 	public static $permissions_dictionary = [
@@ -214,5 +236,19 @@ class Config
 		"ADD_ROLE" => "Allows the staff member to add a role to the `Roles` page.",
 		"EDIT_ROLE" => "Allows the staff member to edit a role on the `Roles` page.",
 		"REMOVE_ROLE" => "Allows the staff member to remove a role from the `Roles` page.",
+
+		//-- Ingame Actions
+		"IG_KICK_PLAYER" => "Kick a player",
+		"IG_FREEZE_PLAYER_TOGGLE" => "Freeze a player",
+		"IG_HEAL_PLAYER" => "Heal a player",
+		"IG_REVIVE_PLAYER" => "Revive a player",
+		"IG_JAIL_PLAYER" => "Jail a player",
+		"IG_UNJAIL_PLAYER" => "Removes a player from jail",
+		"IG_FIX_PLAYER" => "Tries to fix player (Kill a player)",
+		"IG_SPECTATE" => "Spectate",
+		"IG_ARSENAL" => "Arsenal",
+		"IG_MAP_TELEPORT" => "Map teleport",
+		"IG_MAP_MARKERS" => "Map markers",
+		"IG_ADMIN_SHOPS" => "Admin shops"
 	];
 }

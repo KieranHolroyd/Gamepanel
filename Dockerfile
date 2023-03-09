@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y \
 	&& docker-php-ext-install -j$(nproc) soap \
 	&& docker-php-ext-install -j$(nproc) zip
 
+# Install php-redis
+RUN pecl install -o -f redis \
+	&&  rm -rf /tmp/pear \
+	&&  docker-php-ext-enable redis
+
 # Enable mod_rewrite
 RUN a2enmod rewrite
 

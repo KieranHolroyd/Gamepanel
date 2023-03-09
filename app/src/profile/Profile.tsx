@@ -1,9 +1,9 @@
-import type { AxiosInstance } from "axios";
 import { useState } from "react";
 import "./style.css";
+import type { APIClient } from "../shared/lib";
 
 type ProfilePageProps = {
-  api: AxiosInstance;
+  api: APIClient;
 };
 type Profile = {};
 

@@ -1460,14 +1460,31 @@ h1 small {
     overflow: auto;
 }
 
-.stat {
-    width: calc(100% - 40px);
+.grid-3-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    margin: 10px 0;
+}
+
+.stat.col {
+    display: inline-block;
     border-radius: 6px;
     box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
-    margin: 10px 20px;
     padding: 10px 15px;
     background-color: #2c2f50;
+    
 }
+
+.stat:not(.col) {
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+    padding: 10px 15px;
+    background-color: #2c2f50;
+    margin: 10px 0;
+}
+
 
 .stat p {
     text-transform: uppercase;
@@ -1651,10 +1668,10 @@ h1 small {
 
 .infoPanel.case_stats {
     padding: 10px;
-    background-color: #3c3b62;
+    background-color: #2c2f50;
     border-radius: 8px;
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
-    margin: 25px;
+    margin: 0 15px 15px;
 }
 
 a {
@@ -2010,24 +2027,15 @@ p#case {
     display: block;
 }
 
-.daily-cases {
+.cool-graph {
     display: inline-block;
-    width: calc(50% - 40px);
-    margin: 10px;
     padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-    background-color: #3c3b62;
+    width: calc(50% - 2px);
+    border-radius: 8px;
 }
 
-.weekly-cases {
-    display: inline-block;
-    width: calc(50% - 40px);
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-    background-color: #3c3b62;
+line.ct-grid {
+    stroke: rgba(255,255,255,.3);
 }
 
 .flashred {

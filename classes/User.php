@@ -1,28 +1,36 @@
 <?php
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Cache.php';
 
-class User
-{
+const USER_CACHE_EXPIRY = 120;
+
+class User {
     public $info = [];
     public $neededFields = [];
     public $error = false;
 
-    public function __construct($id = null)
-    {
+    public function __construct($id = null) {
         global $pdo;
+        $cache = Cache::getRedis();
         if ($id) {
-            $query2 = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-            $query2->bindValue(':id', $id);
-            if ($query2->execute()) {
-                $usr = $query2->fetch();
-                if ($usr) {
-                    $this->info = $usr;
+            $exists_in_cache = $cache->get("user:{$id}");
+            if ($exists_in_cache) {
+                return $this->info = json_decode($exists_in_cache);
+            } else {
+                $query2 = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+                $query2->bindValue(':id', $id);
+                if ($query2->execute()) {
+                    $usr = $query2->fetch();
+                    if ($usr) {
+                        $cache->set("user:{$usr->id}", json_encode($usr), ["ex" => USER_CACHE_EXPIRY]);
+                        $this->info = $usr;
+                    } else {
+                        $this->error = true;
+                    }
                 } else {
                     $this->error = true;
                 }
-            } else {
-                $this->error = true;
             }
         } else {
             if (Helpers::getAuth()) {
@@ -33,17 +41,23 @@ class User
                     $result = $stmt->fetch();
                     $stmt->closeCursor();
                     if ($result) {
-                        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-                        $stmt->bindValue(':id', $result->user_id);
-                        if ($stmt->execute()) {
-                            $usr = $stmt->fetch();
-                            if ($usr) {
-                                $this->info = $usr;
+                        $exists_in_cache = $cache->get("user:{$result->user_id}");
+                        if ($exists_in_cache) {
+                            return $this->info = json_decode($exists_in_cache);
+                        } else {
+                            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+                            $stmt->bindValue(':id', $result->user_id);
+                            if ($stmt->execute()) {
+                                $usr = $stmt->fetch();
+                                if ($usr) {
+                                    $cache->set("user:{$usr->id}", json_encode($usr), ["ex" => USER_CACHE_EXPIRY]);
+                                    $this->info = $usr;
+                                } else {
+                                    $this->error = true;
+                                }
                             } else {
                                 $this->error = true;
                             }
-                        } else {
-                            $this->error = true;
                         }
                     } else {
                         $this->error = true;
@@ -58,8 +72,7 @@ class User
         }
     }
 
-    public function isOnLOA()
-    {
+    public function isOnLOA() {
         if (!$this->infoExists())
             return false;
         if ($this->info->loa !== null) {
@@ -71,8 +84,7 @@ class User
         return false;
     }
 
-    public function isSLT()
-    {
+    public function isSLT() {
         if (!$this->infoExists())
             return false;
         if ($this->info->SLT || $this->info->Developer || $this->info->isServerOwner) {
@@ -81,8 +93,7 @@ class User
         return false;
     }
 
-    public function isStaff()
-    {
+    public function isStaff() {
         if (!$this->infoExists())
             return false;
         if ($this->verified() && $this->info->isStaff) {
@@ -91,8 +102,7 @@ class User
         return false;
     }
 
-    public function isDeveloper()
-    {
+    public function isDeveloper() {
         if (!$this->infoExists())
             return false;
         if ($this->verified() && $this->info->Developer) {
@@ -101,8 +111,7 @@ class User
         return false;
     }
 
-    public function isCommand()
-    {
+    public function isCommand() {
         if (!$this->infoExists())
             return false;
         if ($this->verified(false) && ($this->info->isCommand || $this->isSLT())) {
@@ -111,8 +120,7 @@ class User
         return false;
     }
 
-    public function verified($old = true)
-    {
+    public function verified($old = true) {
         if (!$this->infoExists())
             return false;
         if (!$this->error) {
@@ -123,15 +131,13 @@ class User
         return false;
     }
 
-    public function displayName()
-    {
+    public function displayName() {
         if (!$this->infoExists())
             return false;
         return $this->info->first_name . ' ' . $this->info->last_name;
     }
 
-    public function isSuspended()
-    {
+    public function isSuspended() {
         if (!$this->infoExists())
             return false;
         if ($this->info->suspended) {
@@ -140,8 +146,7 @@ class User
         return false;
     }
 
-    public function hasGameReadAccess($level = 0)
-    {
+    public function hasGameReadAccess($level = 0) {
         if (!$this->infoExists())
             return false;
         if ($level == 0) {
@@ -156,8 +161,7 @@ class User
         return false;
     }
 
-    public function hasGameWriteAccess($comp = true)
-    {
+    public function hasGameWriteAccess($comp = true) {
         if (!$this->infoExists())
             return false;
         if ($comp) {
@@ -173,8 +177,7 @@ class User
         return false;
     }
 
-    public function needMoreInfo()
-    {
+    public function needMoreInfo() {
         if (!$this->infoExists())
             return false;
         if ($this->info->region == null || $this->info->region == '')
@@ -190,8 +193,7 @@ class User
         return false;
     }
 
-    public function isPD()
-    {
+    public function isPD() {
         if (!$this->infoExists())
             return false;
         if ($this->info->isPD)
@@ -199,8 +201,7 @@ class User
         return false;
     }
 
-    public function isEMS()
-    {
+    public function isEMS() {
         if (!$this->infoExists())
             return false;
         if ($this->info->isEMS)
@@ -208,8 +209,7 @@ class User
         return false;
     }
 
-    public function getInfoForFrontend()
-    {
+    public function getInfoForFrontend() {
         if (!$this->infoExists())
             return false;
         return [
@@ -232,8 +232,7 @@ class User
         ];
     }
 
-    private function getFactionRank()
-    {
+    private function getFactionRank() {
         if (!$this->infoExists() || $this->info->faction_rank == null || $this->info->faction_rank == '')
             return null;
         if ($this->isPD()) {
@@ -243,33 +242,40 @@ class User
         }
     }
 
-    public function fetchNotifications()
-    {
+    public function fetchNotifications() {
         global $pdo;
 
         if (!$this->infoExists())
             return false;
 
-        $stmt = $pdo->prepare('SELECT * FROM notifications WHERE for_user_id = :id ORDER BY id DESC LIMIT 25');
-        $stmt->bindValue(':id', $this->info->id, PDO::PARAM_INT);
+        $cache = Cache::getRedis();
 
-        $stmt->execute();
-        $notifications = $stmt->fetchAll();
+        $notifications = $cache->get("notifications:{$this->info->id}");
+        if ($notifications) {
+            return json_decode($notifications);
+        } else {
+            $stmt = $pdo->prepare('SELECT * FROM notifications WHERE for_user_id = :id ORDER BY id DESC LIMIT 25');
+            $stmt->bindValue(':id', $this->info->id, PDO::PARAM_INT);
 
-        $stmt = $pdo->prepare('UPDATE notifications SET viewed = 1 WHERE for_user_id = :id');
-        $stmt->bindValue(':id', $this->info->id, PDO::PARAM_INT);
+            $stmt->execute();
+            $notifications = $stmt->fetchAll();
 
-        $stmt->execute();
+            $stmt = $pdo->prepare('UPDATE notifications SET viewed = 1 WHERE for_user_id = :id');
+            $stmt->bindValue(':id', $this->info->id, PDO::PARAM_INT);
 
-        foreach ($notifications as $n) {
-            $n->timestamp = date("F j, Y \a\\t g:ia", strtotime($n->timestamp));
+            $stmt->execute();
+
+            foreach ($notifications as $n) {
+                $n->timestamp = date("F j, Y \a\\t g:ia", strtotime($n->timestamp));
+            }
+
+            $cache->set("notifications:{$this->info->id}", json_encode($notifications), USER_CACHE_EXPIRY);
         }
 
         return $notifications;
     }
 
-    public function pushNotification($title = "No Title", $content = "No Content", $link = "/")
-    {
+    public function pushNotification($title = "No Title", $content = "No Content", $link = "/") {
         global $pdo;
 
         if (!$this->infoExists())
@@ -297,15 +303,13 @@ class User
         Helpers::PusherSend($data, 'notifications', 'receive');
     }
 
-    public function highestRank()
-    {
+    public function highestRank() {
         if (!$this->infoExists())
             return false;
         return Permissions::getHighestRank(json_decode($this->info->rank_groups, true));
     }
 
-    public function discord_tag()
-    {
+    public function discord_tag() {
         if (!$this->infoExists())
             return false;
         if ($this->info->discord_tag == null || $this->info->discord_tag == '')
@@ -313,8 +317,7 @@ class User
         return "@" . $this->info->discord_tag;
     }
 
-    private function infoExists()
-    {
+    private function infoExists() {
         if (gettype($this->info) !== gettype(json_decode("{\"example\": 0}")))
             return false;
 

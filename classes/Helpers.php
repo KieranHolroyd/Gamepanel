@@ -12,11 +12,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Webhook.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
-class Helpers
-{
+class Helpers {
 
-    public static function ParseOtherStaff($staff)
-    {
+    public static function ParseOtherStaff($staff) {
         $staff = explode(' ', $staff);
         $list = [];
         foreach ($staff as $user) {
@@ -30,8 +28,7 @@ class Helpers
         return $list;
     }
 
-    public static function UsernameToID($name = null)
-    {
+    public static function UsernameToID($name = null) {
         global $pdo;
         if ($name) {
             $stmt = $pdo->prepare('SELECT id, username FROM users WHERE username = :username');
@@ -45,8 +42,7 @@ class Helpers
         return false;
     }
 
-    public static function IDToUsername($id = null)
-    {
+    public static function IDToUsername($id = null) {
         global $pdo;
         if ($id) {
             $stmt = $pdo->prepare('SELECT id, username FROM users WHERE id = :id');
@@ -60,19 +56,16 @@ class Helpers
         return "Staff Not Found";
     }
 
-    public static function APIResponse($message = null, $array = null, $code = null)
-    {
+    public static function APIResponse($message = null, $array = null, $code = null) {
         return json_encode(['response' => $array, 'code' => $code, 'message' => $message]);
     }
 
-    public static function NewAPIResponse($array = null)
-    {
+    public static function NewAPIResponse($array = null) {
         $_SERVER['Content-Type'] = 'application/json';
         return json_encode([...$array]);
     }
 
-    public static function PusherSend($data, $channel, $event)
-    {
+    public static function PusherSend($data, $channel, $event) {
         try {
             $pusher = new Pusher\Pusher(
                 Config::$pusher['AUTH_KEY'],
@@ -94,8 +87,7 @@ class Helpers
         return true;
     }
 
-    public static function addAuditLog($content, $discord = true)
-    {
+    public static function addAuditLog($content, $discord = true) {
         global $pdo;
         $user = new User;
 
@@ -123,14 +115,12 @@ class Helpers
         }
     }
 
-    public static function parseAuditLogForWebhook($content)
-    {
+    public static function parseAuditLogForWebhook($content) {
         // TODO: make audit log parser
         return $content;
     }
 
-    public static function viewingPublicPage()
-    {
+    public static function viewingPublicPage() {
         $publicurls = [
             '/errors/awaitingapproval',
             '/errors/nostaff',
@@ -147,8 +137,7 @@ class Helpers
         return false;
     }
 
-    public static function fixPlayersForCase($number, $errors)
-    {
+    public static function fixPlayersForCase($number, $errors) {
         global $pdo;
 
         $errors = json_encode($errors);
@@ -166,24 +155,21 @@ class Helpers
         }
     }
 
-    public static function sanitizeUserDataArray($users)
-    {
+    public static function sanitizeUserDataArray($users) {
         foreach ($users as $key => $user) {
             $users[$key] = self::sanitizeUserData($user);
         }
         return $users;
     }
 
-    public static function sanitizeUserData($user)
-    {
+    public static function sanitizeUserData($user) {
         unset($user->password);
         unset($user->email);
         unset($user->unique_id);
         return $user;
     }
 
-    public static function getPlayersFromCase($caseid)
-    {
+    public static function getPlayersFromCase($caseid) {
         global $pdo;
         $stmt = $pdo->prepare('SELECT * FROM case_players WHERE case_id = :id');
         $stmt->bindValue(':id', $caseid, PDO::PARAM_INT);
@@ -191,8 +177,7 @@ class Helpers
         return $stmt->fetchAll();
     }
 
-    public static function parsePlayers(array $players)
-    {
+    public static function parsePlayers(array $players) {
         foreach ($players as $player) {
             $name = $player->name;
             $player->name = "<a href='" . Config::$base_url . "search?type=players&query={$name}'>{$name}</a>";
@@ -200,14 +185,12 @@ class Helpers
         return $players;
     }
 
-    public static function parsePunishment($p)
-    {
+    public static function parsePunishment($p) {
         $comments = nl2br($p->comments);
         return "<div class='punishment_report'><span class='player'>{$p->player}'s Punishment Report</span> <span class='points'>{$p->points} Points</span><p class='rules'>Rules Broken: {$p->rules}</p><p class='comments'>Staff Comment: {$comments}</p></div>";
     }
 
-    public static function parseBan($b)
-    {
+    public static function parseBan($b) {
         $length = ($b->length) ? $b->length . ' Days' : 'Permanent';
 
         $ts = self::zeroOneToYesNo($b->teamspeak);
@@ -239,13 +222,11 @@ class Helpers
         </div>";
     }
 
-    public static function zeroOneToYesNo($n)
-    {
+    public static function zeroOneToYesNo($n) {
         return ($n) ? 'Yes' : 'No';
     }
 
-    public static function checkCaseHasPunishment($id)
-    {
+    public static function checkCaseHasPunishment($id) {
         global $pdo;
 
         $stmt = $pdo->prepare('SELECT COUNT(*) AS reports FROM punishment_reports WHERE case_id = :id');
@@ -256,8 +237,7 @@ class Helpers
         return $returned;
     }
 
-    public static function checkCaseHasBan($id)
-    {
+    public static function checkCaseHasBan($id) {
         global $pdo;
 
         $stmt = $pdo->prepare('SELECT COUNT(*) AS reports FROM ban_reports WHERE case_id = :id');
@@ -268,13 +248,11 @@ class Helpers
         return $returned;
     }
 
-    public static function IDToStaff(int $id)
-    {
+    public static function IDToStaff(int $id) {
         return new User($id);
     }
 
-    public static function getBMMakeReservedRequest($steamid, $licenseKey, $orderID, $username)
-    {
+    public static function getBMMakeReservedRequest($steamid, $licenseKey, $orderID, $username) {
         try {
             $tok = Config::$battleMetrics['apiKey'];
 
@@ -351,8 +329,7 @@ class Helpers
         }
     }
 
-    public static function isValidAPIToken(string $key)
-    {
+    public static function isValidAPIToken(string $key) {
         global $pdo;
 
         $stmt = $pdo->prepare('SELECT `id`, `owner`, `view`, `update`, `delete` FROM api_keys WHERE `key` = :k');
@@ -367,8 +344,7 @@ class Helpers
 
     private static $APITokenPerms = ['V' => 'view', 'U' => 'update', 'D' => 'delete'];
 
-    public static function ValidateAPITokenPerms($keyInfo, $permission)
-    {
+    public static function ValidateAPITokenPerms($keyInfo, $permission) {
         if (!$keyInfo)
             return false;
 
@@ -378,8 +354,7 @@ class Helpers
         return true;
     }
 
-    public static function BattlemetricsIssueBan($playerID, $banReason = "", $banningAdminName = "", $banLength = null)
-    {
+    public static function BattlemetricsIssueBan($playerID, $banReason = "", $banningAdminName = "", $banLength = null) {
         $headers = [
             'Authorization' => 'Bearer ' . Config::$battleMetrics['apiKey'],
             'Accept' => 'application/json',
@@ -441,18 +416,15 @@ class Helpers
         return Unirest\Request::post('https://api.battlemetrics.com/bans', $headers, $body)->body;
     }
 
-    public static function getRankNameFromPosition($getHighestRank)
-    {
+    public static function getRankNameFromPosition($getHighestRank) {
         global $pdo;
-
         $stmt = $pdo->prepare('SELECT * FROM rank_groups WHERE position = :p');
         $stmt->bindValue(':p', $getHighestRank, PDO::PARAM_INT);
         $stmt->execute();
         return @$stmt->fetch()->name; // Supressing "using stdClass as array" error
     }
 
-    public static function sendNotificationTo(int $user_id, $title = "No Title", $content = "No Content", $link = "/")
-    {
+    public static function sendNotificationTo(int $user_id, $title = "No Title", $content = "No Content", $link = "/") {
         global $pdo;
 
         $stmt = $pdo->prepare('INSERT INTO notifications (`title`, `content`, `callback_url`, `for_user_id`) 
@@ -480,8 +452,7 @@ class Helpers
         Helpers::PusherSend($data, 'notifications', 'receive');
     }
 
-    public static function getAuth()
-    {
+    public static function getAuth() {
         if (isset($_COOKIE['LOGINTOKEN'])) {
             return $_COOKIE['LOGINTOKEN'];
         }
