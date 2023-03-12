@@ -112,23 +112,33 @@ export function Dashboard(props: DashboardProps) {
 					setCases({
 						daily: data.stats.daily
 							.map((x, ix) => {
-								return { name: `${ix} days ago`, value: x };
+								return { name: _colNameFor(ix, "day"), value: x };
 							})
 							.reverse(),
 						weekly: data.stats.weekly
 							.map((x, ix) => {
-								return { name: `${ix} weeks ago`, value: x };
+								return { name: _colNameFor(ix, "week"), value: x };
 							})
 							.reverse(),
 						monthly: data.stats.monthly
 							.map((x, ix) => {
-								return { name: `${ix} months ago`, value: x };
+								return { name: _colNameFor(ix, "month"), value: x };
 							})
 							.reverse(),
 					});
 				}
 			});
 	}, []);
+	function _colNameFor(index: number, type: "day" | "week" | "month") {
+		switch (type) {
+			case "day":
+				return index === 0 ? "Today" : index === 1 ? "Yesterday" : `${index} days ago`;
+			case "week":
+				return index === 0 ? "This Week" : index === 1 ? "Last Week" : `${index} weeks ago`;
+			case "month":
+				return index === 0 ? "This Month" : index === 1 ? "Last Month" : `${index} months ago`;
+		}
+	}
 
 	return (
 		<div>

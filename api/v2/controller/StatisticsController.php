@@ -11,7 +11,7 @@ class StatisticsController {
 			if (!isset($stats[$key][$idx])) {
 				$stats[$key][$idx] = 0;
 			}
-			if ($time_since_created > ($x * $time_step) && $time_since_created < (($x + 1) * $time_step)) {
+			if ($time_since_created >= ($x) && $time_since_created <= ($x + $time_step)) {
 				$stats[$key][$idx]++;
 			}
 		}
@@ -29,9 +29,9 @@ class StatisticsController {
 			foreach ($pdo->query('SELECT * FROM case_logs WHERE `timestamp` >= DATE_SUB(NOW(), INTERVAL 6 MONTH)') as $r) {
 				$time_since_created = time() - strtotime($r->timestamp);
 
-				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* day   */ 60 * 60 * 24,      7, 'daily');
-				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* week  */ 60 * 60 * 24 * 7,  4, 'weekly');
-				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* month */ 60 * 60 * 24 * 30, 6, 'monthly');
+				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* day   */ 60 * 60 * 24,      8, 'daily');
+				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* week  */ 60 * 60 * 24 * 7,  5, 'weekly');
+				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* month */ 60 * 60 * 24 * 30, 7, 'monthly');
 			}
 			$cache->set('cases:stats:all', json_encode($stats), 60 * 60);
 			echo Helpers::NewAPIResponse(["success" => true, "stats" => $stats]);
