@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
 import Clock from "../shared/component/clock";
 import { APIClient } from "../shared/lib";
 import "./style.css";
@@ -55,6 +56,16 @@ type ServerStatistics = {
 	}>;
 };
 
+type CaseStatObject = {
+	name: string;
+	value: number;
+};
+type CasesStatistics = {
+	daily: CaseStatObject[];
+	weekly: CaseStatObject[];
+	monthly: CaseStatObject[];
+};
+
 export function Dashboard(props: DashboardProps) {
 	const [stats, setStats] = useState<ServerStatistics>({
 		total: {
@@ -64,6 +75,11 @@ export function Dashboard(props: DashboardProps) {
 			balance: "$000,000,000",
 		},
 		richlist: [],
+	});
+	const [cases, setCases] = useState<CasesStatistics>({
+		daily: [],
+		weekly: [],
+		monthly: [],
 	});
 
 	useEffect(() => {
@@ -81,6 +97,37 @@ export function Dashboard(props: DashboardProps) {
 				});
 			}
 		});
+		props.api
+			.get<{
+				success: boolean;
+				stats: {
+					daily: number[];
+					weekly: number[];
+					monthly: number[];
+				};
+			}>("/v2/statistics/cases")
+			.then(({ data }) => {
+				console.log(data.stats);
+				if (data.success) {
+					setCases({
+						daily: data.stats.daily
+							.map((x, ix) => {
+								return { name: `${ix} days ago`, value: x };
+							})
+							.reverse(),
+						weekly: data.stats.weekly
+							.map((x, ix) => {
+								return { name: `${ix} weeks ago`, value: x };
+							})
+							.reverse(),
+						monthly: data.stats.monthly
+							.map((x, ix) => {
+								return { name: `${ix} months ago`, value: x };
+							})
+							.reverse(),
+					});
+				}
+			});
 	}, []);
 
 	return (
@@ -128,12 +175,34 @@ export function Dashboard(props: DashboardProps) {
 					</div>
 				) : undefined}
 
-				<div id="staff_info" className="case_stats infoPanel" style={{ opacity: 0, transition: "200ms" }}>
+				<div id="staff_info" className="case_stats infoPanel">
 					<div className="cool-graph daily-cases">
 						<b>Daily Cases</b>
+						<LineChart width={600} height={300} data={cases.daily} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+							<Line type="monotone" dataKey="value" stroke="#8884d8" />
+							<XAxis dataKey="name" />
+							<YAxis />
+							<Tooltip labelStyle={{ color: "black" }} />
+						</LineChart>
 					</div>
 					<div className="cool-graph weekly-cases">
 						<b>Weekly Cases</b>
+						<LineChart width={600} height={300} data={cases.weekly} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+							<Line type="monotone" dataKey="value" stroke="#8884d8" />
+							<XAxis dataKey="name" />
+							<YAxis />
+							<Tooltip labelStyle={{ color: "black" }} />
+						</LineChart>
+					</div>
+					<div className="cool-graph weekly-cases">
+						<b>Monthly Cases</b>
+						<LineChart width={600} height={300} data={cases.monthly} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+							<Line type="monotone" dataKey="value" stroke="#8884d8" />
+							{/* <CartesianGrid stroke="#ccc" strokeDasharray="5 5" /> */}
+							<XAxis dataKey="name" />
+							<YAxis />
+							<Tooltip labelStyle={{ color: "black" }} />
+						</LineChart>
 					</div>
 				</div>
 			</div>

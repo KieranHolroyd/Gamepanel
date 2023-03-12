@@ -63,6 +63,7 @@ $router->post('/players/update/police', 'PlayerController@UpdatePlayerPoliceLeve
 $router->post('/players/update/balance', 'PlayerController@UpdatePlayerBalance');
 
 //-- Statistics Routes
+$router->get('/statistics/cases', 'StatisticsController@CaseStatistics');
 $router->get('/statistics/cases/daily', 'StatisticsController@DailyCases');
 $router->get('/statistics/cases/weekly', 'StatisticsController@WeeklyCases');
 $router->get('/statistics/game/server', 'StatisticsController@ServerStatistics');
