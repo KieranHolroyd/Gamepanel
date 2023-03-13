@@ -135,3 +135,7 @@
     display: none;
     margin-left: 60px;
 }
+
+.grid.new {
+    padding-left: 75px !important;
+}
