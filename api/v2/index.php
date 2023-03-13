@@ -73,6 +73,7 @@ $router->get('/staff/list', 'StaffController@ListStaffTeam');
 $router->get('/staff/applications/list', 'StaffController@ListApplications');
 $router->get('/staff/applications/get', 'StaffController@GetApplication');
 $router->get('/staff/logger/list', 'StaffController@ListUsers');
+$router->get('/staff/{id}/details', 'StaffController@StaffDetails');
 $router->post('/staff/applications/submit', 'StaffController@SubmitApplication');
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');

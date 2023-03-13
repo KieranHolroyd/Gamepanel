@@ -172,9 +172,7 @@ Guard::init()->SLTRequired();
         $('#staff_info').html("<p><img src='../img/loadw.svg'></p>");
         actwarn_start = "";
         actwarn_end = "";
-        $.post('/api/v1/getStaffMoreInfo', {
-            'id': id
-        }, function(data) {
+        $.get(`/api/v2/staff/${id}/details`, function(data) {
             let res = JSON.parse(data);
             if (res.code === 200) {
                 moreinfo = res.response;
@@ -190,122 +188,122 @@ Guard::init()->SLTRequired();
                         actwarn_end = "</span>";
                     }
                     let changeName = "";
-                    if (moreinfo.id !== userArray.info.id)
-                        changeName = `ondblclick='openChangeName(${moreinfo.id}, "${moreinfo.display_name}")'`;
+                    // if (moreinfo.id !== userArray.info.id)
+                    changeName = `ondblclick='openChangeName(${moreinfo.id}, "${moreinfo.display_name}")'`;
                     setMoreInfo = `<h1 style='color: ${staffbgc};' id='cn${moreinfo.id}' ${changeName}>${moreinfo.display_name}</h1><p style='color: ${staffbgc};'>${region}${parseStaffTeamToName(moreinfo.team)} ${moreinfo.primary_rank.name}</p><p style='color: ${staffbgc};'>${moreinfo.casecount} Cases Complete (${actwarn_start}${moreinfo.casecount_week} this week | ${moreinfo.casecount_month} this month${actwarn_end})</p>`;
                     setMoreInfo += `<p style='color: ${staffbgc};'>${moreinfo.primary_rank.name} Since ${moreinfo.lastPromotion}</p>`;
 
-                    if (moreinfo.id !== userArray.info.id) {
-                        if (moreinfo.onLOA) {
-                            setMoreInfo += `<p style='color: ${staffbgc};'>${moreinfo.name} is on LOA until ${moreinfo.loaEND}</p>`;
-                            setMoreInfo += `<div style='color: ${staffbgc};' class='staffActivityCard' onclick='bringOffLOA(${moreinfo.id});'>Remove LOA</div>`;
-                        }
-                        if (moreinfo.isSuspended) {
-                            setMoreInfo += `<div style='color: ${staffbgc};' class='staffActivityCard' onclick='bringOffSuspension(${moreinfo.id});'>Remove Suspension</div>`;
-                        }
-                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Notes</div><textarea class='fieldTextarea' id='staffNotesTextarea'>${moreinfo.notes}</textarea></div>`;
-                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Region</div>${regionInputSelector(moreinfo.region)}</div>`;
-                        setMoreInfo += `<div class='field'><div class='fieldTitle'>Discord Tag</div><input class='fieldInput' id='staffDiscordInput' value="${moreinfo.discord_tag}"></div>`;
-                        setMoreInfo += `<div class='field'><div class='fieldTitle'>UID</div><input class='fieldInput' id='staffUIDInput' value="${moreinfo.uid}"></div>`;
+                    // if (moreinfo.id !== userArray.info.id) {
+                    if (moreinfo.onLOA) {
+                        setMoreInfo += `<p style='color: ${staffbgc};'>${moreinfo.name} is on LOA until ${moreinfo.loaEND}</p>`;
+                        setMoreInfo += `<div style='color: ${staffbgc};' class='staffActivityCard' onclick='bringOffLOA(${moreinfo.id});'>Remove LOA</div>`;
+                    }
+                    if (moreinfo.isSuspended) {
+                        setMoreInfo += `<div style='color: ${staffbgc};' class='staffActivityCard' onclick='bringOffSuspension(${moreinfo.id});'>Remove Suspension</div>`;
+                    }
+                    setMoreInfo += `<div class='field'><div class='fieldTitle'>Notes</div><textarea class='fieldTextarea' id='staffNotesTextarea'>${moreinfo.notes}</textarea></div>`;
+                    setMoreInfo += `<div class='field'><div class='fieldTitle'>Region</div>${regionInputSelector(moreinfo.region)}</div>`;
+                    setMoreInfo += `<div class='field'><div class='fieldTitle'>Discord Tag</div><input class='fieldInput' id='staffDiscordInput' value="${moreinfo.discord_tag}"></div>`;
+                    setMoreInfo += `<div class='field'><div class='fieldTitle'>UID</div><input class='fieldInput' id='staffUIDInput' value="${moreinfo.uid}"></div>`;
 
-                        setMoreInfo += `<div class="spacer"></div><div class="btnGroup">`;
+                    setMoreInfo += `<div class="spacer"></div><div class="btnGroup">`;
 
-                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='saveAll("${moreinfo.id}")'>Save Info</button>`;
+                    setMoreInfo += `<button style='color: ${staffbgc};' onclick='saveAll("${moreinfo.id}")'>Save Info</button>`;
 
-                        if (moreinfo.casecount > 0) {
-                            setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffActivity("${moreinfo.id}", "cases")'>View Cases</button>`;
-                            setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffActivity("${moreinfo.id}", "punishments")'>View Punishments</button>`;
-                            setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffActivity("${moreinfo.id}", "bans")'>View Bans</button>`;
-                        }
-                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffAudit("${moreinfo.id}")'>Staff Audit</button>`;
+                    if (moreinfo.casecount > 0) {
+                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffActivity("${moreinfo.id}", "cases")'>View Cases</button>`;
+                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffActivity("${moreinfo.id}", "punishments")'>View Punishments</button>`;
+                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffActivity("${moreinfo.id}", "bans")'>View Bans</button>`;
+                    }
+                    setMoreInfo += `<button style='color: ${staffbgc};' onclick='getStaffAudit("${moreinfo.id}")'>Staff Audit</button>`;
 
-                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='assign_team_menu();'>Assign Team</button>`;
-                        if (!moreinfo.onLOA) {
-                            setMoreInfo += `<button style='color: ${staffbgc};' onclick='send_on_loa_menu();'>Send on LOA</button>`;
-                        }
-                        if (!moreinfo.isSuspended) {
-                            setMoreInfo += `<button style='color: ${staffbgc};' title='Double Click' ondblclick='suspend(${moreinfo.id});'>Suspend</button>`;
-                        }
-                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='update_lastpromotion_menu();'>Update Last Promotion</button>`;
-                        if (moreinfo.rank_lvl >= 6 || moreinfo.rank_lvl === "" || parseInt(userArray.info.rank_lvl) === 1 || userArray.info.dev) {
-                            setMoreInfo += `<button style='color: ${staffbgc};' onclick='assign_rank_menu();'>Assign Rank</button>`;
-                            setMoreInfo += `<button style='color: ${staffbgc};' id='rfl${id}' onclick='removeFromLogger(${id})'>Remove From Logger</button>`;
+                    setMoreInfo += `<button style='color: ${staffbgc};' onclick='assign_team_menu();'>Assign Team</button>`;
+                    if (!moreinfo.onLOA) {
+                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='send_on_loa_menu();'>Send on LOA</button>`;
+                    }
+                    if (!moreinfo.isSuspended) {
+                        setMoreInfo += `<button style='color: ${staffbgc};' title='Double Click' ondblclick='suspend(${moreinfo.id});'>Suspend</button>`;
+                    }
+                    setMoreInfo += `<button style='color: ${staffbgc};' onclick='update_lastpromotion_menu();'>Update Last Promotion</button>`;
+                    if (moreinfo.rank_lvl >= 6 || moreinfo.rank_lvl === "" || parseInt(userArray.info.rank_lvl) === 1 || userArray.info.dev) {
+                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='assign_rank_menu();'>Assign Rank</button>`;
+                        setMoreInfo += `<button style='color: ${staffbgc};' id='rfl${id}' onclick='removeFromLogger(${id})'>Remove From Logger</button>`;
+                    }
+                    setMoreInfo += `</div>`;
+
+
+                    setMoreInfo += `<div class="dropdownGroup">`;
+
+                    if (moreinfo.rank_lvl >= 6 || moreinfo.rank_lvl === "" || parseInt(userArray.info.rank_lvl) === 1 || userArray.info.dev) {
+                        setMoreInfo += `<div id='assignRankMenu' style='display: none;color: ${staffbgc};'>`;
+                        for (let r of moreinfo.ranks_available) {
+                            let selected = false;
+                            for (let rr of moreinfo.all_ranks)
+                                if (rr.id === r.id) selected = true;
+
+                            let icon = (selected) ? '<i id="selected-icon-' + r.id + '" class="fas fa-check"></i>' : '<i id="selected-icon-' + r.id + '" class="fas fa-times"></i>';
+
+                            setMoreInfo += `<div class='staffActivityCard' onclick='assign_rank(\`${id}\`, \`${r.id}\`, \`${(selected) ? 'yes' : 'no'}\`);'>${icon} ${r.name} <i style="float: right;" data-tippy-content="Permission: ${JSON.parse(r.permissions).join(', ')}" class="fas fa-question-circle"></i></div>`;
                         }
                         setMoreInfo += `</div>`;
+                    }
+                    if (!moreinfo.onLOA) {
+                        setMoreInfo += `<div id='sendOnLoaMenu' style='display: none;color: ${staffbgc};'><div class="field"><div class="fieldTitle">Time Of Return</div><input type="date" class="fieldInput" id="timeOfReturn"></div><div class='staffActivityCard' onclick='sendOnLOA(${moreinfo.id});'>Confirm</div></div>`;
+                    }
+                    setMoreInfo += `<div id='assignTeamMenu' style='display: none;color: ${staffbgc};'><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`1\`);'>Staff Team 1</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`2\`);'>Staff Team 2</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`3\`);'>Staff Team 3</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`4\`);'>Staff Team 4</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`5\`);'>Staff Team 5</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`6\`);'>Support Team</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`100\`);'>Senior Management Team</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`500\`);'>Development Team</div></div>`;
+                    setMoreInfo += `<div id='updateLastPromotionMenu' style='display: none;color: ${staffbgc};'><div class="field"><div class="fieldTitle">Promotion Date</div><input type="date" class="fieldInput" value="${moreinfo.lastPromotion}" id="promotionDate"></div><div class='staffActivityCard' onclick='updateLastPromotion(${moreinfo.id});'>Confirm</div></div>`;
+                    setMoreInfo += `</div>`;
 
+                    setMoreInfo += `<div id='activityGraph'></div>`;
 
-                        setMoreInfo += `<div class="dropdownGroup">`;
+                    google.charts.load('current', {
+                        'packages': ['line']
+                    });
 
-                        if (moreinfo.rank_lvl >= 6 || moreinfo.rank_lvl === "" || parseInt(userArray.info.rank_lvl) === 1 || userArray.info.dev) {
-                            setMoreInfo += `<div id='assignRankMenu' style='display: none;color: ${staffbgc};'>`;
-                            for (let r of moreinfo.ranks_available) {
-                                let selected = false;
-                                for (let rr of moreinfo.all_ranks)
-                                    if (rr.id === r.id) selected = true;
+                    google.charts.setOnLoadCallback(finishDisplay);
 
-                                let icon = (selected) ? '<i id="selected-icon-' + r.id + '" class="fas fa-check"></i>' : '<i id="selected-icon-' + r.id + '" class="fas fa-times"></i>';
-
-                                setMoreInfo += `<div class='staffActivityCard' onclick='assign_rank(\`${id}\`, \`${r.id}\`, \`${(selected) ? 'yes' : 'no'}\`);'>${icon} ${r.name} <i style="float: right;" data-tippy-content="Permission: ${JSON.parse(r.permissions).join(', ')}" class="fas fa-question-circle"></i></div>`;
-                            }
-                            setMoreInfo += `</div>`;
-                        }
-                        if (!moreinfo.onLOA) {
-                            setMoreInfo += `<div id='sendOnLoaMenu' style='display: none;color: ${staffbgc};'><div class="field"><div class="fieldTitle">Time Of Return</div><input type="date" class="fieldInput" id="timeOfReturn"></div><div class='staffActivityCard' onclick='sendOnLOA(${moreinfo.id});'>Confirm</div></div>`;
-                        }
-                        setMoreInfo += `<div id='assignTeamMenu' style='display: none;color: ${staffbgc};'><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`1\`);'>Staff Team 1</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`2\`);'>Staff Team 2</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`3\`);'>Staff Team 3</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`4\`);'>Staff Team 4</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`5\`);'>Staff Team 5</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`6\`);'>Support Team</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`100\`);'>Senior Management Team</div><div class='staffActivityCard' onclick='assign_team(\`${id}\`, \`500\`);'>Development Team</div></div>`;
-                        setMoreInfo += `<div id='updateLastPromotionMenu' style='display: none;color: ${staffbgc};'><div class="field"><div class="fieldTitle">Promotion Date</div><input type="date" class="fieldInput" value="${moreinfo.lastPromotion}" id="promotionDate"></div><div class='staffActivityCard' onclick='updateLastPromotion(${moreinfo.id});'>Confirm</div></div>`;
-                        setMoreInfo += `</div>`;
-
-                        setMoreInfo += `<div id='activityGraph'></div>`;
-
-                        google.charts.load('current', {
-                            'packages': ['line']
+                    function finishDisplay() {
+                        let GraphData = Object.keys(moreinfo.activityGraph).map(i => {
+                            return [i, moreinfo.activityGraph[i]]
                         });
 
-                        google.charts.setOnLoadCallback(finishDisplay);
+                        let data = new google.visualization.DataTable();
+                        data.addColumn('string', 'Timestamp');
+                        data.addColumn('number', 'Cases');
 
-                        function finishDisplay() {
-                            let GraphData = Object.keys(moreinfo.activityGraph).map(i => {
-                                return [i, moreinfo.activityGraph[i]]
-                            });
+                        data.addRows([
+                            GraphData[6],
+                            GraphData[5],
+                            GraphData[4],
+                            GraphData[3],
+                            GraphData[2],
+                            GraphData[1],
+                            GraphData[0],
+                        ]);
 
-                            let data = new google.visualization.DataTable();
-                            data.addColumn('string', 'Timestamp');
-                            data.addColumn('number', 'Cases');
+                        let options = {
+                            chart: {
+                                title: 'Staff Activity Across The Week',
+                                subtitle: 'Daily',
+                            },
+                            curveType: 'function',
+                            backgroundColor: '#3c3b62',
+                            legend: {
+                                position: 'bottom'
+                            }
+                        };
 
-                            data.addRows([
-                                GraphData[6],
-                                GraphData[5],
-                                GraphData[4],
-                                GraphData[3],
-                                GraphData[2],
-                                GraphData[1],
-                                GraphData[0],
-                            ]);
+                        $('#staff_info').html(setMoreInfo);
 
-                            let options = {
-                                chart: {
-                                    title: 'Staff Activity Across The Week',
-                                    subtitle: 'Daily',
-                                },
-                                curveType: 'function',
-                                backgroundColor: '#3c3b62',
-                                legend: {
-                                    position: 'bottom'
-                                }
-                            };
+                        let chart = new google.charts.Line(document.getElementById('activityGraph'));
 
-                            $('#staff_info').html(setMoreInfo);
+                        chart.draw(data, google.charts.Line.convertOptions(options));
 
-                            let chart = new google.charts.Line(document.getElementById('activityGraph'));
-
-                            chart.draw(data, google.charts.Line.convertOptions(options));
-
-                            tippy('[data-tippy-content]', {
-                                placement: 'left'
-                            });
-                        }
+                        tippy('[data-tippy-content]', {
+                            placement: 'left'
+                        });
                     }
+                    // }
                     $('#staff_info').html(setMoreInfo);
                 } else {
                     $('#staff_info').html(`<p><b>Oops </b>This staff member could not be found, they may have been removed.</p>`);

@@ -1,16 +1,28 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: kiera
- * Date: 28/11/2018
- * Time: 02:50
- */
-
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Webhook.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+// namespace App\Helper {
+class Statistics {
+    public static function _sort_to_bin(array &$stats, int $time_since_created, int $time_step, int $bin_size, string $key) {
+        for ($x = 0; $x < $bin_size * $time_step; $x += $time_step) {
+            $idx = $x / $time_step;
+            if (!isset($stats[$key][$idx])) {
+                $stats[$key][$idx] = 0;
+            }
+            if ($time_since_created >= ($x) && $time_since_created <= ($x + $time_step)) {
+                $stats[$key][$idx]++;
+            }
+        }
+        return;
+    }
+}
+// }
+
+// namespace {
 
 class Helpers {
 
@@ -213,13 +225,13 @@ class Helpers {
         //        $date = strtotime(date("Y-m-d", strtotime($b->timestamp)) . ' + ' . $b->length . ' days');
 
         return "<div class='punishment_report{$custom_classes}'><span class='player'>{$b->player}'s Ban Report {$ban_expired_text}</span> <span class='points'>{$length}</span>
-            <p>Ban Message: `{$b->message}`</p>
-            <div style='padding: 10px 0 0;'>
-                <span class='{$tsClass}'>Teamspeak Ban: {$ts}</span>
-                <span class='{$igClass}'>Ingame Ban: {$ig}</span>
-                <span class='{$wbClass}'>Website Ban: {$wb}</span>
-            </div>
-        </div>";
+                <p>Ban Message: `{$b->message}`</p>
+                <div style='padding: 10px 0 0;'>
+                    <span class='{$tsClass}'>Teamspeak Ban: {$ts}</span>
+                    <span class='{$igClass}'>Ingame Ban: {$ig}</span>
+                    <span class='{$wbClass}'>Website Ban: {$wb}</span>
+                </div>
+            </div>";
     }
 
     public static function zeroOneToYesNo($n) {
@@ -278,51 +290,51 @@ class Helpers {
             $bmPlayerInfo = Unirest\Request::post('https://api.battlemetrics.com/players/match', $headers, $body);
 
             return '{
-    "data": {
-        "attributes": {
-            "expires": "' . substr(date("c", time() + 60 * 60 * 24 * 30), 0, 19) . '.962Z",
-            "identifiers": [
-                {
-                    "type": "steamID",
-                    "identifier": "' . $steamid . '",
-                    "manual": true
-                }
-            ]
-        },
-        "relationships": {
-            "player": {
-                "data": {
-                    "type": "player",
-                    "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '"
-                }
-            },
-            "servers": {
-                "data": [
+        "data": {
+            "attributes": {
+                "expires": "' . substr(date("c", time() + 60 * 60 * 24 * 30), 0, 19) . '.962Z",
+                "identifiers": [
                     {
-                        "type": "server",
-                        "id": "2921049"
-                    },{
-                        "type": "server",
-                        "id": "2829381"
+                        "type": "steamID",
+                        "identifier": "' . $steamid . '",
+                        "manual": true
                     }
                 ]
             },
-            "organization": {
-                "data": {
-                    "type": "organization",
-                    "id": "8030"
+            "relationships": {
+                "player": {
+                    "data": {
+                        "type": "player",
+                        "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '"
+                    }
+                },
+                "servers": {
+                    "data": [
+                        {
+                            "type": "server",
+                            "id": "2921049"
+                        },{
+                            "type": "server",
+                            "id": "2829381"
+                        }
+                    ]
+                },
+                "organization": {
+                    "data": {
+                        "type": "organization",
+                        "id": "8030"
+                    }
+                },
+                "user": {
+                    "data": {
+                        "type": "user",
+                        "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '"
+                    }
                 }
             },
-            "user": {
-                "data": {
-                    "type": "user",
-                    "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '"
-                }
-            }
-        },
-        "type": "reservedSlot"
-    }
-}';
+            "type": "reservedSlot"
+        }
+    }';
         } catch (\Unirest\Exception $e) {
             self::addAuditLog('ERROR::Unirest Error [Get Player SteamID Match] ' . $e->getMessage());
             return false;
@@ -382,37 +394,37 @@ class Helpers {
         $realBanLength = ($banLength == 0) ? 'null' : '"' . $bl . '"';
 
         $body = '{
-  "data": {
-    "type": "ban",
-    "attributes": {
-      "timestamp": "' . substr(date("c", time()), 0, 19) . '.962Z",
-      "reason": "' . $banReason . ' - {{timeLeft}} - ' . $banningAdminName . '",
-      "note": "",
-      "expires": ' . $realBanLength . ',
-      "identifiers": [
-        {
-          "type": "steamID",
-          "identifier": "' . $playerID . '",
-          "manual": true
-        }
-      ],
-      "orgWide": true,
-      "autoAddEnabled": false,
-      "nativeEnabled": null
-    },
-    "relationships": {
-      "organization": { "data": { "type": "organization", "id": "8030" } },
-      "server": { "data": { "type": "server", "id": "2921049" } },
-      "player": { "data": { "type": "player", "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '" } },
-      "banList": {
-        "data": {
-          "type": "banList",
-          "id": "84f68930-e938-11e8-b55f-a91a07062049"
+      "data": {
+        "type": "ban",
+        "attributes": {
+          "timestamp": "' . substr(date("c", time()), 0, 19) . '.962Z",
+          "reason": "' . $banReason . ' - {{timeLeft}} - ' . $banningAdminName . '",
+          "note": "",
+          "expires": ' . $realBanLength . ',
+          "identifiers": [
+            {
+              "type": "steamID",
+              "identifier": "' . $playerID . '",
+              "manual": true
+            }
+          ],
+          "orgWide": true,
+          "autoAddEnabled": false,
+          "nativeEnabled": null
+        },
+        "relationships": {
+          "organization": { "data": { "type": "organization", "id": "8030" } },
+          "server": { "data": { "type": "server", "id": "2921049" } },
+          "player": { "data": { "type": "player", "id": "' . $bmPlayerInfo->body->data[0]->relationships->player->data->id . '" } },
+          "banList": {
+            "data": {
+              "type": "banList",
+              "id": "84f68930-e938-11e8-b55f-a91a07062049"
+            }
+          }
         }
       }
-    }
-  }
-}';
+    }';
         return Unirest\Request::post('https://api.battlemetrics.com/bans', $headers, $body)->body;
     }
 
@@ -428,7 +440,7 @@ class Helpers {
         global $pdo;
 
         $stmt = $pdo->prepare('INSERT INTO notifications (`title`, `content`, `callback_url`, `for_user_id`) 
-                              VALUES (:t, :c, :url, :id)');
+                                  VALUES (:t, :c, :url, :id)');
         $stmt->bindValue(':t', $title);
         $stmt->bindValue(':c', $content);
         $stmt->bindValue(':url', $link);
@@ -464,3 +476,4 @@ class Helpers {
         return null;
     }
 }
+// }

@@ -2,20 +2,9 @@
 
 namespace App\API\V2\Controller;
 
-use \User, \Permissions, \PDO, \Config, \Helpers, \Cache;
+use \User, \Permissions, \PDO, \Config, \Helpers, \Cache, \Statistics;
 
 class StatisticsController {
-	private function _sort_to_bin(array &$stats, int $time_since_created, int $time_step, int $bin_size, string $key) {
-		for ($x = 0; $x < $bin_size * $time_step; $x += $time_step) {
-			$idx = $x / $time_step;
-			if (!isset($stats[$key][$idx])) {
-				$stats[$key][$idx] = 0;
-			}
-			if ($time_since_created >= ($x) && $time_since_created <= ($x + $time_step)) {
-				$stats[$key][$idx]++;
-			}
-		}
-	}
 	public function CaseStatistics() {
 		global $pdo;
 		$cache = Cache::getRedis();
@@ -29,9 +18,9 @@ class StatisticsController {
 			foreach ($pdo->query('SELECT * FROM case_logs WHERE `timestamp` >= DATE_SUB(NOW(), INTERVAL 6 MONTH)') as $r) {
 				$time_since_created = time() - strtotime($r->timestamp);
 
-				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* day   */ 60 * 60 * 24,      8, 'daily');
-				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* week  */ 60 * 60 * 24 * 7,  5, 'weekly');
-				$this->_sort_to_bin(/* reference */$stats, $time_since_created, /* month */ 60 * 60 * 24 * 30, 7, 'monthly');
+				Statistics::_sort_to_bin(/* reference */$stats, $time_since_created, /* day   */ 60 * 60 * 24,      8, 'daily');
+				Statistics::_sort_to_bin(/* reference */$stats, $time_since_created, /* week  */ 60 * 60 * 24 * 7,  5, 'weekly');
+				Statistics::_sort_to_bin(/* reference */$stats, $time_since_created, /* month */ 60 * 60 * 24 * 30, 7, 'monthly');
 			}
 			$cache->set('cases:stats:all', json_encode($stats), 60 * 60);
 			echo Helpers::NewAPIResponse(["success" => true, "stats" => $stats]);
@@ -115,9 +104,13 @@ class StatisticsController {
 	}
 
 	public function ServerStatistics() {
-		$user = new User;
+		if (!Config::$enableGamePanel) {
+			echo Helpers::APIResponse("Error", "Game Panel is disabled.", 403);
+			return;
+		}
 
-		if (Permissions::init()->hasPermission("VIEW_GENERAL") && Config::$enableGamePanel) {
+		$user = new User;
+		if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
 			$in_cache = Cache::get('server:stats:general');
 
 			if ($in_cache) {
