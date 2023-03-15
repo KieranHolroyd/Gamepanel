@@ -20,10 +20,67 @@ class Statistics {
         return;
     }
 }
+class Headers {
+    /** the function takes an array of timings and returns a string compatible with the ServerTimingAPI header.
+     * @param array $timings Required. the array should be in the following format:
+     * [\
+     * 'key' => [\
+     * 		'description' => 'description of the timing',\
+     * 		'value' => 'value of the timing',\
+     * 	]\
+     * ]
+     * @return string The string compatible with the ServerTimingAPI header.
+     */
+    public static function transform_timings_to_server_timing_header(array $timings) {
+        $server_timing_header = '';
+        usort($timings, function ($a, $b) {
+            return $a['value'] <=> $b['value'];
+        });
+        foreach ($timings as $key => $timing) {
+            $server_timing_header .= $timing['name'] . ';desc="' . $timing['description'] . '";dur=' . $timing['value'] . ',';
+        }
+        return $server_timing_header;
+    }
+
+    /** the function takes a name, description and value and returns an array compatible with the ServerTimingAPI header.
+     * @param string $name Required. the name of the timing.
+     * @param string $description Required. the description of the timing.
+     * @param float $value Required. the value of the timing.
+     * @return array The array compatible with the transform function.
+     */
+    public static function create_timing_object(string $name, string $description, float $value) {
+        if (!isset($_SESSION['timings']) || !is_array($_SESSION['timings']))
+            $_SESSION['timings'] = [];
+
+        $name = str_replace(':', '-', $name);
+
+        $_SESSION['timings'][$name] = [
+            'name' => $name,
+            'description' => $description,
+            'value' => $value / 1e6,
+        ];
+
+        return [
+            'name' => $name,
+            'description' => $description,
+            'value' => $value,
+        ];
+    }
+
+    /** the function sends the correctly formatted Server-Timing header if the timings array is set on the `$_SESSION` variable.
+     * @return void
+     */
+    public static function send_server_timing_header() {
+        if (isset($_SESSION['timings']) && is_array($_SESSION['timings'])) {
+            header('Server-Timing: ' . self::transform_timings_to_server_timing_header($_SESSION['timings']));
+            unset($_SESSION['timings']);
+        }
+    }
+}
 // }
 
-// namespace {
 
+// namespace {
 class Helpers {
 
     public static function ParseOtherStaff($staff) {

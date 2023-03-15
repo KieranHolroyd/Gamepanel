@@ -2,12 +2,12 @@
 
 namespace App\API\V2\Controller;
 
+use Headers;
 use \User, \Permissions, \PDO, \Config, \Helpers, \Cache, \Statistics;
 
 class StatisticsController {
 	public function CaseStatistics() {
-		global $pdo;
-		$cache = Cache::getRedis();
+		global $pdo, $cache;
 		$in_cache = $cache->get('cases:stats:all');
 
 		if ($in_cache) {
@@ -28,8 +28,7 @@ class StatisticsController {
 	}
 
 	public function DailyCases() {
-		global $pdo;
-		$cache = Cache::getRedis();
+		global $pdo, $cache;
 		$in_cache = $cache->get('cases:stats:daily');
 
 		if ($in_cache) {
@@ -66,8 +65,7 @@ class StatisticsController {
 	}
 
 	public function WeeklyCases() {
-		global $pdo;
-		$cache = Cache::getRedis();
+		global $pdo, $cache;
 		$in_cache = $cache->get('cases:stats:weekly');
 
 		if ($in_cache) {
@@ -104,6 +102,7 @@ class StatisticsController {
 	}
 
 	public function ServerStatistics() {
+		global $cache;
 		if (!Config::$enableGamePanel) {
 			echo Helpers::APIResponse("Error", "Game Panel is disabled.", 403);
 			return;
@@ -111,7 +110,7 @@ class StatisticsController {
 
 		$user = new User;
 		if (Permissions::init()->hasPermission("VIEW_GENERAL")) {
-			$in_cache = Cache::get('server:stats:general');
+			$in_cache = $cache->get('server:stats:general');
 
 			if ($in_cache) {
 				echo Helpers::APIResponse("Success", json_decode($in_cache), 200);
@@ -134,11 +133,13 @@ class StatisticsController {
 				$stmt = $gamepdo->prepare('SELECT `bankacc`, `name`, `uid`, `playerid`, `last_seen` from `players` ORDER BY bankacc DESC LIMIT 5');
 				$stmt->execute();
 				$richList = $stmt->fetchAll(PDO::FETCH_OBJ);
+
 				foreach ($richList as $user) {
 					$user->bankacc = "$" . number_format($user->bankacc, 0);
 				}
+
 				$server_data = ['serverBalance' => ['read' => $serverBalance->total, 'formatted' => '$' . number_format($serverBalance->total)], 'players' => ['total' => $players->total, 'total_cops' => $cops->total, 'total_medics' => $medics->total, 'rich_list' => $richList]];
-				Cache::set('server:stats:general', json_encode($server_data), 60 * 60);
+				$cache->set('server:stats:general', json_encode($server_data), 60 * 60);
 				echo Helpers::APIResponse("Success", $server_data, 200);
 			}
 		} else {

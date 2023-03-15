@@ -2,6 +2,7 @@
 
 namespace App\API\V2;
 
+use Headers;
 use Helpers;
 
 require __DIR__ . '/include.php';

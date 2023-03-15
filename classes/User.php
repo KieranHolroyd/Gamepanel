@@ -11,8 +11,7 @@ class User {
     public $error = false;
 
     public function __construct($id = null) {
-        global $pdo;
-        $cache = Cache::getRedis();
+        global $pdo, $cache;
         if ($id) {
             $exists_in_cache = $cache->get("user:{$id}");
             if ($exists_in_cache) {
@@ -243,12 +242,10 @@ class User {
     }
 
     public function fetchNotifications() {
-        global $pdo;
+        global $pdo, $cache;
 
         if (!$this->infoExists())
             return false;
-
-        $cache = Cache::getRedis();
 
         $notifications = $cache->get("notifications:{$this->info->id}");
         if ($notifications) {
