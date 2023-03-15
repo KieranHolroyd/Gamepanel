@@ -4,10 +4,8 @@ namespace App\API\V2\Controller;
 
 use  \Helpers, \Permissions, \User;
 
-class RoleController
-{
-	public function List()
-	{
+class RoleController {
+	public function List() {
 		global $pdo;
 
 		if (Permissions::init()->hasPermission("VIEW_ROLES")) {
@@ -25,18 +23,17 @@ class RoleController
 		}
 	}
 
-	public function Update($roleID)
-	{
+	public function Update($roleID) {
 		global $pdo;
 
 		$user = new User;
 		$sudo = Permissions::init()->hasSudo();
 
-		$perms = (isset($_POST['perms'])) ? $_POST['perms'] : false;
+		$perms = (isset($_POST['perms'])) ? $_POST['perms'] : [];
 		$name = (isset($_POST['name'])) ? $_POST['name'] : false;
 
 		if (Permissions::init()->hasPermission("EDIT_ROLE")) {
-			if ($roleID === false || $perms === false) {
+			if ($roleID === false) {
 				echo Helpers::NewAPIResponse(["success" => false, "message" => "RoleID Required"]);
 				exit;
 			}
@@ -78,8 +75,7 @@ class RoleController
 		}
 	}
 
-	public function Add()
-	{
+	public function Add() {
 		global $pdo;
 
 		$name = (isset($_POST['name'])) ? $_POST['name'] : false;
@@ -114,8 +110,7 @@ class RoleController
 		}
 	}
 
-	public function Shuffle($roleID)
-	{
+	public function Shuffle($roleID) {
 		global $pdo;
 
 		$user = new User;
@@ -170,8 +165,7 @@ class RoleController
 		}
 	}
 
-	public function Delete($roleID)
-	{
+	public function Delete($roleID) {
 		global $pdo;
 
 		$sudo = Permissions::init()->hasSudo();

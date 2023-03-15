@@ -39,10 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $arr['token'] .= $token;
             $arr['uid'] .= $userid;
             $json = json_encode($arr);
-            Helpers::addAuditLog("LOGGED_IN::{$_SERVER['REMOTE_ADDR']} Logged Into Account ID:{$userid} Username:{$selected_user->username}");
+            Helpers::addAuditLog("LOGGED_IN Logged Into Account ID:{$userid} Username:{$selected_user->username}");
             echo $json;
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `Login`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `Login`");
             $arr['token'] .= "Failed";
             $json = json_encode($arr);
             echo $json;
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $query3->bindValue(':password', $password, PDO::PARAM_STR);
                         $query3->execute();
                         $latestID = $pdo->lastInsertId();
-                        Helpers::addAuditLog("ACCOUNT_CREATED::{$_SERVER['REMOTE_ADDR']} Created Account {$username} With ID {$latestID}");
+                        Helpers::addAuditLog("ACCOUNT_CREATED Created Account {$username} With ID {$latestID}");
                         echo "Account Created.";
                     } else {
                         echo "Username Already Used.";
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo true;
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CheckLogin`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `CheckLogin`");
             echo false;
         }
     } else if ($url == "addGuide") {
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Helpers::addAuditLog("{$li->info->username} Added Guide {$title}");
             echo "Guide Added Successfully.";
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddGuide`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `AddGuide`");
             echo "Insufficient Permissions.";
         }
     } else if ($url == "editGuide") {
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Helpers::addAuditLog("{$li->info->username} Edited Guide `{$title}`");
             echo "Guide Edited Successfully.";
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `EditGuide`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `EditGuide`");
             echo "Insufficient Permissions.";
         }
     } else if ($url == "removeStaff") {
@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 Helpers::addAuditLog("{$user->info->username} Tried to terminate their own account");
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} ~ {$user->info->username} ~ Triggered An Unauthenticated Response In `RemoveStaff`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED ~ {$user->info->username} ~ Triggered An Unauthenticated Response In `RemoveStaff`");
         }
     } else if ($url == "getFullGuide") {
         $user = new User;
@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $arr['effective'] = $r->effective;
             echo json_encode($arr);
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetFullGuide`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetFullGuide`");
         }
     } else if ($url == "getMoreInfo") {
         $user = new User;
@@ -266,7 +266,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $report['report']['timestamp'] = htmlspecialchars($r->timestamp);
             echo Helpers::APIResponse("Fetched More Info", $report, 200);
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetMoreInfo`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetMoreInfo`");
             echo Helpers::APIResponse("Failed: Unauthorised", null, 401);
         }
     } else if ($url == "getSearchResults") {
@@ -408,7 +408,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     break;
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetSearchResults`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetSearchResults`");
             echo Helpers::APIResponse("Search Failed: Unauthorised", null, 401);
         }
     } else if ($url == "getStaffActivity") {
@@ -510,7 +510,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetStaffActivity`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetStaffActivity`");
             echo Helpers::APIResponse("Unauthorised", null, 401);
         }
     } else if ($url == "getMyActivity") {
@@ -610,7 +610,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Field Required", null, 400);
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetMyActivity`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetMyActivity`");
             echo Helpers::APIResponse("Unauthorised", null, 401);
         }
     } else if ($url == "getStaffMoreInfo") {
@@ -757,7 +757,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $staffinfo['ranks_available'] = $ranks_available;
             echo Helpers::APIResponse("Fetched User", $staffinfo, 200);
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetStaffMoreInfo`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetStaffMoreInfo`");
             echo Helpers::APIResponse("Unauthorised", null, 401);
         }
     } else if ($url == "getMyInfo") {
@@ -788,8 +788,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $allTimeCount = $AllTime;
             //Check for activity warnings based on current weekly case count.
             $staffinfo['activity_warning'] = false;
-            if ($r->rank_lvl >= 7) {
-                if ($Recent < 10) {
+            if (!Permissions::init()->hasPermission('BYPASS_ACTIVITY')) {
+                if ($Recent < 5) {
                     $staffinfo['activity_warning'] = true;
                 }
             }
@@ -855,7 +855,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $staffinfo['casecount_week'] = $recentCount;
             echo Helpers::APIResponse("Fetched User", $staffinfo, 200);
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetMyInfo`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetMyInfo`");
             echo Helpers::APIResponse("Unauthorised", null, 401);
         }
     } else if ($url == "addCommentNew") {
@@ -878,7 +878,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddCommentNew`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `AddCommentNew`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "addPointNew") {
@@ -902,7 +902,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Failed To Add Point", $stmt->errorinfo(), 500);
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddPointNew`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `AddPointNew`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "sendMessage") {
@@ -926,7 +926,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             echo json_encode(["code" => 200, "message" => "sent"]);
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SendMessage`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SendMessage`");
             echo json_encode(["code" => 401, "message" => "You're Not Authorised"]);
         }
     } else if ($url == "getMessages") {
@@ -947,7 +947,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo json_encode(["list" => $messages, "code" => 200]);
         } else {
             echo json_encode(["message" => "Unauthorised", "code" => 401]);
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `GetMessages`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetMessages`");
         }
     } else if ($url == "saveStaffNotes") {
         $li = new User();
@@ -964,12 +964,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 print_r($stmt->errorinfo());
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffNotes`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffNotes`");
         }
     } else if ($url == "saveStaffDiscordTag") {
         $li = new User();
         //TODO: fix this
-        if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
+        if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
             $stmt = $pdo->prepare('UPDATE users SET discord_tag = :tag WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
             $stmt->bindValue(':tag', htmlspecialchars($_POST['tag']), PDO::PARAM_STR);
@@ -981,12 +981,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 print_r($stmt->errorinfo());
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
         }
     } else if ($url == "saveStaffUID") {
         $li = new User();
         //TODO: fix this
-        if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
+        if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
             $stmt = $pdo->prepare('UPDATE users SET steamid = :uid WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
             $stmt->bindValue(':uid', htmlspecialchars($_POST['uid']), PDO::PARAM_STR);
@@ -998,7 +998,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 print_r($stmt->errorinfo());
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffUID`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffUID`");
         }
     } else if ($url == "saveStaffPromotion") {
         $li = new User();
@@ -1016,7 +1016,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 print_r($stmt->errorinfo());
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffPromotion`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffPromotion`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "saveStaffRegion") {
@@ -1035,7 +1035,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 print_r($stmt->errorinfo());
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SaveStaffRegion`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffRegion`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "sendOnLOA") {
@@ -1054,7 +1054,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 print_r($stmt->errorinfo());
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `SendOnLOA`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SendOnLOA`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "deletePoint") {
@@ -1085,7 +1085,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Database Error [Failed To Delete Point]", $stmt->errorInfo(), 500);
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `DeleteMeetingPoint`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `DeleteMeetingPoint`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "interview") {
@@ -1107,7 +1107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `AddInterview`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `AddInterview`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "editInterview") {
@@ -1133,7 +1133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
             }
         } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `EditInterview`");
+            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `EditInterview`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "playerChangeAdminLevel") {

@@ -165,7 +165,7 @@ class Helpers {
         $stmt = $pdo->prepare('INSERT INTO audit_log (log_content, log_context, logged_in_user) VALUES (:content, :ctx, :liu)');
         $stmt->bindValue(':content', $content);
         $stmt->bindValue(':ctx', $ctx);
-        $stmt->bindValue(':liu', @$user->info->id); // Supressing error (using stdClass as array)
+        $stmt->bindValue(':liu', ($user->isStaff()) ? @$user->info->id : 0); // Supressing error (using stdClass as array)
         $stmt->execute();
         $stmt->closeCursor();
 
@@ -174,7 +174,7 @@ class Helpers {
             try {
                 $hook = new WebhookManager;
                 $content = self::parseAuditLogForWebhook($content);
-                $response = @$hook->discord()->embed("Audit Log", $content, @$user->info->username)->send();
+                $response = @$hook->discord()->embed("Audit Log", $content, ($user->isStaff()) ? @$user->info->username : "No User")->send();
                 if ($response["error"]) {
                     self::addAuditLog("DISCORD_WEBHOOK_ERROR::" . $response["error"], false);
                 }

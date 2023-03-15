@@ -4,13 +4,52 @@ namespace App\API\V2\Controller;
 
 use \Meetings, \User, \Helpers, \Permissions, \PDO;
 
-class MeetingsController
-{
-	public function ListMeetings()
-	{
+class MeetingsController {
+	public function ListMeetings() {
+		global $pdo;
 		$user = new User;
 
-		$meetings = Meetings::list($user);
+		$wheres = "";
+
+		if ($user->isStaff()) {
+			$wheres .= "staff = 1 ";
+		}
+		$or = ($wheres != "") ? 'OR' : '';
+		if ($user->isPD()) {
+			$wheres .= "{$or} pd = 1 ";
+		}
+		$or = ($wheres != "") ? 'OR' : '';
+		if ($user->isEMS()) {
+			$wheres .= "{$or} ems = 1 ";
+		}
+		$or = ($wheres != "") ? 'OR' : '';
+		if ($user->isSLT()) {
+			$wheres .= "{$or} slt = 1";
+		}
+
+		$stmt = $pdo->prepare("SELECT * FROM meetings WHERE {$wheres} ORDER BY date DESC");
+
+		if (!$stmt->execute()) {
+			echo Helpers::NewAPIResponse(["message" => "Database Call Failed", "success" => false, "error" => $stmt->errorInfo()]);
+		}
+
+		$meetings = $stmt->fetchAll();
+
+		if (!$meetings) {
+			echo Helpers::NewAPIResponse(["message" => "No meetings found.", "success" => false]);
+		}
+
+		foreach ($meetings as $meeting) {
+			$stmt = $pdo->prepare('SELECT COUNT(*) AS count FROM meeting_points WHERE meetingID = :id');
+			$stmt->bindValue(':id', $meeting->id, PDO::PARAM_STR);
+			$stmt->execute();
+			$point = $stmt->fetch();
+			$meeting->points = (int)$point->count;
+			if ($meeting->staff) $meeting->type = 'Staff ';
+			if ($meeting->pd) $meeting->type = 'Police ';
+			if ($meeting->ems) $meeting->type = 'EMS ';
+			if ($meeting->slt) $meeting->type = 'SLT ';
+		}
 
 		if (!$meetings) {
 			echo Helpers::NewAPIResponse(["message" => "No meetings found.", "success" => false]);
@@ -25,8 +64,7 @@ class MeetingsController
 		echo Helpers::NewAPIResponse(["success" => true, "meetings" => $meetings]);
 	}
 
-	public function CreateMeeting()
-	{
+	public function CreateMeeting() {
 		global $pdo;
 		$user = new User;
 
@@ -65,8 +103,7 @@ class MeetingsController
 		}
 	}
 
-	public function GetMeeting($id)
-	{
+	public function GetMeeting($id) {
 		global $pdo;
 		$user = new User;
 		if (!isset($id)) {
@@ -95,8 +132,7 @@ class MeetingsController
 	}
 
 	// TODO: rename point.
-	public function AddPoint($id)
-	{
+	public function AddPoint($id) {
 		global $pdo;
 		$user = new User;
 
@@ -128,8 +164,7 @@ class MeetingsController
 		}
 	}
 
-	public function AddPointComment($meetingid, $pointid)
-	{
+	public function AddPointComment($meetingid, $pointid) {
 		global $pdo;
 		$user = new User;
 
@@ -160,8 +195,7 @@ class MeetingsController
 		}
 	}
 
-	public function DeletePoint($meetingid, $pointid)
-	{
+	public function DeletePoint($meetingid, $pointid) {
 		global $pdo;
 		$user = new User;
 
@@ -195,8 +229,7 @@ class MeetingsController
 		}
 	}
 
-	public function GetPoint($meetingid, $pointid)
-	{
+	public function GetPoint($meetingid, $pointid) {
 		global $pdo;
 
 		if (Permissions::init()->hasPermission("VIEW_MEETING")) {

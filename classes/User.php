@@ -40,23 +40,18 @@ class User {
                     $result = $stmt->fetch();
                     $stmt->closeCursor();
                     if ($result) {
-                        $exists_in_cache = $cache->get("user:{$result->user_id}");
-                        if ($exists_in_cache) {
-                            return $this->info = json_decode($exists_in_cache);
-                        } else {
-                            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-                            $stmt->bindValue(':id', $result->user_id);
-                            if ($stmt->execute()) {
-                                $usr = $stmt->fetch();
-                                if ($usr) {
-                                    $cache->set("user:{$usr->id}", json_encode($usr), ["ex" => USER_CACHE_EXPIRY]);
-                                    $this->info = $usr;
-                                } else {
-                                    $this->error = true;
-                                }
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+                        $stmt->bindValue(':id', $result->user_id);
+                        if ($stmt->execute()) {
+                            $usr = $stmt->fetch();
+                            if ($usr) {
+                                $cache->set("user:{$usr->id}", json_encode($usr), ["ex" => USER_CACHE_EXPIRY]);
+                                $this->info = $usr;
                             } else {
                                 $this->error = true;
                             }
+                        } else {
+                            $this->error = true;
                         }
                     } else {
                         $this->error = true;
@@ -142,37 +137,6 @@ class User {
         if ($this->info->suspended) {
             return true;
         }
-        return false;
-    }
-
-    public function hasGameReadAccess($level = 0) {
-        if (!$this->infoExists())
-            return false;
-        if ($level == 0) {
-            if ($this->info->rank_lvl <= 8 || $this->info->Developer || $this->isCommand()) {
-                return true;
-            }
-        } else {
-            if ($this->info->rank_lvl <= 7 || $this->info->Developer || $this->isCommand()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function hasGameWriteAccess($comp = true) {
-        if (!$this->infoExists())
-            return false;
-        if ($comp) {
-            if ($this->info->rank_lvl <= 6 || $this->info->Developer) {
-                return true;
-            }
-        } else {
-            if ($this->info->rank_lvl <= 6 || $this->info->Developer || $this->isCommand()) {
-                return true;
-            }
-        }
-
         return false;
     }
 

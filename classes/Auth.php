@@ -7,17 +7,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Config.php';
 
 class Auth extends User {
 
-    public function SLTRequired()
-    {
+    public function SLTRequired() {
         if (!$this->isSLT()) {
             echo '<h1>Unauthorised! Redirecting...</h1><meta http-equiv="refresh" content="0;url=/">';
             die();
         }
     }
 
-    public function RequireGameAccess()
-    {
-        if (!$this->hasGameReadAccess()) {
+    public function RequireGameAccess() {
+        if (!Permissions::init()->hasPermission("VIEW_GAME")) {
             echo '<h1>Unauthorised! Redirecting...</h1><meta http-equiv="refresh" content="0;url=/">';
             die();
         }
@@ -26,5 +24,4 @@ class Auth extends User {
             die();
         }
     }
-
 }

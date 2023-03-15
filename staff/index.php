@@ -225,28 +225,27 @@ Guard::init()->SLTRequired();
                         setMoreInfo += `<button style='color: ${staffbgc};' title='Double Click' ondblclick='suspend(${moreinfo.id});'>Suspend</button>`;
                     }
                     setMoreInfo += `<button style='color: ${staffbgc};' onclick='update_lastpromotion_menu();'>Update Last Promotion</button>`;
-                    if (moreinfo.rank_lvl >= 6 || moreinfo.rank_lvl === "" || parseInt(userArray.info.rank_lvl) === 1 || userArray.info.dev) {
-                        setMoreInfo += `<button style='color: ${staffbgc};' onclick='assign_rank_menu();'>Assign Rank</button>`;
-                        setMoreInfo += `<button style='color: ${staffbgc};' id='rfl${id}' onclick='removeFromLogger(${id})'>Remove From Logger</button>`;
-                    }
+                    // These should be hidden based on permissions
+                    setMoreInfo += `<button style='color: ${staffbgc};' onclick='assign_rank_menu();'>Assign Rank</button>`;
+                    setMoreInfo += `<button style='color: ${staffbgc};' id='rfl${id}' onclick='removeFromLogger(${id})'>Remove From Logger</button>`;
+                    // /These should be hidden based on permissions
                     setMoreInfo += `</div>`;
 
 
                     setMoreInfo += `<div class="dropdownGroup">`;
+                    // These should be hidden based on permissions
+                    setMoreInfo += `<div id='assignRankMenu' style='display: none;color: ${staffbgc};'>`;
+                    for (let r of moreinfo.ranks_available) {
+                        let selected = false;
+                        for (let rr of moreinfo.all_ranks)
+                            if (rr.id === r.id) selected = true;
 
-                    if (moreinfo.rank_lvl >= 6 || moreinfo.rank_lvl === "" || parseInt(userArray.info.rank_lvl) === 1 || userArray.info.dev) {
-                        setMoreInfo += `<div id='assignRankMenu' style='display: none;color: ${staffbgc};'>`;
-                        for (let r of moreinfo.ranks_available) {
-                            let selected = false;
-                            for (let rr of moreinfo.all_ranks)
-                                if (rr.id === r.id) selected = true;
+                        let icon = (selected) ? '<i id="selected-icon-' + r.id + '" class="fas fa-check"></i>' : '<i id="selected-icon-' + r.id + '" class="fas fa-times"></i>';
 
-                            let icon = (selected) ? '<i id="selected-icon-' + r.id + '" class="fas fa-check"></i>' : '<i id="selected-icon-' + r.id + '" class="fas fa-times"></i>';
-
-                            setMoreInfo += `<div class='staffActivityCard' onclick='assign_rank(\`${id}\`, \`${r.id}\`, \`${(selected) ? 'yes' : 'no'}\`);'>${icon} ${r.name} <i style="float: right;" data-tippy-content="Permission: ${JSON.parse(r.permissions).join(', ')}" class="fas fa-question-circle"></i></div>`;
-                        }
-                        setMoreInfo += `</div>`;
+                        setMoreInfo += `<div class='staffActivityCard' onclick='assign_rank(\`${id}\`, \`${r.id}\`, \`${(selected) ? 'yes' : 'no'}\`);'>${icon} ${r.name} <i style="float: right;" data-tippy-content="Permission: ${JSON.parse(r.permissions).join(', ')}" class="fas fa-question-circle"></i></div>`;
                     }
+                    setMoreInfo += `</div>`;
+                    // /These should be hidden based on permissions
                     if (!moreinfo.onLOA) {
                         setMoreInfo += `<div id='sendOnLoaMenu' style='display: none;color: ${staffbgc};'><div class="field"><div class="fieldTitle">Time Of Return</div><input type="date" class="fieldInput" id="timeOfReturn"></div><div class='staffActivityCard' onclick='sendOnLOA(${moreinfo.id});'>Confirm</div></div>`;
                     }

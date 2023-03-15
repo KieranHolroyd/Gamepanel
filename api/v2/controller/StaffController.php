@@ -44,19 +44,15 @@ class StaffController {
 				$stmt->execute();
 				$recent = $stmt->fetch()->count;
 				$activity = 'Good';
-				if ($r->rank_lvl < 4) {
-					$activity = 'God';
-				}
-				if (($r->rank_lvl != 9 || (time() - strtotime($r->lastPromotion)) > 128000) && $r->rank_lvl > 6) {
-					if ($recent < 20) {
+				if (Permissions::init()->hasPermission("BYPASS_ACTIVITY")) {
+					$activity = 'N/A';
+				} else {
+					if ($recent < 10)
 						$activity = 'Initial Warning';
-					}
-					if ($recent < 10) {
+					if ($recent < 5)
 						$activity = '<span style="color: #ff8a00;">Warning</span>';
-					}
-					if ($recent < 3) {
+					if ($recent < 2)
 						$activity = '<span style="color: #ff0000;">Terrible</span>';
-					}
 				}
 
 				$loa = '';
@@ -353,7 +349,7 @@ class StaffController {
 			$allTimeCount = $AllTime;
 			//Check for activity warnings based on current weekly case count.
 			$staffinfo['activity_warning'] = false;
-			if ($r->rank_lvl >= 7) {
+			if (!Permissions::init()->hasPermission("BYPASS_ACTIVITY")) {
 				if ($Recent < 5 && $Month < 10) {
 					$staffinfo['activity_warning'] = true;
 				}
@@ -406,8 +402,6 @@ class StaffController {
 				$r->region = '';
 			if ($r->discord_tag == null)
 				$r->discord_tag = '';
-			if ($r->rank_lvl == null)
-				$r->rank_lvl = 100;
 			if ($r->lastPromotion == null)
 				$r->lastPromotion = 'CHANGE ME';
 
@@ -453,7 +447,6 @@ class StaffController {
 			}
 			$staffinfo['uid'] = $r->steamid;
 			$staffinfo['lastPromotion'] = $r->lastPromotion;
-			$staffinfo['rank_lvl'] = $r->rank_lvl;
 			$staffinfo['team'] = $r->staff_team;
 			$staffinfo['isSuspended'] = ($r->suspended) ? true : false;
 			$staffinfo['region'] = $r->region;
