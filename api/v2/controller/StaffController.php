@@ -44,7 +44,7 @@ class StaffController {
 				$stmt->execute();
 				$recent = $stmt->fetch()->count;
 				$activity = 'Good';
-				if (Permissions::init()->hasPermission("BYPASS_ACTIVITY")) {
+				if (Permissions::forUserID($r->id)->hasPermission("BYPASS_ACTIVITY")) {
 					$activity = 'N/A';
 				} else {
 					if ($recent < 10)
@@ -349,7 +349,7 @@ class StaffController {
 			$allTimeCount = $AllTime;
 			//Check for activity warnings based on current weekly case count.
 			$staffinfo['activity_warning'] = false;
-			if (!Permissions::init()->hasPermission("BYPASS_ACTIVITY")) {
+			if (!Permissions::forUserID($r->id)->hasPermission("BYPASS_ACTIVITY")) {
 				if ($Recent < 5 && $Month < 10) {
 					$staffinfo['activity_warning'] = true;
 				}

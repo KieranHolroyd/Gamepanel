@@ -108,6 +108,7 @@ class Config
 		//-- Special
 		"*",
 		"SPECIAL_DEVELOPER",
+		"BYPASS_ACTIVITY",
 
 		//-- Cases
 		"SUBMIT_CASE",

@@ -3,20 +3,25 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Config.php';
 
-class Permissions extends User
-{
+class Permissions extends User {
     private static $instance;
 
-    public static function init()
-    {
+    public static function init() {
         if (is_null(self::$instance)) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    public static function getHighestRank($user_ranks)
-    {
+    public static function forUserID($id = null) {
+        if (is_null($id)) {
+            return new self();
+        } else {
+            return new self($id);
+        }
+    }
+
+    public static function getHighestRank($user_ranks) {
         global $pdo;
 
         $arr = [];
@@ -34,8 +39,7 @@ class Permissions extends User
         }
     }
 
-    public function hasPermission($name)
-    {
+    public function hasPermission($name) {
         global $pdo;
 
         if (!$this->verified(false)) return false;
@@ -61,8 +65,7 @@ class Permissions extends User
         return false;
     }
 
-    public function hasSudo()
-    {
+    public function hasSudo() {
         global $pdo;
 
         if (!$this->verified(false)) return false;
@@ -89,8 +92,7 @@ class Permissions extends User
         return false;
     }
 
-    public function isOverlord()
-    {
+    public function isOverlord() {
         if ($this->info->isServerOwner)
             return true;
         return false;

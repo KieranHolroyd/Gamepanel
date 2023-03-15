@@ -788,7 +788,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $allTimeCount = $AllTime;
             //Check for activity warnings based on current weekly case count.
             $staffinfo['activity_warning'] = false;
-            if (!Permissions::init()->hasPermission('BYPASS_ACTIVITY')) {
+            if (!Permissions::forUserID($r->id)->hasPermission('BYPASS_ACTIVITY')) {
                 if ($Recent < 5) {
                     $staffinfo['activity_warning'] = true;
                 }
