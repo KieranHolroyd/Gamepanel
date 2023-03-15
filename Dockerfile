@@ -17,11 +17,6 @@ RUN apt-get update && apt-get install -y \
 	&& docker-php-ext-install -j$(nproc) zip \
 	&& docker-php-ext-install -j$(nproc) opcache
 
-ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS="0" \
-	PHP_OPCACHE_MAX_ACCELERATED_FILES="10000" \
-	PHP_OPCACHE_MEMORY_CONSUMPTION="192" \
-	PHP_OPCACHE_MAX_WASTED_PERCENTAGE="10"
-
 # Install php-redis
 RUN pecl install -o -f redis \
 	&&  rm -rf /tmp/pear \
