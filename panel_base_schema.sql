@@ -308,6 +308,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `timezone` text DEFAULT NULL,
   `steamid` text DEFAULT NULL,
   `discord_tag` text DEFAULT NULL,
+  `discord_id` bigint DEFAULT NULL,
   `active` tinyint(1) DEFAULT NULL,
   `strikes` int(11) DEFAULT NULL,
   `notes` text DEFAULT NULL,
