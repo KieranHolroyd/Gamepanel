@@ -451,6 +451,7 @@ class StaffController {
 			$staffinfo['isSuspended'] = ($r->suspended) ? true : false;
 			$staffinfo['region'] = $r->region;
 			$staffinfo['discord_tag'] = $r->discord_tag;
+			$staffinfo['discord_id'] = $r->discord_id;
 			$staffinfo['activityGraph'] = (array) $activityGraph;
 			$staffinfo['casecount'] = $allTimeCount;
 			$staffinfo['casecount_week'] = $recentCount;
@@ -460,6 +461,35 @@ class StaffController {
 		} else {
 			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `StaffController::StaffDetails`");
 			echo Helpers::APIResponse("Unauthorised", null, 401);
+		}
+	}
+
+	public function UpdateDiscordTag($userid) {
+		global $pdo;
+		$li = new User();
+		$tag = htmlspecialchars($_POST['tag']);
+		$id = htmlspecialchars($userid);
+		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $id) {
+			$controller = new DiscordIntegrationController();
+			$search_response = json_decode($controller->SearchForMemberByTag($tag));
+			if (!empty($search_response)) {
+				$discord_id = $search_response[0]->user->id;
+			} else {
+				$discord_id = null;
+			}
+			$stmt = $pdo->prepare('UPDATE users SET discord_tag = :tag, discord_id = :duid WHERE id = :id');
+			$stmt->bindValue(':id', $id, PDO::PARAM_STR);
+			$stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
+			$stmt->bindValue(':duid', $discord_id);
+			if ($stmt->execute()) {
+				$updatedUsername = Helpers::IDToUsername($id);
+				Helpers::addAuditLog("{$li->info->username} Set Discord Tag For {$updatedUsername} To {$tag}");
+				echo "Success";
+			} else {
+				print_r($stmt->errorinfo());
+			}
+		} else {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
 		}
 	}
 }

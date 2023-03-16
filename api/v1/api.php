@@ -1,5 +1,6 @@
 <?php
 //error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
 session_start();
 include_once $_SERVER['DOCUMENT_ROOT'] . "/db.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/User.php";
@@ -9,6 +10,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Config.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/DiffViewer.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Parsedown.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/classes/Interviews.php";
+include_once $_SERVER['DOCUMENT_ROOT'] . "/api/v2/controller/DiscordIntegrationController.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/vendor/autoload.php";
 $url = $_GET['url'];
 
@@ -967,25 +969,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffNotes`");
         }
     } else if ($url == "saveStaffDiscordTag") {
-        $li = new User();
-        //TODO: fix this
-        if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
-            $stmt = $pdo->prepare('UPDATE users SET discord_tag = :tag WHERE id = :id');
-            $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
-            $stmt->bindValue(':tag', htmlspecialchars($_POST['tag']), PDO::PARAM_STR);
-            if ($stmt->execute()) {
-                $updatedUsername = Helpers::IDToUsername($_POST['id']);
-                Helpers::addAuditLog("{$li->info->username} Set Discord Tag For {$updatedUsername} To {$_POST['tag']}");
-                echo "Success";
-            } else {
-                print_r($stmt->errorinfo());
-            }
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
-        }
     } else if ($url == "saveStaffUID") {
         $li = new User();
-        //TODO: fix this
         if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
             $stmt = $pdo->prepare('UPDATE users SET steamid = :uid WHERE id = :id');
             $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);

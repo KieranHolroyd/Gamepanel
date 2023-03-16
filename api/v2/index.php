@@ -2,10 +2,10 @@
 
 namespace App\API\V2;
 
-use Headers;
 use Helpers;
 
-require __DIR__ . '/include.php';
+require_once __DIR__ . '/include.php';
+require __DIR__ . '/setup.php';
 $router = new \Bramus\Router\Router();
 
 // Add CORS headers to all responses (for development)
@@ -78,6 +78,7 @@ $router->get('/staff/{id}/details', 'StaffController@StaffDetails');
 $router->post('/staff/applications/submit', 'StaffController@SubmitApplication');
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
+$router->post('/staff/{userid}/discord', 'StaffController@UpdateDiscordTag');
 
 //-- Role Management Routes
 $router->get('/roles/list', 'RoleController@List');
@@ -95,6 +96,9 @@ $router->post('/meetings/{meetingid}/point/{pointid}/delete', 'MeetingsControlle
 $router->post('/meetings/{meetingid}/point/{pointid}/comment', 'MeetingsController@AddPointComment');
 $router->post('/meetings/{meetingid}/point/add', 'MeetingsController@AddPoint');
 $router->post('/meetings/add', 'MeetingsController@CreateMeeting');
+
+//-- External Integration Routes
+$router->get('/discord/findid', 'DiscordIntegrationController@FindID');
 
 // Execute the router
 $router->run();

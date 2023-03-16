@@ -203,7 +203,7 @@ Guard::init()->SLTRequired();
                     }
                     setMoreInfo += `<div class='field'><div class='fieldTitle'>Notes</div><textarea class='fieldTextarea' id='staffNotesTextarea'>${moreinfo.notes}</textarea></div>`;
                     setMoreInfo += `<div class='field'><div class='fieldTitle'>Region</div>${regionInputSelector(moreinfo.region)}</div>`;
-                    setMoreInfo += `<div class='field'><div class='fieldTitle'>Discord Tag</div><input class='fieldInput' id='staffDiscordInput' value="${moreinfo.discord_tag}"></div>`;
+                    setMoreInfo += `<div class='field'><div class='fieldTitle'>Discord Tag${moreinfo.discord_id !== null ?" (Linked to ID)":""}</div><input class='fieldInput' id='staffDiscordInput' value="${moreinfo.discord_tag}"></div>`;
                     setMoreInfo += `<div class='field'><div class='fieldTitle'>UID</div><input class='fieldInput' id='staffUIDInput' value="${moreinfo.uid}"></div>`;
 
                     setMoreInfo += `<div class="spacer"></div><div class="btnGroup">`;
@@ -643,9 +643,8 @@ Guard::init()->SLTRequired();
     }
 
     function setStaffDiscordTag(id) {
-        $.post('/api/v1/saveStaffDiscordTag', {
-            tag: $('#staffDiscordInput').val(),
-            id: id
+        $.post(`/api/v2/staff/${id}/discord`, {
+            tag: $('#staffDiscordInput').val()
         }, data => {
             console.log(data);
         });

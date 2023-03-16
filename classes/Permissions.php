@@ -54,6 +54,8 @@ class Permissions extends User {
 
             $fetch = $stmt->fetch();
 
+            if (!$fetch || $fetch == null) continue; // Skip if rank group doesn't exist (e.g. deleted)
+
             foreach (json_decode($fetch->permissions) as $f) {
                 $perms[] = $f;
             }

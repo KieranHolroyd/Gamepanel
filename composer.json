@@ -6,6 +6,7 @@
     "ext-openssl": "*",
     "ext-pdo": "*",
     "bramus/router": "^1.6",
-    "ablaze/php-discord-webhook": "^1.0"
+    "ablaze/php-discord-webhook": "^1.0",
+    "vlucas/phpdotenv": "^5.5"
   }
 }
