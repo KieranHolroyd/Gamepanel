@@ -66,7 +66,7 @@ if (!isset($_GET['meeting']) || $_GET['meeting'] == "") :
                     });
                     $('#meetings').html(meeting_list);
                 } else {
-                    $('#meetings').html(`<div class="navCard-small"><div class="navCard-items"><p class="title">No Meetings Found</p><p class="shortcontent">Currently no meetings scheduled</p></div>`)
+                    $('#meetings').html(`<div class="navCard-small"><div class="navCard-items"><p class="title">No Meetings Found</p><p class="shortcontent">${data.message}</p></div>`)
                 }
             }).catch(noty_catch_error)
         }

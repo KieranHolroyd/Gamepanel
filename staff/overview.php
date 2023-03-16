@@ -8,7 +8,7 @@ Guard::init()->SLTRequired();
             <?php
             ini_set("display_errors", "0");
             $teams = [null => 0];
-            foreach ($pdo->query("SELECT * FROM users WHERE (isStaff = 1 OR (isStaff = 0 AND isEMS = 0 AND isPD = 0))") as $r) {
+            foreach ($pdo->query("SELECT * FROM users") as $r) {
                 $teams[$r->staff_team]++;
             }
             foreach ($teams as $key => $count) {

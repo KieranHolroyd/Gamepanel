@@ -8,35 +8,38 @@ class MeetingsController {
 	public function ListMeetings() {
 		global $pdo;
 		$user = new User;
+		if (!Permissions::init()->hasPermission("VIEW_MEETING")) {
+			echo Helpers::NewAPIResponse(["message" => "You do not have permission to view meetings.", "success" => false]);
+			return;
+		}
+		$wheres = [];
 
-		$wheres = "";
+		if ($user->isStaff())
+			$wheres[] = "staff = 1";
 
-		if ($user->isStaff()) {
-			$wheres .= "staff = 1 ";
-		}
-		$or = ($wheres != "") ? 'OR' : '';
-		if ($user->isPD()) {
-			$wheres .= "{$or} pd = 1 ";
-		}
-		$or = ($wheres != "") ? 'OR' : '';
-		if ($user->isEMS()) {
-			$wheres .= "{$or} ems = 1 ";
-		}
-		$or = ($wheres != "") ? 'OR' : '';
-		if ($user->isSLT()) {
-			$wheres .= "{$or} slt = 1";
-		}
+		if ($user->isPD())
+			$wheres[] = "pd = 1";
 
-		$stmt = $pdo->prepare("SELECT * FROM meetings WHERE {$wheres} ORDER BY date DESC");
+		if ($user->isEMS())
+			$wheres[] = "ems = 1 ";
+
+		if (Permissions::init()->hasPermission("VIEW_SLT"))
+			$wheres[] = "slt = 1";
+
+
+		$where_str = implode(" OR ", $wheres);
+		$stmt = $pdo->prepare("SELECT * FROM meetings WHERE {$where_str} ORDER BY date DESC");
 
 		if (!$stmt->execute()) {
 			echo Helpers::NewAPIResponse(["message" => "Database Call Failed", "success" => false, "error" => $stmt->errorInfo()]);
+			return;
 		}
 
 		$meetings = $stmt->fetchAll();
 
 		if (!$meetings) {
 			echo Helpers::NewAPIResponse(["message" => "No meetings found.", "success" => false]);
+			return;
 		}
 
 		foreach ($meetings as $meeting) {
@@ -52,13 +55,8 @@ class MeetingsController {
 		}
 
 		if (!$meetings) {
-			echo Helpers::NewAPIResponse(["message" => "No meetings found.", "success" => false]);
-			exit;
-		}
-
-		if (!Permissions::init()->hasPermission("VIEW_MEETING")) {
-			echo Helpers::NewAPIResponse(["message" => "You do not have permission to view meetings.", "success" => false]);
-			exit;
+			echo Helpers::NewAPIResponse(["message" => "No meetings found.", "meetings" => [], "success" => true]);
+			return;
 		}
 
 		echo Helpers::NewAPIResponse(["success" => true, "meetings" => $meetings]);
