@@ -11,10 +11,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/User.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Helpers.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/db.php';
 
-class Meetings
-{
-    public static function list(User $user)
-    {
+class Meetings {
+    public static function list(User $user) {
         global $pdo;
 
         $wheres = "";
@@ -61,13 +59,13 @@ class Meetings
         return $meetings;
     }
 
-    public static function fromID($id)
-    {
+    public static function fromID($id) {
         global $pdo;
         $stmt = $pdo->prepare('SELECT * FROM meetings WHERE id = :id');
         $stmt->bindValue(':id', $id, PDO::PARAM_STR);
         $stmt->execute();
         $meeting = $stmt->fetch();
+        if (!$meeting) return false;
         $stmt = $pdo->prepare('SELECT COUNT(*) AS count FROM meeting_points WHERE meetingID = :id');
         $stmt->bindValue(':id', $meeting->id, PDO::PARAM_STR);
         $stmt->execute();

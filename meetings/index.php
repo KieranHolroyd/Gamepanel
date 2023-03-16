@@ -105,14 +105,21 @@ if (!isset($_GET['meeting']) || $_GET['meeting'] == "") :
         }
     </style>
 <?php else : ?>
-    <?php $meeting = Meetings::fromID($_GET['meeting']); ?>
-    <meta name="data-meeting-date" content="<?= $meeting->date ?>">
-    <meta name="data-meeting-id" content="<?= $meeting->id ?>">
-    <meta name="data-pusher-id" content="<?= Config::$pusher['AUTH_KEY'] ?>">
-    <meta name="data-pusher-cluster" content="<?= Config::$pusher['DEFAULT_CONFIG']['cluster']; ?>">
-    <link rel="stylesheet" href="/app/dist/meetings/index.css">
-    <script type="module" src="/app/dist/meetings/index.js"></script>
-    <div id="app">
-        <div style="padding: 20px 70px;"><img style="width: 24px;" src="/img/loadw.svg" alt="loading"> Loading...</div>
-    </div>
+    <?php $meeting = Meetings::fromID($_GET['meeting']);
+    if ($meeting) : ?>
+        <meta name="data-meeting-date" content="<?= $meeting->date ?>">
+        <meta name="data-meeting-id" content="<?= $meeting->id ?>">
+        <meta name="data-pusher-id" content="<?= Config::$pusher['AUTH_KEY'] ?>">
+        <meta name="data-pusher-cluster" content="<?= Config::$pusher['DEFAULT_CONFIG']['cluster']; ?>">
+        <link rel="stylesheet" href="/app/dist/meetings/index.css">
+        <script type="module" src="/app/dist/meetings/index.js"></script>
+        <div id="app">
+            <div style="padding: 20px 70px;"><img style="width: 24px;" src="/img/loadw.svg" alt="loading"> Loading...</div>
+        </div>
+    <?php else : ?>
+        <div style="text-align: center;margin-top: 4em;">
+            <p><b>Meeting Not Found</b></p>
+            <p style="margin-top: .25em;"><i>The meeting you are looking for does not exist.</i></p>
+        </div>
+    <?php endif ?>
 <?php endif; ?>
