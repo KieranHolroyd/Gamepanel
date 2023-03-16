@@ -4,10 +4,8 @@ namespace App\API\V2\Controller;
 
 use \User, \Permissions, \Helpers, \PDO;
 
-class CasesController
-{
-    public function GetCases()
-    {
+class CasesController {
+    public function GetCases() {
         global $pdo;
 
         $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
@@ -41,8 +39,7 @@ class CasesController
         }
     }
 
-    public function SubmitCase()
-    {
+    public function SubmitCase() {
         global $pdo;
         $user = new User;
 
@@ -156,21 +153,24 @@ class CasesController
                 "timestamp" => $row->timestamp,
                 "reporting_player" => $playersInvolved
             ];
-            if ($user->discord_tag()) {
-                Helpers::addAuditLog("{$user->discord_tag()} Submitted A Case");
+            if ($user->discord_id()) {
+                Helpers::addAuditLog("<@{$user->discord_id()}> Submitted A Case");
             } else {
                 Helpers::addAuditLog("{$user->info->username} Submitted A Case");
             }
             Helpers::PusherSend($data, 'caseInformation', 'receive');
             $user->pushNotification('You Submitted A Case', "Click to view Case #{$caseid}-{$playersInvolved[0]->name}", "/me#case:{$caseid}");
         } else {
-            Helpers::addAuditLog("{$user->info->name} Tried to use `CasesController::SubmitCase` without permission.");
+            if ($user->discord_id()) {
+                Helpers::addAuditLog("<@{$user->discord_id()}> Tried to use `CasesController::SubmitCase` without permission.");
+            } else {
+                Helpers::addAuditLog("{$user->info->username} Tried to use `CasesController::SubmitCase` without permission.");
+            }
             echo "Insufficient Permissions";
         }
     }
 
-    public function CaseInfo($id)
-    {
+    public function CaseInfo($id) {
         global $pdo;
 
         if (Permissions::init()->hasPermission("VIEW_GENERAL")) {

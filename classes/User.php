@@ -90,7 +90,7 @@ class User {
     public function isStaff() {
         if (!$this->infoExists())
             return false;
-        if ($this->verified() && $this->info->isStaff) {
+        if ($this->verified() && Permissions::forUserID($this->info->id)->hasPermission("VIEW_GENERAL")) {
             return true;
         }
         return false;
@@ -282,6 +282,14 @@ class User {
         if ($this->info->discord_tag == null || $this->info->discord_tag == '')
             return false;
         return "@" . $this->info->discord_tag;
+    }
+
+    public function discord_id() {
+        if (!$this->infoExists())
+            return false;
+        if ($this->info->discord_id == null || $this->info->discord_id == '')
+            return false;
+        return $this->info->discord_id;
     }
 
     private function infoExists() {
