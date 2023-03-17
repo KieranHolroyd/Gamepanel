@@ -212,7 +212,7 @@ export const Meeting = (props: MeetingProps) => {
 		e.preventDefault();
 		if (newPoint.description !== "" && newPoint.title !== "") {
 			props.api
-				.post(`/api/v2/meetings/${props.id}/point/add`, {
+				.post(`/v2/meetings/${props.id}/point/add`, {
 					...newPoint,
 				})
 				.then(() => {
