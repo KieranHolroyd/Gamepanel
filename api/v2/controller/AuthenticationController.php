@@ -4,10 +4,8 @@ namespace App\API\V2\Controller;
 
 use Helpers;
 
-class AuthenticationController
-{
-	public function Login()
-	{
+class AuthenticationController {
+	public function Login() {
 		global $pdo;
 
 		if (!isset($_POST['email']) || !isset($_POST['password'])) {
@@ -39,15 +37,14 @@ class AuthenticationController
 			$query2->bindValue(':userid', $userid, \PDO::PARAM_STR);
 			$query2->execute();
 			setcookie("LOGINTOKEN", $token, time() + 60 * 60 * 24 * 365, "/");
-			Helpers::addAuditLog("LOGGED_IN::{$_SERVER['REMOTE_ADDR']} Logged Into Account ID:{$userid} Username:{$selected_user->username}");
+			Helpers::addAuditLog("User logged in.\n Account ID: {$userid}\n Username: {$selected_user->username}");
 			echo Helpers::NewAPIResponse(["success" => true, "message" => "Logged in", "token" => $token, "uid" => $userid]);
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `Login`");
+			Helpers::addAuditLog("Someone tried to login, but was unable.\n Account ID: {$selected_user->id}\n Username: {$selected_user->username}");
 			echo Helpers::NewAPIResponse(["success" => false, "message" => "Invalid credentials"]);
 		}
 	}
-	public function Logout()
-	{
+	public function Logout() {
 		global $pdo;
 		if (Helpers::getAuth()) {
 			$token = sha1(Helpers::getAuth());
@@ -70,8 +67,7 @@ class AuthenticationController
 			echo Helpers::NewAPIResponse(["success" => false, "message" => "Malformed request"]);
 		}
 	}
-	public function Signup()
-	{
+	public function Signup() {
 		global $pdo;
 		$password = $_POST['password'];
 		$cpassword = $_POST['cpassword'];
@@ -121,8 +117,7 @@ class AuthenticationController
 			echo Helpers::NewAPIResponse(["success" => false, "message" => "All Fields Are Required To Sign Up."]);
 		}
 	}
-	public function Check()
-	{
+	public function Check() {
 		global $pdo;
 
 		if (Helpers::getAuth()) {
@@ -136,7 +131,6 @@ class AuthenticationController
 				echo Helpers::newAPIResponse(["success" => true, "message" => "Logged In"]);
 			}
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `CheckLogin`");
 			echo Helpers::newAPIResponse(["success" => false, "message" => "Not Logged In"]);
 		}
 	}
