@@ -51,7 +51,8 @@ include "head.php";
         $('.signup-div').slideDown(250);
         selected = 0;
     });
-    $('#continue').click(function() {
+
+    function init_auth_request() {
         $(this).html('<img src="/img/loadw.svg" width="25px">');
         if (selected === 0) {
             // selected = 0 -> signup
@@ -95,6 +96,12 @@ include "head.php";
                     }
                 }).catch(noty_catch_error);
             }).catch(noty_catch_error);
+        }
+    }
+    $('#continue').click(init_auth_request);
+    $('#continue').keydown(function(e) {
+        if (e.keyCode === 13) { // enter
+            init_auth_request();
         }
     });
 </script>
