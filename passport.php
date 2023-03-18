@@ -53,7 +53,7 @@ include "head.php";
     });
 
     function init_auth_request() {
-        $(this).html('<img src="/img/loadw.svg" width="25px">');
+        $('#continue').html('<img src="/img/loadw.svg" width="25px">');
         if (selected === 0) {
             // selected = 0 -> signup
             apiclient.post('api/v2/auth/signup', {
@@ -99,7 +99,7 @@ include "head.php";
         }
     }
     $('#continue').click(init_auth_request);
-    $('#continue').keydown(function(e) {
+    $('input').keydown(function(e) {
         if (e.keyCode === 13) { // enter
             init_auth_request();
         }
