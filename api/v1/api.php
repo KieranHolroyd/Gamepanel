@@ -951,42 +951,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo json_encode(["message" => "Unauthorised", "code" => 401]);
             Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `GetMessages`");
         }
-    } else if ($url == "saveStaffNotes") {
-        $li = new User();
-
-        if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
-            $stmt = $pdo->prepare('UPDATE users SET notes = :notes WHERE id = :id');
-            $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
-            $stmt->bindValue(':notes', htmlspecialchars($_POST['notes']), PDO::PARAM_STR);
-            if ($stmt->execute()) {
-                $updatedUsername = Helpers::IDToUsername($_POST['id']);
-                Helpers::addAuditLog("{$li->info->username} Saved Notes On {$updatedUsername}");
-                echo "Success";
-            } else {
-                print_r($stmt->errorinfo());
-            }
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffNotes`");
-        }
-    } else if ($url == "saveStaffPromotion") {
-        $li = new User();
-
-        if (Permissions::init()->hasPermission("EDIT_USER_PROMOTION") || $li->info->id == $_POST['id']) {
-            $stmt = $pdo->prepare('UPDATE users SET lastPromotion = :promo WHERE id = :id');
-            $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
-            $stmt->bindValue(':promo', htmlspecialchars($_POST['promotionTime']), PDO::PARAM_STR);
-            $updatedUsername = Helpers::IDToUsername($_POST['id']);
-            if ($stmt->execute()) {
-                Helpers::addAuditLog("{$li->info->username} Updated {$updatedUsername}'s Last Promotion Date To {$_POST['promotionTime']}");
-                echo "Success";
-            } else {
-                Helpers::addAuditLog("DATABASE_ERROR::{$li->info->username} Failed To Update {$updatedUsername}'s Last Promotion Date");
-                print_r($stmt->errorinfo());
-            }
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffPromotion`");
-            echo Helpers::APIResponse("Authentication Failed", null, 401);
-        }
     } else if ($url == "sendOnLOA") {
         $li = new User();
 

@@ -471,6 +471,8 @@ class StaffController {
 		$li = new User();
 		$tag = htmlspecialchars($_POST['tag']);
 		$id = htmlspecialchars($userid);
+		$loc = Config::$base_url . "staff/#User:{$id}";
+
 		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $id) {
 			$controller = new DiscordIntegrationController();
 			$search_response = json_decode($controller->SearchForMemberByTag($tag));
@@ -513,7 +515,6 @@ class StaffController {
 				]);
 			}
 		} else {
-			$loc = Config::$base_url . "staff/User:{$userid}";
 			AuditLog::create("Unauthorised attempt to update discord tag for {$loc}");
 			echo Helpers::NewAPIResponse([
 				"success" => false,
@@ -532,6 +533,8 @@ class StaffController {
 		$id = htmlspecialchars($userid);
 
 		$updating_self = $li->info->id == $id;
+
+		$loc = Config::$base_url . "staff/#User:{$id}";
 
 		if ($updating_self && $steamid == "") {
 			echo Helpers::NewAPIResponse([
@@ -565,7 +568,6 @@ class StaffController {
 				]);
 			}
 		} else {
-			$loc = Config::$base_url . "staff/User:{$userid}";
 			AuditLog::create("Unauthorised attempt to update SteamID for {$loc}");
 			echo Helpers::NewAPIResponse([
 				"success" => false,
@@ -584,6 +586,7 @@ class StaffController {
 		$id = htmlspecialchars($userid);
 
 		$updating_self = $li->info->id == $id;
+		$loc = Config::$base_url . "staff/#User:{$id}";
 
 		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $updating_self) {
 			$stmt = $pdo->prepare('UPDATE users SET region = :reg WHERE id = :id');
@@ -607,8 +610,83 @@ class StaffController {
 				]);
 			}
 		} else {
-			$loc = Config::$base_url . "staff/User:{$userid}";
 			AuditLog::create("Unauthorised attempt to update Region for {$loc}");
+			echo Helpers::NewAPIResponse([
+				"success" => false,
+				"errors" => [
+					"Unauthorised"
+				]
+			]);
+		}
+	}
+
+	public function UpdateNotes($userid) {
+		global $pdo;
+
+		$notes = htmlspecialchars($_POST['notes']);
+		$id = htmlspecialchars($userid);
+		$loc = Config::$base_url . "staff/#User:{$id}";
+
+		if (Permissions::init()->hasPermission("EDIT_USER_INFO")) {
+			$stmt = $pdo->prepare('UPDATE users SET notes = :notes WHERE id = :id');
+			$stmt->bindValue(':id', $id);
+			$stmt->bindValue(':notes', $notes);
+			if ($stmt->execute()) {
+				$user_updated_username = Helpers::IDToUsername($id);
+				AuditLog::create("Saved notes for {$user_updated_username} {$loc}");
+				echo Helpers::NewAPIResponse([
+					"success" => true,
+					"message" => "Updated Notes"
+				]);
+			} else {
+				echo Helpers::NewAPIResponse([
+					"success" => false,
+					"errors" => [
+						"Failed To Update Notes",
+						"sql" => $stmt->errorInfo()
+					]
+				]);
+			}
+		} else {
+			AuditLog::create("Unauthorised attempt to update Notes for {$loc}");
+			echo Helpers::NewAPIResponse([
+				"success" => false,
+				"errors" => [
+					"Unauthorised"
+				]
+			]);
+		}
+	}
+
+	public function UpdateLastPromotion($userid) {
+		global $pdo;
+
+		$promotion_time = htmlspecialchars($_POST['promotion_time']);
+		$id = htmlspecialchars($userid);
+		$loc = Config::$base_url . "staff/#User:{$id}";
+
+		if (Permissions::init()->hasPermission("EDIT_USER_PROMOTION")) {
+			$stmt = $pdo->prepare('UPDATE users SET lastPromotion = :promo WHERE id = :id');
+			$stmt->bindValue(':id', $id);
+			$stmt->bindValue(':promo', $promotion_time);
+			if ($stmt->execute()) {
+				$user_updated_username = Helpers::IDToUsername($id);
+				AuditLog::create("Saved last promotion date for {$user_updated_username} {$loc}");
+				echo Helpers::NewAPIResponse([
+					"success" => true,
+					"message" => "Updated Promotion Date"
+				]);
+			} else {
+				echo Helpers::NewAPIResponse([
+					"success" => false,
+					"errors" => [
+						"Failed To Update Promotion Date",
+						"sql" => $stmt->errorInfo()
+					]
+				]);
+			}
+		} else {
+			AuditLog::create("Unauthorised attempt to update last promotion date for {$loc}");
 			echo Helpers::NewAPIResponse([
 				"success" => false,
 				"errors" => [

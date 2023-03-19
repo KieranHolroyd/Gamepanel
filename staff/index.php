@@ -625,11 +625,24 @@ Guard::init()->SLTRequired();
     }
 
     function setStaffNotes(id) {
-        $.post('/api/v1/saveStaffNotes', {
-            notes: $('#staffNotesTextarea').val(),
-            id: id
-        }, data => {
-            console.log(data);
+        apiclient.post(`/api/v2/staff/${id}/notes`, {
+            notes: $('#staffNotesTextarea').val()
+        }).then(({
+            data
+        }) => {
+            if (data.success) {
+                new Noty({
+                    text: 'Notes saved.',
+                    type: 'success',
+                    timeout: 5000
+                }).show();
+            } else {
+                new Noty({
+                    text: `Notes not saved. ${data.errors.join(', ')}`,
+                    type: 'error',
+                    timeout: 5000
+                }).show();
+            }
         });
     }
 
@@ -639,7 +652,6 @@ Guard::init()->SLTRequired();
         }).then(({
             data
         }) => {
-            console.log(data);
             if (data.success) {
                 new Noty({
                     text: 'Region saved.',
@@ -662,7 +674,6 @@ Guard::init()->SLTRequired();
         }).then(({
             data
         }) => {
-            console.log(data);
             if (data.success) {
                 new Noty({
                     text: 'Discord saved.',
@@ -685,7 +696,6 @@ Guard::init()->SLTRequired();
         }).then(({
             data
         }) => {
-            console.log(data);
             if (data.success) {
                 new Noty({
                     text: 'Steam saved.',
@@ -703,12 +713,25 @@ Guard::init()->SLTRequired();
     }
 
     function updateLastPromotion(id) {
-        $.post('/api/v1/saveStaffPromotion', {
-            promotionTime: $('#promotionDate').val(),
-            id: id
-        }, data => {
-            getMoreInfo(id);
-            console.log(data);
+        apiclient.post(`/api/v2/staff/${id}/promotion`, {
+            promotion_time: $('#promotionDate').val()
+        }).then(({
+            data
+        }) => {
+            if (data.success) {
+                new Noty({
+                    text: 'Last promotion saved.',
+                    type: 'success',
+                    timeout: 5000
+                }).show();
+                getMoreInfo(id);
+            } else {
+                new Noty({
+                    text: `Last promotion not saved. ${data.errors.join(', ')}`,
+                    type: 'error',
+                    timeout: 5000
+                }).show();
+            }
         });
     }
 

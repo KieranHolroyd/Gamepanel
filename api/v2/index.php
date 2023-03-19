@@ -81,6 +81,8 @@ $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 $router->post('/staff/{userid}/discord', 'StaffController@UpdateDiscordTag');
 $router->post('/staff/{userid}/steam', 'StaffController@UpdateSteamID');
 $router->post('/staff/{userid}/region', 'StaffController@UpdateRegion');
+$router->post('/staff/{userid}/notes', 'StaffController@UpdateNotes');
+$router->post('/staff/{userid}/promotion', 'StaffController@UpdateLastPromotion');
 
 //-- Role Management Routes
 $router->get('/roles/list', 'RoleController@List');
