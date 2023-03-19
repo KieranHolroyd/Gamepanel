@@ -634,28 +634,68 @@ Guard::init()->SLTRequired();
     }
 
     function setStaffRegion(id) {
-        $.post('/api/v1/saveStaffRegion', {
-            region: $('#staffRegionInput').val(),
-            id: id
-        }, data => {
+        apiclient.post(`/api/v2/staff/${id}/region`, {
+            region: $('#staffRegionInput').val()
+        }).then(({
+            data
+        }) => {
             console.log(data);
+            if (data.success) {
+                new Noty({
+                    text: 'Region saved.',
+                    type: 'success'
+                }).show();
+            } else {
+                new Noty({
+                    text: `Region not saved. ${data.errors.join(', ')}`,
+                    type: 'error',
+                    timeout: 5000
+                }).show();
+            }
         });
     }
 
     function setStaffDiscordTag(id) {
-        $.post(`/api/v2/staff/${id}/discord`, {
+        apiclient.post(`/api/v2/staff/${id}/discord`, {
             tag: $('#staffDiscordInput').val()
-        }, data => {
+        }).then(({
+            data
+        }) => {
             console.log(data);
+            if (data.success) {
+                new Noty({
+                    text: 'Discord saved.',
+                    type: 'success'
+                }).show();
+            } else {
+                new Noty({
+                    text: `Discord not saved. ${data.errors?.query?._errors?.map(e => e.message).join(', ') ?? "Unknown error"}`,
+                    type: 'error',
+                    timeout: 5000
+                }).show();
+            }
         });
     }
 
     function setStaffUID(id) {
-        $.post('/api/v1/saveStaffUID', {
-            uid: $('#staffUIDInput').val(),
-            id: id
-        }, data => {
+        apiclient.post(`/api/v2/staff/${id}/steam`, {
+            uid: $('#staffUIDInput').val()
+        }).then(({
+            data
+        }) => {
             console.log(data);
+            if (data.success) {
+                new Noty({
+                    text: 'Steam saved.',
+                    type: 'success'
+                }).show();
+            } else {
+                new Noty({
+                    text: `Steam not saved. ${data.errors.join(', ')}`,
+                    type: 'error',
+                    timeout: 5000
+                }).show();
+            }
         });
     }
 
