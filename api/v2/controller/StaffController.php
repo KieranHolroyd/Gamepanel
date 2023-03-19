@@ -472,10 +472,10 @@ class StaffController {
 		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $id) {
 			$controller = new DiscordIntegrationController();
 			$search_response = json_decode($controller->SearchForMemberByTag($tag));
-			if (property_exists($search_response, 'errors')) {
+			if (gettype($search_response) != "array" && property_exists($search_response, 'errors')) {
 				echo Helpers::NewAPIResponse([
 					"success" => false,
-					"errors" => $search_response->errors
+					"errors" => @$search_response->errors
 				]);
 				return;
 			}

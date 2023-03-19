@@ -67,7 +67,7 @@ Guard::init()->StaffRequired();
                         }).show();
                     } else {
                         new Noty({
-                            text: `Discord not saved. ${data.errors.query._errors.map(e => e.message).join(', ')}`,
+                            text: `Discord not saved. ${data.errors?.query?._errors?.map(e => e.message).join(', ') ?? "Unknown error"}`,
                             type: 'error',
                             timeout: 5000
                         }).show();
