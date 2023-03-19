@@ -643,7 +643,8 @@ Guard::init()->SLTRequired();
             if (data.success) {
                 new Noty({
                     text: 'Region saved.',
-                    type: 'success'
+                    type: 'success',
+                    timeout: 5000
                 }).show();
             } else {
                 new Noty({
@@ -665,7 +666,8 @@ Guard::init()->SLTRequired();
             if (data.success) {
                 new Noty({
                     text: 'Discord saved.',
-                    type: 'success'
+                    type: 'success',
+                    timeout: 5000
                 }).show();
             } else {
                 new Noty({
@@ -687,7 +689,8 @@ Guard::init()->SLTRequired();
             if (data.success) {
                 new Noty({
                     text: 'Steam saved.',
-                    type: 'success'
+                    type: 'success',
+                    timeout: 5000
                 }).show();
             } else {
                 new Noty({
