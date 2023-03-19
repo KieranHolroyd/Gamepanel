@@ -2,6 +2,8 @@
 
 namespace App\API\V2\Controller;
 
+use AuditLog;
+use Config;
 use \User, \Permissions, \PDO, \Helpers, \DateTime;
 
 function invalid_staff_application($application) {
@@ -472,6 +474,8 @@ class StaffController {
 		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $id) {
 			$controller = new DiscordIntegrationController();
 			$search_response = json_decode($controller->SearchForMemberByTag($tag));
+
+
 			if (gettype($search_response) != "array" && property_exists($search_response, 'errors')) {
 				echo Helpers::NewAPIResponse([
 					"success" => false,
@@ -484,13 +488,15 @@ class StaffController {
 			} else {
 				$discord_id = null;
 			}
+
+
 			$stmt = $pdo->prepare('UPDATE users SET discord_tag = :tag, discord_id = :duid WHERE id = :id');
 			$stmt->bindValue(':id', $id, PDO::PARAM_STR);
 			$stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
 			$stmt->bindValue(':duid', $discord_id);
 			if ($stmt->execute()) {
 				$updatedUsername = Helpers::IDToUsername($id);
-				Helpers::addAuditLog("{$li->info->username} Set Discord Tag For {$updatedUsername} To {$tag}");
+				AuditLog::create("Discord tag for {$updatedUsername} set to {$tag}");
 				echo Helpers::NewAPIResponse([
 					"success" => true,
 					"message" => "Updated Discord Tag",
@@ -507,7 +513,8 @@ class StaffController {
 				]);
 			}
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
+			$loc = Config::$base_url . "staff/User:{$userid}";
+			AuditLog::create("Unauthorised attempt to update discord tag for {$loc}");
 			echo Helpers::NewAPIResponse([
 				"success" => false,
 				"errors" => [
@@ -542,7 +549,7 @@ class StaffController {
 			$stmt->bindValue(':uid', $steamid);
 			if ($stmt->execute()) {
 				$updatedUsername = Helpers::IDToUsername($id);
-				Helpers::addAuditLog("{$li->info->username} Set UID For {$updatedUsername} To {$steamid}");
+				AuditLog::create("SteamID for {$updatedUsername} set to {$steamid}");
 				echo Helpers::NewAPIResponse([
 					"success" => true,
 					"message" => "Updated SteamID",
@@ -558,7 +565,8 @@ class StaffController {
 				]);
 			}
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffUID`");
+			$loc = Config::$base_url . "staff/User:{$userid}";
+			AuditLog::create("Unauthorised attempt to update SteamID for {$loc}");
 			echo Helpers::NewAPIResponse([
 				"success" => false,
 				"errors" => [
@@ -583,7 +591,7 @@ class StaffController {
 			$stmt->bindValue(':reg', $region);
 			$user_updated_username = $updating_self ? $li->info->username : Helpers::IDToUsername($id);
 			if ($stmt->execute()) {
-				Helpers::addAuditLog("{$li->info->username} Updated {$user_updated_username}'s Region To {$region}");
+				AuditLog::create("Region for {$user_updated_username} set to {$region}");
 				echo Helpers::NewAPIResponse([
 					"success" => true,
 					"message" => "Updated SteamID",
@@ -599,7 +607,8 @@ class StaffController {
 				]);
 			}
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffRegion`");
+			$loc = Config::$base_url . "staff/User:{$userid}";
+			AuditLog::create("Unauthorised attempt to update Region for {$loc}");
 			echo Helpers::NewAPIResponse([
 				"success" => false,
 				"errors" => [

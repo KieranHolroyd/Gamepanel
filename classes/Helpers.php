@@ -95,7 +95,7 @@ class AuditLog {
             //Dispatch to Discord
             try {
                 $hook = new WebhookManager;
-                // $message = self::parseAuditLogForWebhook($message);
+                $message = self::create_message(($user->isStaff()) ? $user : 0, $message);
                 $response = @$hook->discord()->embed("Audit Log", $message, ($user->isStaff()) ? @$user->info->username : "No User")->send();
                 if ($response["error"]) {
                     self::create("DISCORD_WEBHOOK_ERROR::" . $response["error"], false);
@@ -104,6 +104,10 @@ class AuditLog {
                 self::create("DISCORD_WEBHOOK_ERROR::" . $e->getMessage(), false);
             }
         }
+    }
+
+    public static function create_message($user, $message) {
+        return ($user->info->discord_id) ? "<@{$user->info->discord_id}> {$message}" : "{$user->info->username} $message";
     }
 }
 // }
