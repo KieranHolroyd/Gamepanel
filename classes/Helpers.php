@@ -77,6 +77,35 @@ class Headers {
         }
     }
 }
+class AuditLog {
+    public static function create($message, $metadata = [], $discord = true) {
+        global $pdo;
+        $user = new User;
+
+        $ctx = ($user->isCommand() && !$user->isStaff()) ? 'PD_EMS_COMMAND' : 'admin';
+
+        $stmt = $pdo->prepare('INSERT INTO audit_log (log_content, log_context, logged_in_user) VALUES (:content, :ctx, :liu)');
+        $stmt->bindValue(':content', $message);
+        $stmt->bindValue(':ctx', $ctx);
+        $stmt->bindValue(':liu', ($user->isStaff()) ? @$user->info->id : 0); // Supressing error (using stdClass as array)
+        $stmt->execute();
+        $stmt->closeCursor();
+
+        if ($discord) {
+            //Dispatch to Discord
+            try {
+                $hook = new WebhookManager;
+                // $message = self::parseAuditLogForWebhook($message);
+                $response = @$hook->discord()->embed("Audit Log", $message, ($user->isStaff()) ? @$user->info->username : "No User")->send();
+                if ($response["error"]) {
+                    self::create("DISCORD_WEBHOOK_ERROR::" . $response["error"], false);
+                }
+            } catch (Exception $e) {
+                self::create("DISCORD_WEBHOOK_ERROR::" . $e->getMessage(), false);
+            }
+        }
+    }
+}
 // }
 
 

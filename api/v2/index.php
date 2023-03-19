@@ -79,6 +79,8 @@ $router->post('/staff/applications/submit', 'StaffController@SubmitApplication')
 $router->post('/staff/rank/update', 'StaffController@UpdateStaffRank');
 $router->post('/staff/team/update', 'StaffController@UpdateStaffTeam');
 $router->post('/staff/{userid}/discord', 'StaffController@UpdateDiscordTag');
+$router->post('/staff/{userid}/steam', 'StaffController@UpdateSteamID');
+$router->post('/staff/{userid}/region', 'StaffController@UpdateRegion');
 
 //-- Role Management Routes
 $router->get('/roles/list', 'RoleController@List');

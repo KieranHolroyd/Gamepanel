@@ -459,7 +459,7 @@ class StaffController {
 			$staffinfo['ranks_available'] = $ranks_available;
 			echo Helpers::APIResponse("Fetched User", $staffinfo, 200);
 		} else {
-			Helpers::addAuditLog("AUTHENTICATION_FAILED::{$_SERVER['REMOTE_ADDR']} Triggered An Unauthenticated Response In `StaffController::StaffDetails`");
+			Helpers::addAuditLog("AUTHENTICATION_FAILED Unauthorised Response In `StaffController::StaffDetails`");
 			echo Helpers::APIResponse("Unauthorised", null, 401);
 		}
 	}
@@ -472,7 +472,14 @@ class StaffController {
 		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $id) {
 			$controller = new DiscordIntegrationController();
 			$search_response = json_decode($controller->SearchForMemberByTag($tag));
-			if (!empty($search_response)) {
+			if (property_exists($search_response, 'errors')) {
+				echo Helpers::NewAPIResponse([
+					"success" => false,
+					"errors" => $search_response->errors
+				]);
+				return;
+			}
+			if (!empty($search_response)) { // possibly unnecessary
 				$discord_id = $search_response[0]->user->id;
 			} else {
 				$discord_id = null;
@@ -484,12 +491,121 @@ class StaffController {
 			if ($stmt->execute()) {
 				$updatedUsername = Helpers::IDToUsername($id);
 				Helpers::addAuditLog("{$li->info->username} Set Discord Tag For {$updatedUsername} To {$tag}");
-				echo "Success";
+				echo Helpers::NewAPIResponse([
+					"success" => true,
+					"message" => "Updated Discord Tag",
+					"discord_tag" => $tag,
+					"discord_id" => $discord_id
+				]);
 			} else {
-				print_r($stmt->errorinfo());
+				echo Helpers::NewAPIResponse([
+					"success" => false,
+					"errors" => [
+						"Failed To Update Discord Tag",
+						"sql" => $stmt->errorInfo()
+					]
+				]);
 			}
 		} else {
 			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffDiscordTag`");
+			echo Helpers::NewAPIResponse([
+				"success" => false,
+				"errors" => [
+					"Unauthorised"
+				]
+			]);
+		}
+	}
+
+	public function UpdateSteamID($userid) {
+		global $pdo;
+		$li = new User();
+
+		$steamid = htmlspecialchars($_POST['uid']);
+		$id = htmlspecialchars($userid);
+
+		$updating_self = $li->info->id == $id;
+
+		if ($updating_self && $steamid == "") {
+			echo Helpers::NewAPIResponse([
+				"success" => false,
+				"errors" => [
+					"SteamID Cannot Be Empty"
+				]
+			]);
+			return;
+		}
+
+		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $updating_self) {
+			$stmt = $pdo->prepare('UPDATE users SET steamid = :uid WHERE id = :id');
+			$stmt->bindValue(':id', $id);
+			$stmt->bindValue(':uid', $steamid);
+			if ($stmt->execute()) {
+				$updatedUsername = Helpers::IDToUsername($id);
+				Helpers::addAuditLog("{$li->info->username} Set UID For {$updatedUsername} To {$steamid}");
+				echo Helpers::NewAPIResponse([
+					"success" => true,
+					"message" => "Updated SteamID",
+					"steam_id" => $steamid,
+				]);
+			} else {
+				echo Helpers::NewAPIResponse([
+					"success" => false,
+					"errors" => [
+						"Failed To Update SteamID",
+						"sql" => $stmt->errorInfo()
+					]
+				]);
+			}
+		} else {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffUID`");
+			echo Helpers::NewAPIResponse([
+				"success" => false,
+				"errors" => [
+					"Unauthorised"
+				]
+			]);
+		}
+	}
+
+	public function UpdateRegion($userid) {
+		global $pdo;
+		$li = new User();
+
+		$region = htmlspecialchars($_POST['region']);
+		$id = htmlspecialchars($userid);
+
+		$updating_self = $li->info->id == $id;
+
+		if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $updating_self) {
+			$stmt = $pdo->prepare('UPDATE users SET region = :reg WHERE id = :id');
+			$stmt->bindValue(':id', $id);
+			$stmt->bindValue(':reg', $region);
+			$user_updated_username = $updating_self ? $li->info->username : Helpers::IDToUsername($id);
+			if ($stmt->execute()) {
+				Helpers::addAuditLog("{$li->info->username} Updated {$user_updated_username}'s Region To {$region}");
+				echo Helpers::NewAPIResponse([
+					"success" => true,
+					"message" => "Updated SteamID",
+					"region" => $region,
+				]);
+			} else {
+				echo Helpers::NewAPIResponse([
+					"success" => false,
+					"errors" => [
+						"Failed To Update SteamID",
+						"sql" => $stmt->errorInfo()
+					]
+				]);
+			}
+		} else {
+			Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffRegion`");
+			echo Helpers::NewAPIResponse([
+				"success" => false,
+				"errors" => [
+					"Unauthorised"
+				]
+			]);
 		}
 	}
 }

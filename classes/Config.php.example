@@ -18,6 +18,10 @@ class Config
 	public static $discord_webhook = "";
 	public static $enableGamePanel = true;
 
+	public static $discord = [
+		"icon_url" => "https://panel.extremo.co.uk/img/logo-transparent-sm.png"
+	];
+
 	// SQL Settings
 	// Panel SQL Storage
 	public static $sql = [

@@ -968,23 +968,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffNotes`");
         }
-    } else if ($url == "saveStaffDiscordTag") {
-    } else if ($url == "saveStaffUID") {
-        $li = new User();
-        if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
-            $stmt = $pdo->prepare('UPDATE users SET steamid = :uid WHERE id = :id');
-            $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
-            $stmt->bindValue(':uid', htmlspecialchars($_POST['uid']), PDO::PARAM_STR);
-            if ($stmt->execute()) {
-                $updatedUsername = Helpers::IDToUsername($_POST['id']);
-                Helpers::addAuditLog("{$li->info->username} Set UID For {$updatedUsername} To {$_POST['uid']}");
-                echo "Success";
-            } else {
-                print_r($stmt->errorinfo());
-            }
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffUID`");
-        }
     } else if ($url == "saveStaffPromotion") {
         $li = new User();
 
@@ -1002,25 +985,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         } else {
             Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffPromotion`");
-            echo Helpers::APIResponse("Authentication Failed", null, 401);
-        }
-    } else if ($url == "saveStaffRegion") {
-        $li = new User();
-        //TODO: fix this
-        if (Permissions::init()->hasPermission("EDIT_USER_INFO") || $li->info->id == $_POST['id']) {
-            $stmt = $pdo->prepare('UPDATE users SET region = :reg WHERE id = :id');
-            $stmt->bindValue(':id', htmlspecialchars($_POST['id']), PDO::PARAM_STR);
-            $stmt->bindValue(':reg', htmlspecialchars($_POST['region']), PDO::PARAM_STR);
-            $updatedUsername = Helpers::IDToUsername($_POST['id']);
-            if ($stmt->execute()) {
-                Helpers::addAuditLog("{$li->info->username} Updated {$updatedUsername}'s Region To {$_POST['region']}");
-                echo "Success";
-            } else {
-                Helpers::addAuditLog("DATABASE_ERROR::{$li->info->username} Failed To Update {$updatedUsername}'s Region");
-                print_r($stmt->errorinfo());
-            }
-        } else {
-            Helpers::addAuditLog("AUTHENTICATION_FAILED Triggered An Unauthenticated Response In `SaveStaffRegion`");
             echo Helpers::APIResponse("Authentication Failed", null, 401);
         }
     } else if ($url == "sendOnLOA") {
