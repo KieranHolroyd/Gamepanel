@@ -135,7 +135,7 @@ class StatisticsController {
 				$richList = $stmt->fetchAll(PDO::FETCH_OBJ);
 
 				foreach ($richList as $user) {
-					$user->bankacc = "$" . number_format($user->bankacc, 0);
+					$user->bankacc = number_format($user->bankacc, 0);
 				}
 
 				$server_data = ['serverBalance' => ['read' => $serverBalance->total, 'formatted' => '$' . number_format($serverBalance->total)], 'players' => ['total' => $players->total, 'total_cops' => $cops->total, 'total_medics' => $medics->total, 'rich_list' => $richList]];
