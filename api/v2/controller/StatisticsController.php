@@ -121,7 +121,7 @@ class StatisticsController {
 				$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players`');
 				$stmt->execute();
 				$players = $stmt->fetch(PDO::FETCH_OBJ);
-				$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players` WHERE natoRank <> "0"');
+				$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players` WHERE coplevel <> "0"');
 				$stmt->execute();
 				$cops = $stmt->fetch(PDO::FETCH_OBJ);
 				$stmt = $gamepdo->prepare('SELECT COUNT(*) AS total from `players` WHERE mediclevel <> "0"');
