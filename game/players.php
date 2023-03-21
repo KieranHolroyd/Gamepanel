@@ -182,7 +182,7 @@ if (!empty($_GET['query'])) {
                     list += `<h2><span style="cursor: pointer;" onclick="getPlayerInfo('${playerID}')">${data.response.name}</span>'s Vehicles</h2>`;
                     for (let key in Object.values(data.response.vehicles)) {
                         const vehicle = data.response.vehicles[key];
-                        list += `<div class="staffActivityCard" style="cursor: default;">${vehicle.type} ${vehicle.displayname}<br>Plate: ${vehicle.plate} | Impounded: ${boolToYesNo(vehicle.impound)} | Insured: ${boolToYesNo(vehicle.insured)}</div>`
+                        list += `<div class="staffActivityCard" style="cursor: default;">${vehicle.type} ${vehicle.displayname}<br>Plate: ${vehicle.plate} | Impounded: ${(vehicle.parking !== "[]") ? "Yes" : "No"} | Insured: ${boolToYesNo(vehicle.insured)}</div>`
                     }
                     $('#case_info').html(list);
                 } else {
