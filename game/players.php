@@ -115,12 +115,6 @@ if (!empty($_GET['query'])) {
 
                 playerBalance = player.bankacc;
 
-                let admin = `<select class="fieldSelector" onchange="updateAdminLevel('${player.playerid}')" id="AdminLevelValue">
-                            ${levels.admin !== undefined && levels.admin.map((_, level) => {
-                                return `<option ${(player.adminlevel == level) ? 'selected' : ''} value="${level + 1}">${levels.admin[level] || level}</option>`;
-                            })}
-                            </select>`;
-
                 let medic = `<select class="fieldSelector" onchange="updateMedicLevel('${player.playerid}')" id="MedicLevelValue">
                             ${levels.medic !== undefined && levels.medic.map((_, level) => {
                                 return `<option ${(player.mediclevel == level) ? 'selected' : ''} value="${level + 1}">${levels.medic[level] || level}</option>`;
@@ -129,7 +123,7 @@ if (!empty($_GET['query'])) {
 
                 let police = `<select class="fieldSelector" onchange="updatePoliceLevel('${player.playerid}')" id="PoliceLevelValue">
                             ${levels.police !== undefined && levels.police.map((_, level) => {
-                                return `<option ${(player.natoRank == level) ? 'selected' : ''} value="${level + 1}">${levels.police[level] || level}</option>`;
+                                return `<option ${(player.coplevel == level) ? 'selected' : ''} value="${level + 1}">${levels.police[level] || level}</option>`;
                             })}
                             </select>`;
 
@@ -139,7 +133,6 @@ if (!empty($_GET['query'])) {
                     <p><b>SteamID: </b>${player.playerid}</p>
                     <p><b>Level: </b>${player.exp_level} (XP: ${player.exp_total})</p>
                     <p><b>Bank Balance: </b><span id="playerFormattedBankBalance">${player.formatbankacc}</span> (Cash: \$${player.cash})</p>
-                    <p><b>Admin Level: </b>${admin}</p>
                     <p><b>Police Level: </b>${police}</p>
                     <p><b>Medic Level: </b>${medic}</p>
                     <p><b>Donated: </b>${boolToYesNo(player.donorlevel)}</p>
@@ -189,7 +182,7 @@ if (!empty($_GET['query'])) {
                     list += `<h2><span style="cursor: pointer;" onclick="getPlayerInfo('${playerID}')">${data.response.name}</span>'s Vehicles</h2>`;
                     for (let key in Object.values(data.response.vehicles)) {
                         const vehicle = data.response.vehicles[key];
-                        list += `<div class="staffActivityCard" style="cursor: default;">${vehicle.side} ${vehicle.type} ${parseClassNameToVehicle(vehicle.classname)}<br>Plate: ${vehicle.plate} | Impounded: ${boolToYesNo(vehicle.impound)} | Insured: ${boolToYesNo(vehicle.insured)}</div>`
+                        list += `<div class="staffActivityCard" style="cursor: default;">${vehicle.type} ${vehicle.displayname}<br>Plate: ${vehicle.plate} | Impounded: ${boolToYesNo(vehicle.impound)} | Insured: ${boolToYesNo(vehicle.insured)}</div>`
                     }
                     $('#case_info').html(list);
                 } else {
@@ -199,10 +192,6 @@ if (!empty($_GET['query'])) {
                 $('#case_info').html(`<h2><b>Error </b>${data.message}</h2>`);
             }
         }).catch(noty_catch_error);
-    }
-
-    function parseClassNameToVehicle(classname) {
-        return levels.vehicle_dictionary[classname] || classname;
     }
 
     function updateAdminLevel(id) {

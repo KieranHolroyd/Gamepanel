@@ -162,6 +162,24 @@ class Helpers {
         return json_encode(['response' => $array, 'code' => $code, 'message' => $message]);
     }
 
+    /**
+     * New API Response
+     * Should conform to the new API Response format
+     * 
+     * The new API Response format is as follows:
+     * ```[
+     *		"success" => true/false,
+     *		"errors" => [
+     *			// Error messages
+     *		],
+     *		"data" => [
+     *			// Data
+     *		]
+     * ]```
+     * 
+     * @param array|null $array
+     * @return false|string
+     */
     public static function NewAPIResponse($array = null) {
         $_SERVER['Content-Type'] = 'application/json';
         return json_encode([...$array]);

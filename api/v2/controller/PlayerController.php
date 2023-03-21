@@ -2,12 +2,11 @@
 
 namespace App\API\V2\Controller;
 
+use AuditLog;
 use \Permissions, \Helpers, \PDO, \User;
 
-class PlayerController
-{
-	public function GetPlayerInformation()
-	{
+class PlayerController {
+	public function GetPlayerInformation() {
 		global $pdo;
 
 		if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
@@ -46,8 +45,7 @@ class PlayerController
 		}
 	}
 
-	public function GetPlayerVehicles()
-	{
+	public function GetPlayerVehicles() {
 
 		if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
 			$pid = (isset($_GET['id'])) ? $_GET['id'] : null;
@@ -74,8 +72,7 @@ class PlayerController
 		}
 	}
 
-	public function GetLevelData()
-	{
+	public function GetLevelData() {
 		if (Permissions::init()->hasPermission("VIEW_GAME_PLAYER")) {
 			$levelSettings = [
 				"police" => [
@@ -129,44 +126,10 @@ class PlayerController
 		}
 	}
 
-	public function UpdatePlayerAdminLevel()
-	{
-		$user = new User;
-
-		if (Permissions::init()->hasPermission("EDIT_PLAYER_ADMIN")) {
-			$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
-			$al = (isset($_POST['al'])) ? $_POST['al'] : null;
-
-			$gamepdo = game_pdo();
-
-			if ($player_id == null || $al == null) {
-				echo Helpers::APIResponse("No ID OR AdminLevel Passed", null, 400);
-				exit;
-			}
-
-			$stmt = $gamepdo->prepare('UPDATE `players` SET adminlevel = :al WHERE playerid = :playerid');
-			$stmt->bindValue(':playerid', $player_id);
-			$stmt->bindValue(':al', $al, PDO::PARAM_INT);
-			if ($stmt->execute()) {
-				Helpers::addAuditLog("GAME::{$user->info->username} Changed Game_Player({$player_id}) Set AdminLevel = {$al}");
-				echo Helpers::APIResponse("Success", null, 200);
-			} else {
-				Helpers::addAuditLog("DATABASE_ERROR::{$user->info->username} Failed To Change Game_Player({$player_id})::" . json_encode($stmt->errorInfo()));
-				echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
-			}
-		} else {
-			Helpers::addAuditLog("GAME_PLAYER_UNAUTHORISED::{$user->info->username} Failed To Change Game_Player Insufficient Rank");
-			echo Helpers::APIResponse("Insufficient Rank", null, 401);
-		}
-	}
-
-	public function UpdatePlayerMedicLevel()
-	{
-		$user = new User;
-
+	public function UpdatePlayerMedicLevel() {
+		$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
+		$ml = (isset($_POST['ml'])) ? $_POST['ml'] : null;
 		if (Permissions::init()->hasPermission("EDIT_PLAYER_MEDIC")) {
-			$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
-			$ml = (isset($_POST['ml'])) ? $_POST['ml'] : null;
 
 			$gamepdo = game_pdo();
 
@@ -177,26 +140,23 @@ class PlayerController
 
 			$stmt = $gamepdo->prepare('UPDATE `players` SET mediclevel = :ml WHERE playerid = :playerid');
 			$stmt->bindValue(':playerid', $player_id);
-			$stmt->bindValue(':ml', $ml, PDO::PARAM_INT);
+			$stmt->bindValue(':ml', $ml);
 			if ($stmt->execute()) {
-				Helpers::addAuditLog("GAME::{$user->info->username} Changed Game_Player({$player_id}) Set MedicLevel = {$ml}");
+				AuditLog::create("Changed Game_Player({$player_id}) Set MedicLevel = {$ml}");
 				echo Helpers::APIResponse("Success", null, 200);
 			} else {
-				Helpers::addAuditLog("DATABASE_ERROR::{$user->info->username} Failed To Change Game_Player({$player_id})::" . json_encode($stmt->errorInfo()));
+				AuditLog::create("Failed to change Game_Player({$player_id}) set mediclevel = {$ml}", ["sql_error" => $stmt->errorInfo()]);
 				echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
 			}
 		} else {
-			Helpers::addAuditLog("GAME_PLAYER_UNAUTHORISED::{$user->info->username} Failed To Change Game_Player Insufficient Rank");
+			AuditLog::create("Unauthorised attempt to change Game_Player({$player_id})'s mediclevel");
 			echo Helpers::APIResponse("Insufficient Rank", null, 401);
 		}
 	}
-	public function UpdatePlayerPoliceLevel()
-	{
-		$user = new User;
-
+	public function UpdatePlayerPoliceLevel() {
+		$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
+		$pl = (isset($_POST['pl'])) ? $_POST['pl'] : null;
 		if (Permissions::init()->hasPermission("EDIT_PLAYER_POLICE")) {
-			$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
-			$pl = (isset($_POST['pl'])) ? $_POST['pl'] : null;
 
 			$gamepdo = game_pdo();
 
@@ -205,18 +165,18 @@ class PlayerController
 				exit;
 			}
 
-			$stmt = $gamepdo->prepare('UPDATE `players` SET natoRank = :pl WHERE playerid = :playerid');
+			$stmt = $gamepdo->prepare('UPDATE `players` SET coplevel = :pl WHERE playerid = :playerid');
 			$stmt->bindValue(':playerid', $player_id);
-			$stmt->bindValue(':pl', $pl, PDO::PARAM_INT);
+			$stmt->bindValue(':pl', $pl);
 			if ($stmt->execute()) {
-				Helpers::addAuditLog("GAME::{$user->info->username} Changed Game_Player({$player_id}) Set PoliceLevel = {$pl}");
+				AuditLog::create("Changed Game_Player({$player_id}) set policelevel = {$pl}");
 				echo Helpers::APIResponse("Success", null, 200);
 			} else {
-				Helpers::addAuditLog("DATABASE_ERROR::{$user->info->username} Failed To Change Game_Player({$player_id})::" . json_encode($stmt->errorInfo()));
+				AuditLog::create("Failed to change Game_Player({$player_id}) set policelevel = {$pl}", ["sql_error" => $stmt->errorInfo()]);
 				echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
 			}
 		} else {
-			Helpers::addAuditLog("GAME_PLAYER_UNAUTHORISED::{$user->info->username} Failed To Change Game_Player Insufficient Rank");
+			AuditLog::create("Unauthorised attempt to change Game_Player({$player_id})'s policelevel");
 			echo Helpers::APIResponse("Insufficient Rank", null, 401);
 		}
 	}
@@ -281,15 +241,13 @@ class PlayerController
 	// 	}
 	// }
 
-	public function UpdatePlayerBalance()
-	{
+	public function UpdatePlayerBalance() {
 		$user = new User;
 
+		$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
+		$pb = (isset($_POST['pb'])) ? $_POST['pb'] : null;
+		$comp = (isset($_POST['comp'])) ? ' [COMPENSATION]' : '';
 		if (Permissions::init()->hasPermission("EDIT_PLAYER_BALANCE")) {
-			$player_id = (isset($_POST['id'])) ? $_POST['id'] : null;
-			$pb = (isset($_POST['pb'])) ? $_POST['pb'] : null;
-			$comp = (isset($_POST['comp'])) ? ' [COMPENSATION]' : '';
-
 			$gamepdo = game_pdo();
 
 			if ($player_id == null || $pb == null) {
@@ -309,14 +267,14 @@ class PlayerController
 			$stmt->bindValue(':playerid', $player_id);
 			$stmt->bindValue(':pb', $pb, PDO::PARAM_INT);
 			if ($stmt->execute()) {
-				Helpers::addAuditLog("GAME::{$user->info->username} Changed Game_Player({$player_id}) [Currently \${$current->bankacc}] Changed Balance To \${$pb}{$comp}");
+				AuditLog::create("Changed Game_Player({$player_id}) [Currently \${$current->bankacc}] Changed Balance To \${$pb}{$comp}");
 				echo Helpers::APIResponse("Success", null, 200);
 			} else {
-				Helpers::addAuditLog("DATABASE_ERROR::{$user->info->username} Failed To Change Game_Player({$player_id})::" . json_encode($stmt->errorInfo()));
+				AuditLog::create("Failed to change Game_Player({$player_id})'s balance", ['sql_error' => $stmt->errorInfo()]);
 				echo Helpers::APIResponse("Database Error", $stmt->errorInfo(), 500);
 			}
 		} else {
-			Helpers::addAuditLog("GAME_PLAYER_UNAUTHORISED::{$user->info->username} Failed To Change Game_Player Insufficient Rank");
+			AuditLog::create("Unauthorised attempt to change Game_Player({$player_id})'s balance");
 			echo Helpers::APIResponse("Insufficient Rank", null, 401);
 		}
 	}
