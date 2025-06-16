@@ -19,7 +19,7 @@ class Config
 	public static $enableGamePanel = true;
 
 	public static $discord = [
-		"icon_url" => "https://panel.extremo.co.uk/img/logo-transparent-sm.png"
+		"icon" => "img/logo-transparent-sm.png"
 	];
 
 	// SQL Settings
@@ -44,7 +44,7 @@ class Config
 
 	// Cache Settings
 	public static $cache = [
-		'enabled' => false,
+		'enabled' => true,
 		'host' => 'cache',
 		'port' => '6379'
 	];
