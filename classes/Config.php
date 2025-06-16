@@ -44,7 +44,7 @@ class Config
 
 	// Cache Settings
 	public static $cache = [
-		'enabled' => true,
+		'enabled' => false,
 		'host' => 'cache',
 		'port' => '6379'
 	];
