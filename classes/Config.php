@@ -12,13 +12,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 class Config
 {
 	// Personalisation/Root Options
-	public static $name = 'Arma-Life';
+	public static $name = 'Extremo';
 	public static $base_url = "http://localhost:4400/";
 	public static $forums_url = "http://localhost:4400/forums/";
 	public static $discord_webhook = "";
 	public static $enableGamePanel = true;
 
 	public static $discord = [
+		"token" => "",
+		"guild" => "",
 		"icon" => "img/logo-transparent-sm.png"
 	];
 
@@ -65,8 +67,8 @@ class Config
 	// Pusher Config
 	public static $pusher = [
 		'AUTH_KEY' => '',
-		'SECRET' => '',
-		'APP_ID' => '',
+        'SECRET' => '',
+        'APP_ID' => '',
 		'DEFAULT_CONFIG' => [
 			'cluster' => 'eu',
 			'useTLS' => true

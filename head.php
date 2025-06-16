@@ -26,7 +26,7 @@ $url = Config::$base_url; ?>
 <head>
     <meta charset="UTF-8">
     <title>
-        <?php Config::$name; ?> | Gamepanel
+        <?php echo Config::$name; ?> | Gamepanel
     </title>
     <!-- favicon -->
     <link rel="apple-touch-icon" href="/img/logo.png">

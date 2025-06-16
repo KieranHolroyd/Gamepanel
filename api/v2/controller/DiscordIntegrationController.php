@@ -2,13 +2,14 @@
 
 namespace App\API\V2\Controller;
 
+use Config;
 use Helpers;
 use \Unirest;
 
 class DiscordIntegrationController {
 	public function SearchForMemberByTag($tag) {
-		$response = Unirest\Request::get("https://discord.com/api/v10/guilds/964059009453785099/members/search", [
-			"Authorization" => "Bot " . $_ENV["DISCORD_BOT_TOKEN"],
+		$response = Unirest\Request::get("https://discord.com/api/v10/guilds/" . Config::$discord['guild'] . "/members/search", [
+			"Authorization" => "Bot " . Config::$discord['token'],
 		], [
 			"query" => $tag,
 			"limit" => 1,
