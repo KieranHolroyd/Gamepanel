@@ -26,7 +26,8 @@ RUN pecl install -o -f redis \
 RUN a2enmod rewrite
 
 # Copy opcache configration
-COPY _cfg/opcache/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+#COPY _cfg/opcache/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
 # Copy existing application directory contents
 COPY . '/var/www/html'
 VOLUME [ "/var/www/html" ]

@@ -1,7 +1,6 @@
 vendor/
 _cfg/
 node_modules/
-classes/Config.php
 composer.lock
 .env
 extremolife-1.sql

@@ -44,6 +44,8 @@ services:
 
   cache:
     image: redis
+    ports: 
+      - "6379:6379"
     volumes:
       - ./_cfg/redis-data:/data
     command: redis-server --appendonly yes

@@ -21,8 +21,8 @@ class WebhookManager {
 	public function embed(string $title, string $content, string $user) {
 		$this->embed = new Embed($title, $content);
 		$this->embed->setColor("#FFFFFF");
-		$this->embed->setAuthor($user, Config::$base_url, Config::$discord['icon_url']);
-		$this->embed->setFooter(Config::$name, Config::$discord['icon_url']);
+		$this->embed->setAuthor($user, Config::$base_url, Config::$base_url . Config::$discord['icon_url']);
+		$this->embed->setFooter(Config::$name, Config::$base_url . Config::$discord['icon_url']);
 		return $this;
 	}
 
